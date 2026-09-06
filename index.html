@@ -39,8 +39,8 @@
 <script>
 const API_URL='https://fixdit-ai.nijlandbjorn.workers.dev';
 const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
-let used=Number(localStorage.getItem('fixdit_successful_used')||0);const max=3;
-function credits(){q('#credits').textContent=Math.max(0,max-used)}credits();
+let used=Number(localStorage.getItem('fixdit_successful_used_v2')||0);const max=3;
+function credits(){const el=q('#credits');if(el)el.textContent=Math.max(0,max-used)}credits();
 q('#navTry').onclick=()=>q('#start').scrollIntoView({behavior:'smooth'});q('#freeBtn').onclick=()=>q('#start').scrollIntoView({behavior:'smooth'});
 q('#problem').addEventListener('input',e=>q('#charCount').textContent=`${e.target.value.length}/500`);qa('[data-fill]').forEach(b=>b.onclick=()=>{q('#problem').value=b.dataset.fill;q('#charCount').textContent=`${q('#problem').value.length}/500`;q('#start').scrollIntoView({behavior:'smooth',block:'center'})});
 
@@ -89,7 +89,7 @@ async function realAnalyze(){
     const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({problem,image})});
     clearInterval(timer);const data=await res.json().catch(()=>({}));
     if(!res.ok||!data.ok||!data.diagnosis)throw new Error(data.error||'De analyse kon niet worden uitgevoerd.');
-    renderDiagnosis(data.diagnosis);used++;localStorage.setItem('fixdit_successful_used',used);credits();q('#loader').style.display='none';q('#diagnosis').classList.add('show');if(used===1)q('#emailGate').classList.add('show');
+    renderDiagnosis(data.diagnosis);used++;localStorage.setItem('fixdit_successful_used_v2',used);credits();q('#loader').style.display='none';q('#diagnosis').classList.add('show');if(used===1)q('#emailGate').classList.add('show');
   }catch(err){q('#loadTitle').textContent='Analyse mislukt';q('#loadStep').textContent='Probeer het opnieuw';q('#loadCopy').textContent=err.message||'Er ging iets mis. Je gratis fix is niet gebruikt.'}
   finally{button.disabled=false;button.innerHTML=`Analyseer gratis · <span id="credits">${Math.max(0,max-used)}</span> over`}
 }
