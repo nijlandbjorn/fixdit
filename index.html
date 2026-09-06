@@ -35,12 +35,30 @@
 </main>
 <footer class="wrap foot"><span>© 2026 Fixdit · Zelf repareren, slim geholpen.</span><span><a href="privacy.html">Privacy</a> · <a href="voorwaarden.html">Voorwaarden</a></span></footer>
 <div class="mobilebar"><a href="#start">Analyseer gratis</a><button id="mobileDemo">Bekijk demo</button></div>
-<div class="overlay" id="overlay" aria-hidden="true"><div class="backdrop" data-close></div><div class="modal"><button class="close" data-close>×</button><div class="loaderwrap" id="loader"><div class="spinner"></div><h3 id="loadTitle">Apparaat herkennen…</h3><p id="loadCopy">Fixdit analyseert je foto en beschrijving.</p><span class="pill" id="loadStep">Foto bekijken</span></div><div class="diagnosis" id="diagnosis"><h3 id="resultHeading">Analyse klaar</h3><div class="conclusion"><b id="diagTitle">Resultaat</b><span id="diagReason">Fixdit heeft je probleem geanalyseerd.</span></div><div class="dmetrics"><div class="dm"><small>Zekerheid</small><b id="metricConfidence">—</b></div><div class="dm"><small>Risico</small><b id="metricRisk">—</b></div><div class="dm"><small>Tijd</small><b id="metricTime">—</b></div><div class="dm"><small>Kosten zelf</small><b id="metricCost">—</b></div></div><div class="safe" id="safeSteps"></div><div class="emailgate" id="emailGate"><div class="emailbox"><h4>Nog 2 gratis fixes</h4><p>Je eerste analyse is gelukt. E-mailverificatie en server-side credits worden als volgende stap aangesloten.</p><div class="emailrow"><input type="email" placeholder="jij@voorbeeld.nl"><button type="button" id="emailBtn">Bewaar fixes</button></div></div></div></div></div></div>
+<div class="overlay" id="overlay" aria-hidden="true"><div class="backdrop" data-close></div><div class="modal"><button class="close" data-close>×</button><div class="loaderwrap" id="loader"><div class="spinner"></div><h3 id="loadTitle">Apparaat herkennen…</h3><p id="loadCopy">Fixdit analyseert je foto en beschrijving.</p><span class="pill" id="loadStep">Foto bekijken</span></div><div class="diagnosis" id="diagnosis"><h3 id="resultHeading">Analyse klaar</h3><div class="conclusion"><b id="diagTitle">Resultaat</b><span id="diagReason">Fixdit heeft je probleem geanalyseerd.</span></div><div class="dmetrics"><div class="dm"><small>Zekerheid</small><b id="metricConfidence">—</b></div><div class="dm"><small>Risico</small><b id="metricRisk">—</b></div><div class="dm"><small>Tijd</small><b id="metricTime">—</b></div><div class="dm"><small>Kosten zelf</small><b id="metricCost">—</b></div></div><div class="safe" id="safeSteps"></div><div class="emailgate" id="emailGate"><div class="emailbox"><h4>Nog 2 gratis fixes</h4><p>Je eerste analyse is gelukt. Je gratis fixes worden server-side bijgehouden. Verifieer straks je e-mailadres om je toegang beter te beveiligen.</p><div class="emailrow"><input type="email" placeholder="jij@voorbeeld.nl"><button type="button" id="emailBtn">Bewaar fixes</button></div></div></div></div></div></div>
 <script>
 const API_URL='https://fixdit-ai.nijlandbjorn.workers.dev';
 const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
-let used=Number(localStorage.getItem('fixdit_successful_used_v2')||0);const max=3;
-function credits(){const el=q('#credits');if(el)el.textContent=Math.max(0,max-used)}credits();
+const max=3;
+let remaining=max;
+function getDeviceId(){
+  let id=localStorage.getItem('fixdit_device_id_v1');
+  if(!id){
+    id=(crypto.randomUUID?.()||('fd-'+Date.now()+'-'+Math.random().toString(36).slice(2)));
+    localStorage.setItem('fixdit_device_id_v1',id);
+  }
+  return id;
+}
+const deviceId=getDeviceId();
+function credits(){const el=q('#credits');if(el)el.textContent=Math.max(0,remaining)}
+async function syncStatus(){
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'status',deviceId})});
+    const data=await res.json().catch(()=>({}));
+    if(res.ok&&data.ok){remaining=Number(data.freeRemaining ?? max);credits()}
+  }catch(_){credits()}
+}
+credits();syncStatus();
 q('#navTry').onclick=()=>q('#start').scrollIntoView({behavior:'smooth'});q('#freeBtn').onclick=()=>q('#start').scrollIntoView({behavior:'smooth'});
 q('#problem').addEventListener('input',e=>q('#charCount').textContent=`${e.target.value.length}/500`);qa('[data-fill]').forEach(b=>b.onclick=()=>{q('#problem').value=b.dataset.fill;q('#charCount').textContent=`${q('#problem').value.length}/500`;q('#start').scrollIntoView({behavior:'smooth',block:'center'})});
 
@@ -80,25 +98,30 @@ function renderDiagnosis(d){
 async function realAnalyze(){
   const problem=q('#problem').value.trim(), image=q('#preview').src||'';
   if(!problem&&!image){alert('Voeg eerst een foto toe of beschrijf het probleem.');return}
-  if(used>=max){q('#prijzen').scrollIntoView({behavior:'smooth'});alert('Je 3 gratis fixes zijn gebruikt. Account- en betaalcredits worden in de volgende stap aangesloten.');return}
+  if(remaining<=0){q('#prijzen').scrollIntoView({behavior:'smooth'});alert('Je 3 gratis fixes zijn gebruikt. Kies hieronder een pakket of abonnement zodra betalen is geactiveerd.');return}
   open();q('#loadTitle').textContent='Apparaat herkennen…';q('#loadStep').textContent='Foto en beschrijving bekijken';
   const button=q('#analyzeBtn');button.disabled=true;button.textContent='Analyseren…';
+  let timer;
   try{
     const phases=[['Foutcodes en details lezen…','Belangrijke signalen zoeken'],['Mogelijke oorzaken vergelijken…','Risico en moeilijkheid inschatten'],['Veilig advies opbouwen…','Stappenplan maken']];let phase=0;
-    const timer=setInterval(()=>{const s=phases[Math.min(phase++,phases.length-1)];q('#loadTitle').textContent=s[0];q('#loadStep').textContent=s[1]},1100);
-    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({problem,image})});
-    clearInterval(timer);const data=await res.json().catch(()=>({}));
+    timer=setInterval(()=>{const s=phases[Math.min(phase++,phases.length-1)];q('#loadTitle').textContent=s[0];q('#loadStep').textContent=s[1]},1100);
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({problem,image,deviceId})});
+    const data=await res.json().catch(()=>({}));
+    if(res.status===402||data.code==='FREE_LIMIT_REACHED'){
+      remaining=0;credits();throw new Error('Je 3 gratis fixes zijn gebruikt.');
+    }
     if(!res.ok||!data.ok||!data.diagnosis)throw new Error(data.error||'De analyse kon niet worden uitgevoerd.');
-    renderDiagnosis(data.diagnosis);used++;localStorage.setItem('fixdit_successful_used_v2',used);credits();q('#loader').style.display='none';q('#diagnosis').classList.add('show');if(used===1)q('#emailGate').classList.add('show');
+    remaining=Number(data.freeRemaining ?? Math.max(0,remaining-1));credits();
+    renderDiagnosis(data.diagnosis);q('#loader').style.display='none';q('#diagnosis').classList.add('show');if(remaining===2)q('#emailGate').classList.add('show');
   }catch(err){q('#loadTitle').textContent='Analyse mislukt';q('#loadStep').textContent='Probeer het opnieuw';q('#loadCopy').textContent=err.message||'Er ging iets mis. Je gratis fix is niet gebruikt.'}
-  finally{button.disabled=false;button.innerHTML=`Analyseer gratis · <span id="credits">${Math.max(0,max-used)}</span> over`}
+  finally{if(timer)clearInterval(timer);button.disabled=false;button.innerHTML=`Analyseer gratis · <span id="credits">${Math.max(0,remaining)}</span> over`}
 }
 
 function demoAnalyze(){
   open();q('#loadTitle').textContent='Voorbeelddiagnose laden…';q('#loadStep').textContent='Demo — kost geen fix';
   setTimeout(()=>{renderDiagnosis({device:'vaatwasser',brand:'Bosch',model:'Serie 4',errorCode:'E24',summary:'Afvoer of filter waarschijnlijk verstopt',confidence:'hoog',risk:'middel',difficulty:2,estimatedTime:'15–25 min',selfRepairCost:'€0–€25',professionalCost:'€90–€180',safeSteps:['Trek de stekker uit het stopcontact.','Reinig filter en afvoerzeef en verwijder zichtbaar vuil.','Controleer of de afvoerslang niet geknikt zit.'],stopReason:'',professionalRecommended:false});q('#loader').style.display='none';q('#diagnosis').classList.add('show')},650)
 }
-q('#analyzeBtn').onclick=realAnalyze;q('#demoBtn').onclick=demoAnalyze;q('#mobileDemo').onclick=demoAnalyze;qa('.demoCard').forEach(c=>c.onclick=demoAnalyze);q('#emailBtn').onclick=()=>alert('E-mailverificatie en server-side credits bouwen we in de volgende stap.');
+q('#analyzeBtn').onclick=realAnalyze;q('#demoBtn').onclick=demoAnalyze;q('#mobileDemo').onclick=demoAnalyze;qa('.demoCard').forEach(c=>c.onclick=demoAnalyze);q('#emailBtn').onclick=()=>alert('Je resterende gratis fixes worden nu veilig server-side bijgehouden. E-mailverificatie voegen we hierna toe.');
 </script>
 </body>
 </html>
