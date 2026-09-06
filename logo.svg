@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Fixdit</title><desc id="desc">Huis met moersleutel en vinkje</desc>
+  <defs>
+    <linearGradient id="house" x1="10" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#176647"/><stop offset="1" stop-color="#0f3f2e"/>
+    </linearGradient>
+    <linearGradient id="check" x1="35" y1="36" x2="55" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c8ff79"/><stop offset="1" stop-color="#77ea77"/>
+    </linearGradient>
+  </defs>
+  <path d="M7 29.5 32 8l25 21.5v21A5.5 5.5 0 0 1 51.5 56h-39A5.5 5.5 0 0 1 7 50.5v-21Z" fill="url(#house)"/>
+  <path d="M21 28.4a8.7 8.7 0 0 1 11-8.4l-4.3 4.3 4.1 4.1 4.3-4.3a8.7 8.7 0 0 1-8.4 11l-8.9 8.9a3.7 3.7 0 1 1-5.2-5.2l8.6-8.6a8.7 8.7 0 0 1-1.2-1.8Z" fill="#fff"/>
+  <path d="m34.5 44 6.1 6.1L54 36.8" fill="none" stroke="url(#check)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
