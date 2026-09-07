@@ -1080,9 +1080,70 @@ h1{
   }
 }
 
+
+/* ===== MOBILE HERO FINAL-TWEAK V7 ===== */
+@media(max-width:680px){
+  /* Let the full image sit flush against the CTA */
+  .heroVisual{
+    align-self:end!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:flex-end!important;
+  }
+
+  .heroVisual img{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+  }
+
+  /* Remove the visual gap between hero and CTA */
+  .ctaRow{
+    margin-top:0!important;
+    padding-top:0!important;
+  }
+
+  /* Slightly slimmer green bar */
+  .cta{
+    min-height:48px!important;
+    border-radius:15px!important;
+    font-size:14px!important;
+    padding:0 16px!important;
+  }
+
+  .cta svg{
+    width:22px!important;
+    height:22px!important;
+  }
+
+  .cta .arrow{
+    font-size:23px!important;
+  }
+
+  .trustline{
+    margin-top:6px!important;
+  }
+
+  .benefits{
+    margin-top:3px!important;
+  }
+}
+
+@media(max-width:410px){
+  .cta{
+    min-height:46px!important;
+    font-size:13.5px!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-FINAL-TWEAK-V7 -->
 <!-- FIXDIT-FULL-IMAGE-V6 -->
 <!-- FIXDIT-CTA-DIRECT-V5 -->
 <!-- FIXDIT-NO-OVERLAP-V4 -->
