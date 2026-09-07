@@ -1562,6 +1562,7 @@ h1{
 </style>
 </head>
 <body>
+<!-- FIXDIT-PRO-ROUTING-V14 -->
 <!-- FIXDIT-CATEGORIES-GALLERY-V13 -->
 <!-- FIXDIT-HERO-CONNECTED-V12 -->
 <!-- FIXDIT-UNIVERSAL-V11 -->
@@ -2155,6 +2156,58 @@ function tradeFor(type){
   };
   return (m[currentLang][type]||m[currentLang].other);
 }
+
+function normalizeClientProblemType(d){
+  const rawType=String(d?.problemType||'other');
+  const hay=[
+    d?.professionalType,
+    d?.device,
+    d?.objectSubtype,
+    d?.summary,
+    d?.solutionTitle,
+    d?.whatToDoNow,
+    q('#problem')?.value
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  if(/\b(schoen|schoenzool|sneaker|laars|shoe|sole|schuh|sohle|textiel|textile|kleding|clothing)\b/.test(hay)) return 'footwear_textile';
+  if(/\b(aquarium|aquariumbak|fish tank|fishtank|aquaristik|aquarien)\b/.test(hay)) return 'aquarium_pet';
+  if(/\b(fiets|fietsband|ketting|derailleur|bicycle|bike|fahrrad)\b/.test(hay)) return 'vehicle_bicycle';
+
+  if(/\b(plumber|loodgieter|sanitair|plumbing|klempner|installateur)\b/.test(hay)) return 'plumbing';
+  if(/\b(electrician|elektricien|elektriker|electrical contractor|elektrofach)\b/.test(hay)) return 'electrical';
+
+  if(/\b(kraan|waterleiding|leiding|sifon|afvoer|gootsteen|wastafel|toilet|wc|douche|radiator|water pipe|drain|sink|tap|faucet|shower|rohr|abfluss|wasserhahn)\b/.test(hay)) return 'plumbing';
+
+  if(/\b(lekkage|waterlek|lekken|leak|leaking|water leak|undicht|wasserleck)\b/.test(hay)){
+    if(/\b(wasmachine|vaatwasser|koffiemachine|koelkast|washing machine|dishwasher|coffee machine|fridge|waschmaschine|geschirrspüler|kaffeemaschine|kühlschrank)\b/.test(hay)) return 'appliance';
+    return 'plumbing';
+  }
+
+  return rawType || 'other';
+}
+
+function dutchMapTrade(type){
+  const map={
+    footwear_textile:'schoenmaker',
+    cleaning:'professionele reiniger',
+    furniture:'meubelhersteller',
+    appliance:'witgoedmonteur',
+    plumbing:'loodgieter',
+    electrical:'elektricien',
+    electronics:'elektronicareparateur',
+    surface:'schilder herstelbedrijf',
+    mechanical:'reparateur',
+    aquarium_pet:'aquariumspecialist',
+    garden_outdoor:'klusbedrijf tuin',
+    vehicle_bicycle:'fietsenmaker',
+    kitchen_household:'huishoudelijke reparatie',
+    hobby_diy:'klusbedrijf',
+    safety:'erkende vakman',
+    other:'reparateur'
+  };
+  return map[type]||map.other;
+}
+
 let lastDiagnosis=null;
 
 function parseMoneyMid(value){
@@ -2327,14 +2380,15 @@ function renderDiagnosis(d){
     q('#dangerCall').textContent=gas?copy.gasCall:copy.call;q('#dangerCall').href=gas?'tel:08009009':'tel:112';
   }
 
-  const fallback=tradeFor(d.problemType||'other');
-  const trade=(d.professionalType&&![copy.unknown,'onbekend','unknown','unbekannt','n.v.t.','n/a'].includes(String(d.professionalType).toLowerCase()))?d.professionalType:fallback[0];
-  const query=`${fallback[1]} Nederland`;
+  const routeType=normalizeClientProblemType(d);
+  const fallback=tradeFor(routeType);
+  const trade=fallback[0];
+  const query=dutchMapTrade(routeType);
   const helpNeeded=stop||high||d.professionalRecommended===true||Number(d.difficulty)>=4;
   q('#helpBox').hidden=!helpNeeded;
   if(helpNeeded){
     q('#helpTitle').textContent=copy.help;
-    q('#helpText').textContent=currentLang==='nl'?`Als de veilige stappen niet helpen, zoek dan een ${trade}. Fixdit kan je probleem of project alvast duidelijk overdragen.`:currentLang==='de'?`Wenn die sicheren Schritte nicht helfen, suche ${trade}. Fixdit kann Problem oder Projekt klar zusammenfassen.`:`If the safe steps do not help, look for ${trade}. Fixdit can summarize the problem or project clearly.`;
+    q('#helpText').textContent=currentLang==='nl'?`Als de veilige stappen niet helpen, zoek dan een ${trade}. Fixdit kan je probleem of project alvast duidelijk overdragen.`:currentLang==='de'?`Wenn die sicheren Schritte nicht helfen, suche ${trade}. Fixdit kann Problem oder Projekt klar zusammenfassen.`:`If the safe steps do not help, look for a ${trade}. Fixdit can summarize the problem or project clearly.`;
     q('#nearbyPro').textContent=copy.nearby;q('#nearbyPro').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     q('#copyPro').textContent=copy.copy;
     q('#copyPro').onclick=async()=>{
