@@ -1195,9 +1195,68 @@ h1{
   }
 }
 
+
+/* ===== FIXDIT POLISH V9 ===== */
+@media(max-width:680px){
+  /* 1) CTA a touch lower for more breathing room */
+  .ctaRow{
+    margin-top:22px!important;
+  }
+
+  /* 2) Hero image only slightly larger */
+  .heroGrid{
+    grid-template-columns:minmax(0,57%) minmax(0,39%)!important;
+    column-gap:4%!important;
+  }
+
+  .heroVisual img{
+    width:116%!important;
+    max-width:none!important;
+    transform:translateX(1%)!important;
+  }
+
+  /* 3) Slightly tighter supporting copy */
+  .heroCopy p{
+    line-height:1.32!important;
+    letter-spacing:-.01em!important;
+  }
+
+  /* 4) Bring pricing section closer to the three benefits */
+  .benefits{
+    padding-bottom:8px!important;
+  }
+
+  #prijzen.section{
+    padding-top:18px!important;
+  }
+}
+
+@media(max-width:410px){
+  .ctaRow{
+    margin-top:21px!important;
+  }
+
+  .heroGrid{
+    grid-template-columns:minmax(0,58%) minmax(0,38%)!important;
+  }
+
+  .heroVisual img{
+    width:114%!important;
+  }
+
+  .heroCopy p{
+    line-height:1.30!important;
+  }
+
+  #prijzen.section{
+    padding-top:16px!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-POLISH-V9 -->
 <!-- FIXDIT-IMAGE-LARGER-V8 -->
 <!-- FIXDIT-FINAL-TWEAK-V7 -->
 <!-- FIXDIT-FULL-IMAGE-V6 -->
