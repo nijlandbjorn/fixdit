@@ -1974,6 +1974,7 @@ body.modalOpen{overflow:hidden}
       <div class="resultActionBar">
         <button class="save" id="saveFix" type="button">Bewaar in Fixpaspoort</button>
         <button class="photo" id="followupPhoto" type="button">Maak vervolgfoto</button>
+        <button class="photo" id="followupGallery" type="button">Kies vervolgfoto uit galerij</button>
       </div>
 
       <div class="feedback">
@@ -2064,7 +2065,8 @@ whyTitle:'Mehr als nur eine KI-Antwort',whySub:'Fixdit ist als Reparaturablauf g
 }
 };
 
-let currentLang=localStorage.getItem('fixdit_lang')||'nl';
+const supportedLanguages=['nl','en','de'];
+let currentLang=supportedLanguages.includes(localStorage.getItem('fixdit_lang'))?localStorage.getItem('fixdit_lang'):'nl';
 const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeId=()=>crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -2089,10 +2091,19 @@ function applyLanguage(lang){
   qa('[data-i18n]').forEach(el=>{const key=el.dataset.i18n,value=translations[lang][key];if(value==null)return;if(key==='heroTitle')el.innerHTML=value;else el.textContent=value});
   const placeholders={nl:'Bijvoorbeeld: er blijft water onderin mijn vaatwasser staan...',en:'For example: water remains in the bottom of my dishwasher...',de:'Zum Beispiel: In meinem Geschirrspüler bleibt unten Wasser stehen...'};
   q('#problem').placeholder=placeholders[lang];
+  q('.brandsub').textContent={nl:'FIX HET ZELF',en:'FIX IT YOURSELF',de:'SELBST REPARIEREN'}[lang];
+  q('.heroVisual img').alt={nl:'Telefoon fotografeert koffieapparaat',en:'Phone photographing a coffee machine',de:'Telefon fotografiert eine Kaffeemaschine'}[lang];
+  q('#drop').setAttribute('aria-label',{nl:'Kies een foto uit je galerij',en:'Choose a photo from your gallery',de:'Wähle ein Foto aus deiner Galerie'}[lang]);
+  q('footer .foot > span').textContent='© 2026 Fixdit · '+{nl:'Nederland',en:'Netherlands',de:'Niederlande'}[lang];
+  q('a[href="voorwaarden.html"]').textContent={nl:'Voorwaarden',en:'Terms',de:'Bedingungen'}[lang];
+  q('a[href="privacy.html"]').textContent={nl:'Privacy',en:'Privacy',de:'Datenschutz'}[lang];
+  q('#toast').textContent='';
   q('#closeModal').setAttribute('aria-label',uiCopy[lang].close);q('#closePassport').setAttribute('aria-label',uiCopy[lang].close);
   q('#passportBtn').textContent=uiCopy[lang].passport;q('#passportKicker').textContent=uiCopy[lang].passportKicker;q('#passportTitle').textContent=uiCopy[lang].passport;q('#passportIntro').textContent=uiCopy[lang].passportIntro;q('#passportEmpty').textContent=uiCopy[lang].passportEmpty;q('#clearPassport').textContent=uiCopy[lang].passportClear;
   q('#followUpBannerTitle').textContent=uiCopy[lang].followTitle;q('#followUpBannerText').textContent=' '+uiCopy[lang].followText;q('#cancelFollowUp').textContent=uiCopy[lang].followCancel;
   updateAllCatsLabel();updateCredits();updateAnalyzeButton();
+  if(lastDiagnosis)renderDiagnosis(lastDiagnosis);
+  if(q('#passportOverlay').classList.contains('open'))renderPassport();
 }
 
 const langBtn=q('#langBtn'),langPanel=q('#langPanel'),menuBtn=q('#menuBtn'),menuPanel=q('#menuPanel');
@@ -2121,6 +2132,8 @@ function updateAnalyzeButton(){
 }
 
 async function apiPost(payload,timeoutMs=90000){
+ const language=payload.language||currentLang;if(!supportedLanguages.includes(language))throw new Error('LANGUAGE_REQUIRED');
+ payload={...payload,language};
  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeoutMs);
  try{
   const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:ctrl.signal});
@@ -2201,8 +2214,13 @@ const diagnosisCopy={
  de:{eyebrow:'ANALYSE ABGESCHLOSSEN',projectEyebrow:'PROJEKTPLAN FERTIG',heading:'Dein Fixdit-Plan',projectHeading:'Dein Fixdit-Projekt',next:'DAS SOLLTEST DU JETZT TUN',confidence:'Sicherheit',risk:'Risiko',time:'Zeit',cost:'Kosten selbst',difficulty:'Schwierigkeit',proCost:'Fachkraft',fixscore:'Fixscore',fixHelp:'Wie gut selbst machbar',fixMore:'Zuerst mehr Informationen',route:'Smarte Route',routeHelp:'Bester nächster Schritt',saving:'Sparanzeige',savingHelp:'Mögliche Ersparnis',steps:'Schritt-für-Schritt-Plan',step:'Schritt',stepsHint:'Beginne mit Schritt 1',causes:'Mögliche Ursachen',attention:'Wichtige Punkte',avoid:'Vermeiden',danger:'Stopp und zuerst die Situation sichern',call:'112 anrufen',gasCall:'0800-9009 anrufen',help:'Wen solltest du anrufen?',nearby:'Hilfe in der Nähe finden',copy:'Nachricht für Fachbetrieb',copied:'Nachricht kopiert',save:'Im Fix-Pass speichern',follow:'Folgefoto machen',feedback:'Hat das geholfen?',yes:'👍 Ja',no:'👎 Noch nicht',thanks:'Danke für dein Feedback',routeSelf:'Selbst machen',routeCare:'Vorsichtig ausführen',routePro:'Fachbetrieb sinnvoller',routeStop:'Sofort stoppen',routeMore:'Mehr Infos nötig',object:'Objekt',materials:'Material',tools:'Werkzeug',measurements:'Maße / Kontrollen',moreInfo:'MEHR INFORMATIONEN NÖTIG',moreInfoTitle:'Ein Detail macht den Plan genauer',completion:'So prüfst du das Ergebnis',types:{footwear_textile:'Schuhe & Textilien',furniture:'Möbel',appliance:'Gerät',plumbing:'Sanitär',electrical:'Elektrik',electronics:'Elektronik',surface:'Wand & Boden',mechanical:'Mechanisch',aquarium:'Aquarium',garden_outdoor:'Garten & Außenbereich',bicycle:'Fahrrad',kitchen_household:'Küche & Haushalt',structure_building:'Bau & Konstruktion',other:'Sonstiges'},intents:{repair:'Reparieren',clean:'Reinigen',maintain:'Warten',assemble:'Montieren',install:'Installieren',build:'Bauen',restore:'Restaurieren',troubleshoot:'Untersuchen',inspect:'Prüfen'},kinds:{leak:'Leck',loose:'Lockeres Teil',crack:'Riss',breakage:'Bruch',wear:'Verschleiß',blockage:'Verstopfung',stain:'Fleck',no_power:'Kein Strom',error_code:'Fehlercode',noise:'Geräusch',overheating:'Überhitzung',corrosion:'Korrosion',alignment:'Ausrichtung',water_damage:'Wasserschaden',setup_build:'Bauprojekt',installation:'Installation',maintenance:'Wartung',cleaning:'Reinigung',unknown:'Noch zu bestimmen',other:'Problem'}}
 };
 
+for(const [lang,values] of Object.entries({nl:{no_flow:'Geen doorstroming',no_drain:'Water loopt niet weg',detachment:'Loslatende verbinding',flat_tire:'Lege of lekke band',brake_failure:'Rem werkt niet goed',poor_result:'Werkt niet naar verwachting'},en:{no_flow:'No flow',no_drain:'Water does not drain',detachment:'Separating joint',flat_tire:'Flat tire',brake_failure:'Brake does not work properly',poor_result:'Unsatisfactory operation'},de:{no_flow:'Kein Durchfluss',no_drain:'Wasser läuft nicht ab',detachment:'Sich lösende Verbindung',flat_tire:'Platter Reifen',brake_failure:'Bremse funktioniert nicht richtig',poor_result:'Unzureichende Funktion'}}))Object.assign(diagnosisCopy[lang].kinds,values);
 function normalizeApiDiagnosis(raw){
- const d={...raw};
+ const view=raw?.views?.[currentLang];
+ if(!view || view.language!==currentLang){
+   const error=new Error({nl:'Dit resultaat moet opnieuw worden geanalyseerd met Fixdit V7.',en:'This result needs to be analyzed again with Fixdit V7.',de:'Dieses Ergebnis muss mit Fixdit V7 erneut analysiert werden.'}[currentLang]);error.code='LEGACY_RESULT';throw error;
+ }
+ const d={...raw,...view};
  if(!d.objectFamily){const legacy={aquarium_pet:'aquarium',vehicle_bicycle:'bicycle'};d.objectFamily=legacy[d.problemType]||d.problemType||'other'}
  if(!d.objectLabel)d.objectLabel=cleanResultValue(d.device)||'';
  if(!d.problemKind)d.problemKind='unknown';
@@ -2218,25 +2236,28 @@ function renderDiagnosis(raw){
  q('#solutionTitle').textContent=cleanResultValue(d.solutionTitle)||cleanResultValue(d.summary)||c.heading;q('#whatNow').textContent=cleanResultValue(d.whatToDoNow)||cleanResultValue(d.summary)||'—';
  const tagParts=[c.intents[d.intent]||c.intents.repair,c.types[d.objectFamily]||c.types.other,c.kinds[d.problemKind]||c.kinds.unknown];q('#problemType').innerHTML=tagParts.map(escapeHtml).join(' <span class="intentDot">·</span> ');
  q('#confidenceLabel').textContent=c.confidence;q('#riskLabel').textContent=c.risk;q('#timeLabel').textContent=c.time;q('#costLabel').textContent=c.cost;q('#difficultyLabel').textContent=c.difficulty;q('#proCostLabel').textContent=c.proCost;
- q('#confidence').textContent=levelText(d.confidence);q('#risk').textContent=levelText(d.risk);q('#time').textContent=cleanResultValue(d.estimatedTime)||localizedUnknown();q('#cost').textContent=cleanResultValue(d.selfRepairCost)||localizedUnknown();q('#difficulty').textContent=Number.isFinite(Number(d.difficulty))?`${d.difficulty}/5`:'—';q('#proCost').textContent=cleanResultValue(d.professionalCost)||localizedUnknown();
+ q('#confidence').textContent=levelText(d.confidence);q('#risk').textContent=levelText(d.risk);q('#time').textContent=cleanResultValue(d.estimatedTime)||localizedUnknown();q('#cost').textContent=cleanResultValue(d.selfRepairCost)||localizedUnknown();q('#difficulty').textContent=d.difficulty!=null&&Number.isFinite(Number(d.difficulty))?`${d.difficulty}/5`:'—';q('#proCost').textContent=cleanResultValue(d.professionalCost)||localizedUnknown();
  const score=calcFixScore(d);q('#fixScoreLabel').textContent=c.fixscore;q('#fixScore').textContent=score==null?'—':`${score}/100`;q('#fixScoreHelp').textContent=score==null?c.fixMore:c.fixHelp;
  const routeMap={stop:c.routeStop,more_info:c.routeMore,professional:c.routePro,caution:c.routeCare,self:c.routeSelf};q('#routeLabel').textContent=c.route;q('#smartRoute').textContent=routeMap[d.route]||c.routeMore;q('#routeHelp').textContent=c.routeHelp;
  const diy=parseMoneyMid(d.selfRepairCost),pro=parseMoneyMid(d.professionalCost);const saving=d.route!=='more_info'&&diy!=null&&pro!=null&&pro>diy?Math.round(pro-diy):null;q('#savingLabel').textContent=c.saving;q('#saving').textContent=saving!=null?`± €${saving}`:'—';q('#savingHelp').textContent=c.savingHelp;
  const cleanItems=arr=>[...new Set((Array.isArray(arr)?arr:[]).map(cleanResultValue).filter(Boolean))];const materials=cleanItems(d.materials),tools=cleanItems(d.tools),measurements=cleanItems(d.measurements);
  q('#materialsTitle').textContent=c.materials;q('#toolsTitle').textContent=c.tools;q('#measurementsTitle').textContent=c.measurements;q('#materialsCard').hidden=!materials.length;q('#toolsCard').hidden=!tools.length;q('#measurementsCard').hidden=!measurements.length;q('#universalNeeds').hidden=!(materials.length||tools.length||measurements.length);fillList('#materialsList',materials);fillList('#toolsList',tools);fillList('#measurementsList',measurements);
  q('#moreInfoLabel').textContent=c.moreInfo;q('#moreInfoTitle').textContent=c.moreInfoTitle;q('#moreInfoBox').hidden=d.route!=='more_info'&&!d.needMoreInfo;q('#followUpQuestion').textContent=cleanResultValue(d.followUpQuestion);q('#followUpPhotoText').textContent=cleanResultValue(d.followUpPhoto);q('#followUpPhotoText').style.display=cleanResultValue(d.followUpPhoto)?'block':'none';
- q('#stepsTitle').textContent=c.steps;q('#stepsHint').textContent=c.stepsHint;q('#steps').innerHTML='';const steps=Array.isArray(d.safeSteps)?d.safeSteps.filter(Boolean):[];steps.slice(0,8).forEach((s,i)=>{const el=document.createElement('div');el.className='step v10';el.innerHTML=`<i>${i+1}</i><div><b>${c.step} ${i+1}</b><p>${escapeHtml(s)}</p></div>`;q('#steps').appendChild(el)});
+ q('#stepsTitle').textContent=c.steps;q('#stepsHint').textContent=c.stepsHint;q('#steps').innerHTML='';const steps=Array.isArray(d.safeSteps)?d.safeSteps.filter((s,i)=>s&&(d.route!=='more_info'||d.stepKinds?.[i]==='inspection')):[];steps.slice(0,8).forEach((s,i)=>{const el=document.createElement('div');el.className='step v10';el.innerHTML=`<i>${i+1}</i><div><b>${c.step} ${i+1}</b><p>${escapeHtml(s)}</p></div>`;q('#steps').appendChild(el)});
  const checks=Array.isArray(d.completionChecks)?d.completionChecks.filter(Boolean):[];q('#completionTitle').textContent=c.completion;q('#completionBox').hidden=!checks.length;fillList('#completionList',checks,6);
- q('#causesTitle').textContent=project?c.attention:c.causes;q('#avoidTitle').textContent=c.avoid;const causes=Array.isArray(d.possibleCauses)?d.possibleCauses.filter(Boolean):[];fillList('#causes',causes.length?causes:[d.summary||'—'],5);const avoid=Array.isArray(d.avoid)?d.avoid.filter(Boolean):[];q('#avoidBox').style.display=avoid.length?'block':'none';fillList('#avoid',avoid,5);
+ q('#causesTitle').textContent=project?c.attention:c.causes;q('#avoidTitle').textContent=c.avoid;const causes=Array.isArray(d.possibleCauses)?d.possibleCauses.filter(Boolean):[];q('#causes').parentElement.hidden=!causes.length;fillList('#causes',causes,5);const avoid=Array.isArray(d.avoid)?d.avoid.filter(Boolean):[];q('#avoidBox').style.display=avoid.length?'block':'none';fillList('#avoid',avoid,5);
  q('#dangerBox').hidden=!stop;q('#resultStatusIcon').textContent=stop?'!':high?'⚠':'✓';q('#resultStatusIcon').style.background=stop?'#fff1ef':high?'#fff7ed':'#edf9f2';q('#resultStatusIcon').style.color=stop?'#a13b30':high?'#a56b13':'#0d974f';
  if(stop){q('#dangerTitle').textContent=c.danger;q('#dangerText').textContent=cleanResultValue(d.stopReason)||cleanResultValue(d.summary)||c.danger;const emergency=String(d.emergencyCode||'none');q('#dangerCall').hidden=!['gas_08009009','emergency_112'].includes(emergency);if(emergency==='gas_08009009'){q('#dangerCall').textContent=c.gasCall;q('#dangerCall').href='tel:08009009'}else if(emergency==='emergency_112'){q('#dangerCall').textContent=c.call;q('#dangerCall').href='tel:112'}}
  const acute=['gas_08009009','emergency_112'].includes(String(d.emergencyCode||'none'));const helpNeeded=d.route==='professional'||(d.route==='stop'&&!acute);q('#helpBox').hidden=!helpNeeded;
  if(helpNeeded){const trade=cleanResultValue(d.professionalType)||c.help,query=cleanResultValue(d.professionalSearchTerm)||'klusbedrijf reparatie';q('#helpTitle').textContent=c.help;q('#helpText').textContent=currentLang==='nl'?`Voor dit probleem past een ${trade}. Fixdit kan de diagnose compact voor je overdragen.`:currentLang==='de'?`Für dieses Problem passt ${trade}. Fixdit kann die Diagnose kompakt übergeben.`:`For this problem, the appropriate professional is ${trade}. Fixdit can summarize the diagnosis for you.`;q('#nearbyPro').textContent=c.nearby;q('#nearbyPro').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;q('#nearbyPro').onclick=()=>track('professional_click');q('#copyPro').textContent=c.copy;q('#copyPro').onclick=()=>copyProfessionalMessage(d,trade,c)}
- q('#saveFix').textContent=c.save;q('#followupPhoto').textContent=c.follow;q('#feedbackTitle').textContent=c.feedback;q('#feedbackYes').textContent=c.yes;q('#feedbackNo').textContent=c.no;q('#feedbackYes').classList.remove('selected');q('#feedbackNo').classList.remove('selected');
- q('#saveFix').onclick=()=>savePassport(d);q('#followupPhoto').onclick=()=>startFollowUp();q('#feedbackYes').onclick=()=>submitFeedback(true);q('#feedbackNo').onclick=()=>submitFeedback(false);
+ q('#followupPhoto').hidden=q('#followupGallery').hidden=d.route==='stop'||Number(d.facts?.followupRound||0)>=2;
+ q('#saveFix').textContent=c.save;q('#followupPhoto').textContent=c.follow;q('#followupGallery').textContent={nl:'Kies vervolgfoto uit galerij',en:'Choose follow-up photo from gallery',de:'Folgefoto aus Galerie auswählen'}[currentLang];q('#feedbackTitle').textContent=c.feedback;q('#feedbackYes').textContent=c.yes;q('#feedbackNo').textContent=c.no;q('#feedbackYes').classList.remove('selected');q('#feedbackNo').classList.remove('selected');
+ q('#saveFix').onclick=()=>savePassport(d);q('#followupPhoto').onclick=()=>startFollowUp('camera');q('#followupGallery').onclick=()=>startFollowUp('gallery');q('#feedbackYes').onclick=()=>submitFeedback(true);q('#feedbackNo').onclick=()=>submitFeedback(false);
 }
 
 async function copyProfessionalMessage(d,trade,c){
+ d=normalizeApiDiagnosis(d);
+ if(d.professionalMessage){try{await navigator.clipboard.writeText(d.professionalMessage);showToast(c.copied)}catch{prompt(c.copy,d.professionalMessage)}return;}
  const vals=[d.objectLabel,d.objectSubtype].map(cleanResultValue).filter(Boolean);const object=[...new Set(vals)].join(' · '),brandModel=[d.brand,d.model].map(cleanResultValue).filter(Boolean).join(' '),code=cleanResultValue(d.errorCode),summary=cleanResultValue(d.summary),action=cleanResultValue(d.whatToDoNow);let lines;
  if(currentLang==='nl')lines=['Hallo, ik wil graag hulp met een probleem.','',object?`Object: ${object}`:'',brandModel?`Merk/model: ${brandModel}`:'',code?`Foutcode: ${code}`:'',`Gezochte vakman: ${trade}`,'',summary?`Probleem: ${summary}`:'',action?`Eerste veilige controle van Fixdit: ${action}`:'',`Risico-inschatting: ${levelText(d.risk)}`,'','Kunt u beoordelen wat de oorzaak is, of reparatie mogelijk is en wat dit ongeveer kost? Ik kan indien nodig foto’s meesturen.'];
  else if(currentLang==='de')lines=['Hallo, ich benötige Hilfe bei einem Problem.','',object?`Objekt: ${object}`:'',brandModel?`Marke/Modell: ${brandModel}`:'',code?`Fehlercode: ${code}`:'',`Gesuchter Fachbetrieb: ${trade}`,'',summary?`Problem: ${summary}`:'',action?`Erste sichere Prüfung laut Fixdit: ${action}`:'',`Risikoeinschätzung: ${levelText(d.risk)}`,'','Können Sie beurteilen, was die Ursache ist, ob eine Reparatur möglich ist und was diese ungefähr kostet? Fotos kann ich bei Bedarf mitsenden.'];
@@ -2246,24 +2267,31 @@ async function copyProfessionalMessage(d,trade,c){
 
 function passportItems(){try{const x=JSON.parse(localStorage.getItem('fixdit_passport_v2')||'[]');return Array.isArray(x)?x:[]}catch{return []}}
 function savePassport(d){const saved=passportItems();const entry={id:d.analysisId||safeId(),date:new Date().toISOString(),language:currentLang,problem:q('#problem').value.trim(),diagnosis:d};const next=[entry,...saved.filter(x=>x.id!==entry.id)].slice(0,30);localStorage.setItem('fixdit_passport_v2',JSON.stringify(next));track('passport_save');showToast(uiCopy[currentLang].saved)}
-function renderPassport(){const list=passportItems(),box=q('#passportList');box.innerHTML='';q('#passportEmpty').hidden=!!list.length;list.forEach(item=>{const d=normalizeApiDiagnosis(item.diagnosis||{}),card=document.createElement('article');card.className='passportItem';const date=new Date(item.date);card.innerHTML=`<div class="passportItemTop"><div><h3>${escapeHtml(cleanResultValue(d.objectLabel)||diagnosisCopy[currentLang].types[d.objectFamily]||diagnosisCopy[currentLang].object)}</h3><small>${escapeHtml(date.toLocaleDateString(currentLang==='nl'?'nl-NL':currentLang==='de'?'de-DE':'en-GB'))}</small></div><small>${escapeHtml(diagnosisCopy[currentLang].intents[d.intent]||'')}</small></div><p>${escapeHtml(cleanResultValue(d.summary)||cleanResultValue(item.problem)||'')}</p>`;box.appendChild(card)})}
+function renderPassport(){
+ const list=passportItems(),box=q('#passportList');box.innerHTML='';q('#passportEmpty').hidden=!!list.length;
+ list.forEach(item=>{
+   let d;try{d=normalizeApiDiagnosis(item.diagnosis||{});}catch{d={objectLabel:diagnosisCopy[currentLang].types[item.diagnosis?.objectFamily]||diagnosisCopy[currentLang].object,summary:{nl:'Oud resultaat: analyseer opnieuw om dit in de gekozen taal te bekijken.',en:'Older result: analyze again to view it in your selected language.',de:'Älteres Ergebnis: erneut analysieren, um es in der gewählten Sprache anzuzeigen.'}[currentLang]};}
+   const card=document.createElement('article');card.className='passportItem';const date=new Date(item.date);
+   card.innerHTML='<div class="passportItemTop"><div><h3>'+escapeHtml(d.objectLabel)+'</h3><small>'+escapeHtml(date.toLocaleDateString(currentLang==='nl'?'nl-NL':currentLang==='de'?'de-DE':'en-GB'))+'</small></div><small>'+escapeHtml(diagnosisCopy[currentLang].intents[d.intent]||'')+'</small></div><p>'+escapeHtml(d.summary)+'</p>';box.appendChild(card);
+ });
+}
 function openPassport(){previousFocus=document.activeElement;renderPassport();const o=q('#passportOverlay');o.classList.add('open');o.setAttribute('aria-hidden','false');document.body.classList.add('modalOpen');setTimeout(()=>q('.passportSheet').focus(),0)}
 function closePassport(){const o=q('#passportOverlay');o.classList.remove('open');o.setAttribute('aria-hidden','true');document.body.classList.remove('modalOpen');previousFocus?.focus?.()}
 q('#passportBtn').onclick=()=>{menuPanel.classList.remove('open');menuBtn.setAttribute('aria-expanded','false');openPassport()};q('#closePassport').onclick=closePassport;q('#passportOverlay').onclick=e=>{if(e.target===q('#passportOverlay'))closePassport()};q('#clearPassport').onclick=()=>{localStorage.removeItem('fixdit_passport_v2');renderPassport();showToast(uiCopy[currentLang].passportDeleted)};
 
-function startFollowUp(){if(!lastAnalysisId){return}followUpMode=true;clearPhoto();q('#followUpBanner').hidden=false;closeModal();q('#start').scrollIntoView({behavior:'smooth'});updateAnalyzeButton();setTimeout(()=>q('#galleryInput').click(),420)}
+function startFollowUp(source='camera'){if(!lastAnalysisId){return}followUpMode=true;clearPhoto();q('#followUpBanner').hidden=false;closeModal();q('#start').scrollIntoView({behavior:'smooth'});updateAnalyzeButton();q(source==='camera'?'#cameraInput':'#galleryInput').click()}
 function cancelFollowUp(){followUpMode=false;q('#followUpBanner').hidden=true;pendingFollowup={id:'',signature:''};updateAnalyzeButton()}
 q('#cancelFollowUp').onclick=cancelFollowUp;
 
 async function submitFeedback(helpful){const b=helpful?q('#feedbackYes'):q('#feedbackNo'),other=helpful?q('#feedbackNo'):q('#feedbackYes');b.classList.add('selected');other.classList.remove('selected');if(lastAnalysisId){try{await apiPost({action:'feedback',analysisId:lastAnalysisId,helpful,deviceId,language:currentLang},15000)}catch{showToast(uiCopy[currentLang].feedbackFail);return}}showToast(diagnosisCopy[currentLang].thanks)}
 function showToast(text){const t=q('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 
-function requestSignature(problem,image,follow){return `${follow?'F':'A'}|${problem}|${image.length}|${image.slice(0,48)}|${currentLang}`}
+async function requestSignature(problem,image,follow){const input=JSON.stringify([follow?'F':'A',follow?lastAnalysisId:'',problem,image,currentLang]);const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(input));return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('')}
 async function performAnalysis(){
  const problem=q('#problem').value.trim();const msg={nl:{missing:'Voeg een foto toe of beschrijf het probleem.',limit:'Je gratis fixes zijn gebruikt.',start:'Analyse starten…',look:'Object, probleem en veiligheidsroute bepalen',followStart:'Vervolgfoto analyseren…',followMissing:'Voeg eerst een vervolgfoto toe.',fail:'Analyse niet voltooid'},en:{missing:'Add a photo or describe the problem.',limit:'You have used your free fixes.',start:'Starting analysis…',look:'Identifying object, problem and safety route',followStart:'Analyzing follow-up photo…',followMissing:'Add a follow-up photo first.',fail:'Analysis not completed'},de:{missing:'Füge ein Foto hinzu oder beschreibe das Problem.',limit:'Du hast deine kostenlosen Fixes verwendet.',start:'Analyse starten…',look:'Objekt, Problem und Sicherheitsroute bestimmen',followStart:'Folgefoto analysieren…',followMissing:'Füge zuerst ein Folgefoto hinzu.',fail:'Analyse nicht abgeschlossen'}}[currentLang];
  if(followUpMode&&!imageData){alert(msg.followMissing);return}if(!followUpMode&&!problem&&!imageData){alert(msg.missing);return}if(!followUpMode&&!testMode&&remaining<=0){alert(msg.limit);q('#prijzen').scrollIntoView({behavior:'smooth'});return}
  openModal();q('#loadTitle').textContent=followUpMode?msg.followStart:msg.start;q('#loadText').textContent=msg.look;const btn=q('#analyzeBtn');btn.disabled=true;
- const sig=requestSignature(problem,imageData,followUpMode);const pending=followUpMode?pendingFollowup:pendingRequest;if(pending.signature!==sig||!pending.id){pending.id=safeId();pending.signature=sig}
+ const sig=await requestSignature(problem,imageData,followUpMode);const pending=followUpMode?pendingFollowup:pendingRequest;if(pending.signature!==sig||!pending.id){pending.id=safeId();pending.signature=sig}
  try{
   const payload=followUpMode?{action:'followup',analysisId:lastAnalysisId,requestId:pending.id,problem,image:imageData,deviceId,language:currentLang}:{requestId:pending.id,problem,image:imageData,deviceId,language:currentLang};
   const data=await apiPost(payload,95000);if(!data?.ok||!data?.diagnosis)throw new Error(msg.fail);

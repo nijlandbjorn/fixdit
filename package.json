@@ -1,0 +1,1 @@
+{"private":true,"type":"module","engines":{"node":">=24"},"scripts":{"test":"node --test tests/core.test.mjs tests/transport.test.mjs tests/frontend.test.cjs"}}
