@@ -4,21 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#fbfcf8">
+<meta name="color-scheme" content="light only">
 <meta name="description" content="Fixdit helpt je begrijpen wat er kapot is, wat je veilig zelf kunt proberen en wanneer je beter een vakman inschakelt.">
 <title>Fixdit — Kapot? Maak eerst een foto.</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
-:root{--bg:#f6f8f3;--paper:#fff;--ink:#122218;--muted:#69786f;--green:#1f7a56;--green2:#55c789;--soft:#e9f5ee;--line:#dce7df;--warn:#a66b16;--warnbg:#fff5e8;--shadow:0 22px 60px rgba(23,43,30,.09)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 88% 0%,rgba(202,244,112,.16),transparent 27%),linear-gradient(180deg,#fcfdf9,#f5f8f3 60%,#f1f5ef);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}button,input,textarea{font:inherit}img{display:block;max-width:100%}a{color:inherit}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
-.topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(18,34,24,.07)}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}.brandmark{width:50px;height:50px;flex:0 0 50px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#1d8a61,#54cf91);box-shadow:0 10px 24px rgba(31,122,86,.18)}.brandmark svg{width:28px;height:28px}.wordmark{display:flex;flex-direction:column;line-height:1;min-width:0}.wordmark b{font-size:29px;letter-spacing:-.065em;white-space:nowrap}.wordmark span{font-size:10px;margin-top:6px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.navlinks{display:flex;align-items:center;gap:8px;margin-left:auto}.navlinks a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:750;padding:10px}.navcta{border:0;border-radius:14px;padding:12px 17px;background:var(--ink);color:#fff;font-weight:900;cursor:pointer;white-space:nowrap}.langmenu{position:relative}.langbtn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 12px;font-weight:850;cursor:pointer;outline:none;display:flex;align-items:center;gap:8px;min-width:74px;justify-content:center}.langbtn:after{content:"⌄";font-size:12px;color:var(--muted)}.langpanel{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:7px;box-shadow:0 18px 45px rgba(18,34,24,.14);display:none;z-index:100}.langpanel.open{display:grid}.langoption{border:0;background:transparent;border-radius:11px;padding:10px 12px;text-align:left;font-weight:800;color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:center}.langoption:hover,.langoption.active{background:var(--soft);color:var(--green)}
-.hero{padding:58px 0 46px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}.eyebrow{display:inline-flex;gap:9px;align-items:center;padding:9px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--green);font-size:13px;font-weight:850}.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green2);box-shadow:0 0 0 5px rgba(85,199,137,.11)}h1{margin:18px 0;font-size:clamp(50px,7.3vw,88px);line-height:.94;letter-spacing:-.075em;max-width:700px}h1 em{font-style:normal;color:var(--green)}.hero p{margin:0 0 25px;color:var(--muted);font-size:19px;line-height:1.68;max-width:620px}.actions{display:flex;flex-wrap:wrap;gap:12px}.primary,.secondary{border:0;border-radius:15px;padding:14px 18px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer}.primary{background:var(--ink);color:#fff}.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.trust{display:flex;flex-wrap:wrap;gap:14px;margin-top:21px;font-size:13px;font-weight:750;color:#4d5d53}.trust span:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}
+:root{color-scheme:only light;--bg:#fbfcf8;--paper:#ffffff;--ink:#102118;--muted:#66736b;--green:#168a4a;--green2:#59c87f;--soft:#eef8ef;--line:#e3ebe4;--warn:#956018;--warnbg:#fff8ed;--shadow:0 18px 48px rgba(31,72,45,.075)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;color-scheme:only light;background:#fbfcf8}body{margin:0;background:radial-gradient(circle at 92% 4%,rgba(183,228,178,.20),transparent 28%),linear-gradient(180deg,#fffefa 0%,#fbfcf8 54%,#f6faf5 100%);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}button,input,textarea{font:inherit}img{display:block;max-width:100%}a{color:inherit}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(18,34,24,.07)}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}.brandmark{width:50px;height:50px;flex:0 0 50px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#08783d,#19a756);box-shadow:0 10px 26px rgba(22,138,74,.20)}.brandmark svg{width:28px;height:28px}.wordmark{display:flex;flex-direction:column;line-height:1;min-width:0}.wordmark b{font-size:29px;letter-spacing:-.06em;white-space:nowrap;font-weight:950}.wordmark span{font-size:10px;margin-top:6px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.navlinks{display:flex;align-items:center;gap:8px;margin-left:auto}.navlinks a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:750;padding:10px}.navcta{border:0;border-radius:14px;padding:12px 17px;background:linear-gradient(135deg,#148b49,#20a75a);color:#fff;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 9px 22px rgba(22,138,74,.16)}.langmenu{position:relative}.langbtn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 12px;font-weight:850;cursor:pointer;outline:none;display:flex;align-items:center;gap:8px;min-width:74px;justify-content:center}.langbtn:after{content:"⌄";font-size:12px;color:var(--muted)}.langpanel{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:7px;box-shadow:0 18px 45px rgba(18,34,24,.14);display:none;z-index:100}.langpanel.open{display:grid}.langoption{border:0;background:transparent;border-radius:11px;padding:10px 12px;text-align:left;font-weight:800;color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:center}.langoption:hover,.langoption.active{background:var(--soft);color:var(--green)}
+.hero{padding:58px 0 46px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}.eyebrow{display:inline-flex;gap:9px;align-items:center;padding:9px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--green);font-size:13px;font-weight:850}.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green2);box-shadow:0 0 0 5px rgba(85,199,137,.11)}h1{margin:18px 0;font-size:clamp(50px,7.3vw,88px);line-height:.94;letter-spacing:-.075em;max-width:700px}h1 em{font-style:normal;color:var(--green)}.hero p{margin:0 0 25px;color:var(--muted);font-size:19px;line-height:1.68;max-width:620px}.actions{display:flex;flex-wrap:wrap;gap:12px}.primary,.secondary{border:0;border-radius:15px;padding:14px 18px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer}.primary{background:linear-gradient(135deg,#148b49,#20a75a);color:#fff;box-shadow:0 11px 24px rgba(22,138,74,.17)}.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.trust{display:flex;flex-wrap:wrap;gap:14px;margin-top:21px;font-size:13px;font-weight:750;color:#4d5d53}.trust span:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}
 .product{background:linear-gradient(180deg,#fff,#fbfdfb);border:1px solid var(--line);border-radius:30px;padding:17px;box-shadow:var(--shadow)}.demo{background:#f7faf7;border:1px solid #e1e9e3;border-radius:23px;padding:14px}.demohead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.demohead b{font-size:14px}.live{font-size:11px;background:var(--soft);color:var(--green);font-weight:850;border-radius:999px;padding:6px 9px}.demophoto{height:235px;border-radius:18px;overflow:hidden;position:relative;background:#dae6dc}.demophoto img{width:100%;height:100%;object-fit:cover}.demophoto:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 52%,rgba(8,20,12,.6))}.photolabel{position:absolute;z-index:2;left:15px;right:15px;bottom:13px;color:#fff}.photolabel small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;opacity:.84}.photolabel strong{display:block;font-size:19px;line-height:1.15;margin-top:4px}.result{margin-top:12px;border-radius:18px;padding:16px;background:#fff;border:1px solid var(--line)}.reshead{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}.reshead small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:850;margin-bottom:5px}.reshead h3{margin:0;font-size:20px;line-height:1.18;letter-spacing:-.04em}.score{background:var(--soft);color:var(--green);border-radius:17px;padding:10px 13px;min-width:115px}.score b{display:block;font-size:25px;line-height:1}.score span{display:block;font-size:11px;font-weight:850;margin-top:5px}.tags{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.tag{font-size:11px;font-weight:850;border-radius:999px;padding:8px 10px;background:#f0f4f1;color:#526159}.tag.good{background:var(--soft);color:var(--green)}.tag.warn{background:var(--warnbg);color:var(--warn)}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{background:#f7f9f7;border:1px solid #e6ece7;border-radius:13px;padding:11px}.metric small{display:block;color:#839188;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.metric b{display:block;margin-top:4px;font-size:14px}.metric.wide{grid-column:1/-1}
 .benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0 0}.benefit{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 8px 24px rgba(25,48,34,.035)}.benefit b{display:block;font-size:14px;margin-bottom:4px}.benefit span{color:var(--muted);font-size:12px;line-height:1.5}
 .uploadsec{padding:26px 0 78px}.uploadshell{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;background:#fff;border:1px solid var(--line);border-radius:32px;padding:32px;box-shadow:var(--shadow)}.label{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--green)}h2{font-size:clamp(34px,5vw,54px);line-height:1.03;letter-spacing:-.055em;margin:11px 0 13px}.lead{margin:0;color:var(--muted);line-height:1.65}.stepsmini{display:grid;gap:10px;margin-top:21px}.stepsmini div{display:flex;gap:10px;align-items:center;font-size:14px;color:#435248}.stepsmini b{width:28px;height:28px;border-radius:9px;background:var(--soft);display:grid;place-items:center;color:var(--green)}.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.quick button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 11px;font-size:11px;font-weight:850;color:#4b5a52;cursor:pointer}.uploadcard{background:#f7faf7;border:1px solid var(--line);border-radius:24px;padding:14px}.upload{height:235px;background:#fff;border:1.5px dashed #b9c8bc;border-radius:20px;display:grid;place-items:center;text-align:center;position:relative;overflow:hidden;cursor:pointer}.uploadcenter{padding:22px;max-width:360px}.plus{width:58px;height:58px;border-radius:17px;background:var(--soft);display:grid;place-items:center;color:var(--green);font-size:28px;font-weight:500;margin:0 auto 11px}.upload strong{display:block;font-size:17px}.upload small{display:block;color:var(--muted);font-size:12px;margin-top:7px;line-height:1.45}.preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.remove{position:absolute;right:11px;top:11px;z-index:3;border:0;width:38px;height:38px;border-radius:50%;background:rgba(18,34,24,.8);color:#fff;font-size:22px}.field{margin-top:13px}.field label{display:block;font-size:13px;font-weight:850;margin-bottom:7px}.field textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:13px 14px;resize:vertical;outline:none}.field textarea:focus{border-color:#8eb39b;box-shadow:0 0 0 4px rgba(31,122,86,.07)}.meta{display:flex;justify-content:space-between;color:#86948c;font-size:11px;margin-top:6px}.analyze{width:100%;border:0;border-radius:15px;padding:15px 17px;margin-top:13px;background:var(--green);color:#fff;font-weight:900;cursor:pointer}.micro{font-size:10px;color:#829087;line-height:1.55;margin:9px 2px 0}
 .section{padding:78px 0;border-top:1px solid rgba(18,34,24,.07)}.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:25px}.sectionhead .lead{max-width:560px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.card{border:1px solid var(--line);border-radius:21px;background:#fff;overflow:hidden;box-shadow:0 8px 24px rgba(25,48,34,.04);cursor:pointer}.card img{width:100%;height:155px;object-fit:cover}.cardbody{padding:16px}.cardbody small{font-size:10px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.08em}.cardbody strong{display:block;margin-top:5px;font-size:16px;line-height:1.2}.cardbody span{display:block;margin-top:5px;color:var(--muted);font-size:12px}.flows{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.flow{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px}.visual{height:110px;background:linear-gradient(180deg,#f6faf7,#eef5f0);border:1px solid #e2ebe4;border-radius:16px;padding:12px;margin-bottom:16px;display:flex;align-items:center}.ui{display:grid;gap:8px;width:100%}.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{font-size:10px;font-weight:850;border:1px solid #dce6df;border-radius:999px;padding:6px 8px;background:#fff}.chip.green{background:var(--soft);color:var(--green)}.uibox{background:#fff;border:1px solid #dce6df;border-radius:12px;padding:9px}.uibox b{display:block;font-size:12px}.uibox span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.flow .num{width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900;margin-bottom:16px}.flow h3{margin:0 0 7px;font-size:19px}.flow p{margin:0;color:var(--muted);font-size:13px;line-height:1.58}
 .compare{display:grid;grid-template-columns:1fr 1fr;gap:17px}.comparebox{background:#fff;border:1px solid var(--line);border-radius:23px;padding:22px}.comparebox h3{margin:0 0 12px;font-size:22px;letter-spacing:-.04em}.comparebox ul{list-style:none;margin:0;padding:0;display:grid;gap:11px}.comparebox li{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start;color:#45554c;font-size:13px}.comparebox li:before{content:"✓";width:23px;height:23px;border-radius:8px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900}.comparebox.generic li:before{content:"·";background:#f3f4f3;color:#77847c}.comparebox.fix{border-color:#9bc1a9;box-shadow:0 18px 44px rgba(31,122,86,.08)}
-.pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:25px}.price{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px;display:flex;flex-direction:column;justify-content:space-between;min-height:305px;position:relative}.price.featured{border-color:#6eb189;box-shadow:0 20px 48px rgba(31,122,86,.12)}.badge{position:absolute;right:13px;top:13px;background:#183f2f;color:#fff;border-radius:999px;padding:6px 9px;font-size:9px;font-weight:900}.price small{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);font-weight:850}.amount{font-size:39px;font-weight:900;letter-spacing:-.06em;margin:9px 0 0}.subprice{font-size:11px;color:var(--muted);font-weight:750}.price p{color:var(--muted);font-size:12px;line-height:1.55}.price ul{list-style:none;margin:17px 0;padding:0;display:grid;gap:9px;font-size:12px}.price li:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}.price button{border:1px solid var(--line);background:#eff4ef;border-radius:12px;padding:11px;font-weight:850;color:var(--ink);cursor:pointer}.price button[data-pay]{opacity:.76}.foot{padding:35px 0 55px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.foot a{color:var(--muted)}
-.overlay{display:none;position:fixed;inset:0;z-index:80;place-items:center;padding:16px}.overlay.open{display:grid}.backdrop{position:absolute;inset:0;background:rgba(11,24,16,.58);backdrop-filter:blur(5px)}.modal{position:relative;z-index:1;width:min(610px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:26px;padding:25px;box-shadow:0 30px 90px rgba(20,40,28,.25)}.close{position:absolute;right:12px;top:12px;border:0;width:37px;height:37px;border-radius:50%;background:#f0f4f1;font-size:20px}.loaderwrap{display:grid;justify-items:center;gap:13px;padding:20px 8px}.spinner{width:48px;height:48px;border:4px solid #e4ebe6;border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loaderwrap h3{margin:0;font-size:27px;letter-spacing:-.04em;text-align:center}.loaderwrap p{margin:0;color:var(--muted);text-align:center}.pill{font-size:11px;border-radius:999px;background:var(--soft);color:var(--green);font-weight:850;padding:7px 10px}.diagnosis{display:none}.diagnosis.show{display:block}.diagnosis h3{margin:0 0 14px;font-size:29px;letter-spacing:-.05em}.conclusion{background:var(--soft);border:1px solid #d4e7dc;border-radius:17px;padding:15px}.conclusion b{display:block;font-size:18px}.conclusion span{display:block;color:#4b5d53;font-size:12px;margin-top:5px}.dmetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.dm{background:#f7f9f7;border:1px solid #e6ece7;border-radius:13px;padding:10px}.dm small{display:block;color:#849188;font-size:9px;text-transform:uppercase}.dm b{display:block;margin-top:4px;font-size:14px}.actionbox{margin:14px 0;background:linear-gradient(180deg,#173f2f,#20583f);color:#fff;border-radius:18px;padding:16px}.actionbox small{display:block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.11em;opacity:.72}.actionbox b{display:block;font-size:18px;line-height:1.25;margin-top:5px}.actionbox p{margin:7px 0 0;font-size:12px;line-height:1.55;opacity:.92}.typepill{display:inline-flex;margin-top:10px;border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.12);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:25px}.price{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px;display:flex;flex-direction:column;justify-content:space-between;min-height:305px;position:relative}.price.featured{border-color:#7bc995;background:linear-gradient(180deg,#ffffff,#f7fcf8);box-shadow:0 18px 44px rgba(22,138,74,.10)}.badge{position:absolute;right:13px;top:13px;background:#168a4a;color:#fff;border-radius:999px;padding:6px 9px;font-size:9px;font-weight:900}.price small{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);font-weight:850}.amount{font-size:39px;font-weight:900;letter-spacing:-.06em;margin:9px 0 0}.subprice{font-size:11px;color:var(--muted);font-weight:750}.price p{color:var(--muted);font-size:12px;line-height:1.55}.price ul{list-style:none;margin:17px 0;padding:0;display:grid;gap:9px;font-size:12px}.price li:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}.price button{border:1px solid var(--line);background:#eef8ef;border-radius:12px;padding:11px;font-weight:850;color:#125d36;cursor:pointer}.price button[data-pay]{opacity:.78;background:#f0f3ef;color:#7c867f}.foot{padding:35px 0 55px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.foot a{color:var(--muted)}
+.overlay{display:none;position:fixed;inset:0;z-index:80;place-items:center;padding:16px}.overlay.open{display:grid}.backdrop{position:absolute;inset:0;background:rgba(11,24,16,.58);backdrop-filter:blur(5px)}.modal{position:relative;z-index:1;width:min(610px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:26px;padding:25px;box-shadow:0 30px 90px rgba(20,40,28,.25)}.close{position:absolute;right:12px;top:12px;border:0;width:37px;height:37px;border-radius:50%;background:#f0f4f1;font-size:20px}.loaderwrap{display:grid;justify-items:center;gap:13px;padding:20px 8px}.spinner{width:48px;height:48px;border:4px solid #e4ebe6;border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loaderwrap h3{margin:0;font-size:27px;letter-spacing:-.04em;text-align:center}.loaderwrap p{margin:0;color:var(--muted);text-align:center}.pill{font-size:11px;border-radius:999px;background:var(--soft);color:var(--green);font-weight:850;padding:7px 10px}.diagnosis{display:none}.diagnosis.show{display:block}.diagnosis h3{margin:0 0 14px;font-size:29px;letter-spacing:-.05em}.conclusion{background:var(--soft);border:1px solid #d4e7dc;border-radius:17px;padding:15px}.conclusion b{display:block;font-size:18px}.conclusion span{display:block;color:#4b5d53;font-size:12px;margin-top:5px}.dmetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.dm{background:#f7f9f7;border:1px solid #e6ece7;border-radius:13px;padding:10px}.dm small{display:block;color:#849188;font-size:9px;text-transform:uppercase}.dm b{display:block;margin-top:4px;font-size:14px}.actionbox{margin:14px 0;background:linear-gradient(135deg,#168a4a,#27a85d);color:#fff;border-radius:18px;padding:16px}.actionbox small{display:block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.11em;opacity:.72}.actionbox b{display:block;font-size:18px;line-height:1.25;margin-top:5px}.actionbox p{margin:7px 0 0;font-size:12px;line-height:1.55;opacity:.92}.typepill{display:inline-flex;margin-top:10px;border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.12);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
 .safe{display:grid;gap:9px}.sstep{display:grid;grid-template-columns:auto 1fr;gap:10px;background:#fafcfa;border:1px solid var(--line);border-radius:14px;padding:11px}.sstep i{font-style:normal;width:27px;height:27px;border-radius:9px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900}.sstep b{font-size:13px}.sstep p{margin:3px 0 0;color:var(--muted);font-size:11px}
 .resultsection{margin-top:15px}.resultsection h4{margin:0 0 9px;font-size:13px;letter-spacing:-.02em}.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.detailbox{background:#fafcfa;border:1px solid var(--line);border-radius:14px;padding:12px}.detailbox h4{margin:0 0 8px;font-size:12px}.detailbox ul{margin:0;padding-left:18px;color:#56665d;font-size:11px;line-height:1.55}.detailbox li+li{margin-top:5px}.avoidbox{background:#fffaf3;border-color:#eee1c9}.avoidbox h4{color:#8b5b17}
 .smartgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.smartcard{background:#f7f9f7;border:1px solid #e4ebe6;border-radius:14px;padding:12px}.smartcard small{display:block;color:#849188;font-size:9px;text-transform:uppercase;letter-spacing:.07em;font-weight:850}.smartcard b{display:block;margin-top:5px;font-size:16px;letter-spacing:-.025em}.smartcard span{display:block;margin-top:4px;color:#6a796f;font-size:10px;line-height:1.4}
@@ -29,17 +30,399 @@
 .emailgate{display:none;margin-top:14px}.emailgate.show{display:block}.emailbox{background:#fafcfb;border:1px solid var(--line);border-radius:16px;padding:15px}.emailbox h4{margin:0 0 6px}.emailbox p{margin:0;color:var(--muted);font-size:12px}.emailrow{display:flex;gap:8px;margin-top:11px}.emailrow input{flex:1;border:1px solid var(--line);border-radius:11px;padding:11px}.emailrow button{border:0;border-radius:11px;background:var(--green);color:#fff;font-weight:850;padding:11px 12px}.mobilebar{display:none}
 @media(max-width:950px){.hero,.uploadshell{grid-template-columns:1fr}.benefits{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}.flows,.pricing{grid-template-columns:1fr 1fr}.compare{grid-template-columns:1fr}}
 @media(max-width:680px){.wrap{width:calc(100% - 24px)}.nav{min-height:70px;gap:8px}.brand{gap:9px}.brandmark{width:42px;height:42px;flex-basis:42px;border-radius:13px}.brandmark svg{width:24px;height:24px}.wordmark b{font-size:24px}.wordmark span{font-size:8px;margin-top:5px;letter-spacing:.07em}.navlinks{gap:6px}.navlinks a,.navcta{display:none}.langbtn{height:44px;padding:0 10px;border-radius:13px;font-size:14px;min-width:62px}.langpanel{min-width:178px;right:0}.hero{padding:32px 0 36px;gap:25px}h1{font-size:clamp(43px,13vw,50px);line-height:.96}.hero p{font-size:17px;line-height:1.62}.actions{display:grid}.primary,.secondary{width:100%;min-height:54px}.trust{gap:10px 14px;margin-top:18px}.benefits{grid-template-columns:1fr}.product{padding:12px}.demophoto{height:185px}.reshead{grid-template-columns:1fr}.score{max-width:150px}.uploadshell{padding:18px;border-radius:24px}.upload{height:215px}.section{padding:61px 0}.sectionhead{display:block}.sectionhead .lead{margin-top:10px}.cards,.flows,.pricing{grid-template-columns:1fr}.dmetrics{grid-template-columns:1fr 1fr}.detailgrid,.smartgrid{grid-template-columns:1fr}.resultactions{grid-template-columns:1fr}.emailrow{flex-direction:column}.mobilebar{display:none!important}.foot{padding-bottom:55px}}
+
+@media (prefers-color-scheme: dark){
+  html,body{color-scheme:only light!important;background:#fbfcf8!important;color:#102118!important}
+  .topbar,.product,.demo,.result,.uploadshell,.uploadcard,.upload,.card,.flow,.comparebox,.price,.modal,.langpanel,.emailgate,.dm,.sstep,.detailbox,.smartcard,.helpbox{background-color:#fff!important;color:#102118!important}
+  .field textarea,.langbtn,.secondary,.quick button{background:#fff!important;color:#102118!important}
+}
+
+
+/* ===== Fixdit concept-v2: matches the approved bright mobile direction ===== */
+body{background:#fbfcf8!important}
+.topbar{background:rgba(255,255,252,.97)!important}
+.nav{min-height:74px}
+.brandmark{background:linear-gradient(145deg,#08783d,#19a756)!important}
+.wordmark b{font-weight:950}
+.navcta{background:linear-gradient(135deg,#168a4a,#26a85c)!important}
+
+/* Header menu */
+.mobileMenuBtn{display:none;width:44px;height:44px;border:0;border-radius:13px;background:#f3f6f2;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer}
+.mobileMenuBtn span{width:19px;height:2px;background:#14241b;border-radius:99px}
+.mobileMenuPanel{display:none;position:absolute;right:12px;top:64px;width:210px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px;box-shadow:0 18px 48px rgba(25,55,35,.14)}
+.mobileMenuPanel.open{display:grid}
+.mobileMenuPanel a{text-decoration:none;padding:11px 12px;border-radius:10px;font-size:13px;font-weight:850;color:#2b3b31}
+.mobileMenuPanel a:hover{background:#f3f8f4}
+
+/* Approved hero */
+.conceptHero{display:block!important;padding:34px 0 30px!important}
+.conceptHeroCard{background:#fff;border:1px solid #e7eee8;border-radius:30px;padding:18px;box-shadow:0 18px 48px rgba(31,72,45,.08);overflow:hidden}
+.conceptHeroTop{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:stretch}
+.conceptHeroCopy{padding:22px 10px 12px 12px}
+.conceptHero .eyebrow{font-size:12px;padding:8px 11px}
+.conceptHero h1{font-size:clamp(52px,7.2vw,88px);line-height:.91;letter-spacing:-.075em;margin:18px 0 17px;max-width:640px}
+.conceptHero h1 em{color:#168a4a}
+.conceptHero p{font-size:18px;line-height:1.58;margin:0;color:#66736b;max-width:560px}
+.conceptHeroVisual{position:relative;min-height:420px;border-radius:23px;overflow:hidden;background:#eaf1eb}
+.conceptHeroVisual img{width:100%;height:100%;object-fit:cover;object-position:center}
+.conceptHeroVisual:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.22),transparent 38%),linear-gradient(180deg,transparent 55%,rgba(0,40,20,.17))}
+.visualGlow{position:absolute;inset:auto auto -30px -20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.82);filter:blur(14px)}
+.cameraHint{position:absolute;z-index:2;right:14px;bottom:14px;background:rgba(255,255,255,.93);border:1px solid rgba(255,255,255,.8);border-radius:14px;padding:9px 11px;box-shadow:0 9px 28px rgba(12,40,22,.14);display:flex;gap:7px;align-items:center}
+.cameraHint b{font-size:11px}
+.heroPhotoCta{margin-top:14px;width:100%;min-height:58px;border-radius:17px;background:linear-gradient(135deg,#168d4b,#22a95b);color:#fff;text-decoration:none;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:0 18px;font-weight:950;box-shadow:0 14px 28px rgba(22,138,74,.19)}
+.cameraIcon{font-size:20px}
+.heroArrow{font-size:26px;line-height:1}
+.heroFeatureRow{display:grid;grid-template-columns:repeat(3,1fr);margin-top:13px;border-top:1px solid #edf1ed;padding-top:12px}
+.heroFeatureRow>div{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border-right:1px solid #edf1ed;padding:3px 8px;text-align:center}
+.heroFeatureRow>div:last-child{border-right:0}
+.heroFeatureIcon{color:#168a4a;font-size:18px;font-weight:950}
+.heroFeatureRow b{font-size:11px;line-height:1.2;color:#34463b}
+
+/* Make the whole site airy like the concept image */
+.section{padding:66px 0!important}
+.uploadshell,.flow,.comparebox,.card,.price{box-shadow:0 10px 30px rgba(26,68,40,.045)}
+.uploadshell{background:#fff;border-color:#e6eee7!important}
+.uploadcard{background:#f8fbf8!important}
+.label{color:#168a4a!important}
+h2{color:#102118}
+.price{background:#fff!important}
+.price.featured{border:1.5px solid #39a866!important;background:linear-gradient(180deg,#ffffff,#f8fdf9)!important;box-shadow:0 16px 42px rgba(22,138,74,.10)!important}
+.price.featured .badge{background:#168a4a!important}
+.price button:not([data-pay]){background:linear-gradient(135deg,#168a4a,#22a95b)!important;color:#fff!important;border:0!important}
+.price button[data-pay]{background:#eef5ef!important;color:#7b857f!important;border:0!important}
+
+/* Pricing order inspired by the concept: paid household choices first */
+.price:nth-child(3){order:1}
+.price:nth-child(4){order:2}
+.price:nth-child(1){order:3}
+.price:nth-child(2){order:4}
+
+/* Cleaner pricing cards */
+.price small{font-size:11px}
+.amount{font-size:44px}
+.price ul{font-size:12.5px}
+.pricing{gap:16px}
+
+/* Remove black-heavy elements */
+.actionbox{background:linear-gradient(135deg,#168a4a,#27a85d)!important}
+.resultactions .solid{background:#168a4a!important}
+.helpprimary{background:#168a4a!important}
+
+@media(max-width:680px){
+  .wrap{width:calc(100% - 24px)!important}
+  .nav{min-height:68px!important}
+  .mobileMenuBtn{display:flex}
+  .navlinks{position:relative}
+  .conceptHero{padding:18px 0 22px!important}
+  .conceptHeroCard{border-radius:24px;padding:10px}
+  .conceptHeroTop{grid-template-columns:1.08fr .92fr;gap:6px;min-height:320px}
+  .conceptHeroCopy{padding:16px 2px 8px 7px;position:relative;z-index:2}
+  .conceptHero .eyebrow{font-size:10px;padding:7px 9px}
+  .conceptHero h1{font-size:clamp(39px,11vw,48px)!important;line-height:.91!important;margin:16px 0 15px!important;letter-spacing:-.065em!important}
+  .conceptHero p{font-size:13px!important;line-height:1.48!important;padding-right:4px}
+  .conceptHeroVisual{min-height:320px;border-radius:18px}
+  .conceptHeroVisual img{object-position:center}
+  .cameraHint{right:8px;bottom:8px;padding:7px 8px;border-radius:11px}
+  .cameraHint span{font-size:14px}.cameraHint b{font-size:9px}
+  .heroPhotoCta{min-height:56px;border-radius:15px;margin-top:10px;padding:0 15px}
+  .heroPhotoCta strong{font-size:14px}
+  .heroFeatureRow{margin-top:9px;padding-top:8px}
+  .heroFeatureRow>div{min-height:52px;display:grid;gap:1px}
+  .heroFeatureIcon{font-size:17px}
+  .heroFeatureRow b{font-size:9px;line-height:1.15}
+  .section{padding:52px 0!important}
+  .uploadsec{padding-top:20px!important}
+  .pricing{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .price{min-height:0!important;border-radius:18px!important;padding:15px!important}
+  .price .amount{font-size:34px!important}
+  .price p{font-size:10.5px!important;line-height:1.42!important}
+  .price ul{font-size:10.5px!important;gap:7px!important}
+  .price button{font-size:11px!important;padding:10px 7px!important}
+  .price .badge{font-size:8px!important;right:9px!important;top:9px!important}
+  .price small{font-size:9px!important}
+  .subprice{font-size:9px!important}
+}
+@media(max-width:430px){
+  .conceptHeroTop{grid-template-columns:1.12fr .88fr}
+  .conceptHero h1{font-size:39px!important}
+  .conceptHero p{font-size:12px!important}
+  .conceptHeroVisual{min-height:300px}
+}
+
+
+/* ===== Fixdit approved bright/professional visual system ===== */
+:root{
+  --green:#0e914b;
+  --green2:#27b867;
+  --soft:#eef9f1;
+  --ink:#0d1e16;
+  --muted:#66736b;
+  --line:#e4ebe5;
+}
+body{background:#fffdf9!important}
+.topbar{background:rgba(255,255,252,.98)!important;border-bottom:1px solid #edf1ed!important}
+.nav{min-height:76px}
+.navlinks>a{color:#324339;font-weight:750}
+.navlinks>a:hover{color:var(--green)}
+.langbtn{background:#f6f8f5!important;border-color:#edf1ed!important}
+.mobileMenuBtn{background:#f6f8f5!important}
+
+.conceptHero{width:100%!important;max-width:none!important;padding:0!important}
+.conceptHeroCard{
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  padding:0!important;background:linear-gradient(90deg,#fffefa 0%,#fffefa 48%,#f2f5ef 100%)!important
+}
+.conceptHeroTop{max-width:1180px;margin:auto;min-height:500px;gap:0!important}
+.conceptHeroCopy{padding:48px 34px 42px 16px!important;display:flex;flex-direction:column;justify-content:center}
+.conceptHero .eyebrow{
+  width:max-content;background:#eef8f1!important;border:0!important;color:#1a6f43!important;
+  font-size:10px!important;text-transform:uppercase;letter-spacing:.13em;padding:8px 13px!important
+}
+.conceptHero h1{font-size:clamp(58px,6.4vw,88px)!important;line-height:.91!important;margin:19px 0 16px!important;max-width:560px}
+.conceptHero h1 em{color:var(--ink)!important}
+.conceptHero p{font-size:18px!important;line-height:1.5!important;max-width:525px!important}
+.conceptHeroVisual{min-height:500px!important;border-radius:0!important;background:#eef3ed!important}
+.conceptHeroVisual img{object-fit:cover!important;object-position:center!important}
+.conceptHeroVisual:after{background:linear-gradient(90deg,rgba(255,254,250,.28),transparent 20%)!important}
+.visualGlow{display:none!important}
+.heroPhotoCta{
+  max-width:1180px;margin:0 auto!important;transform:translateY(-28px);width:min(440px,calc(100% - 32px))!important;
+  position:relative;left:calc((100% - min(1180px,100% - 32px))/2 + 16px);margin-left:0!important;
+  min-height:62px!important;border-radius:17px!important;background:linear-gradient(135deg,#0c914b,#19ad5b)!important;
+  box-shadow:0 14px 28px rgba(13,145,75,.20)!important
+}
+.heroMicroTrust{
+  max-width:1180px;margin:-16px auto 0;padding-left:16px;display:flex;align-items:center;gap:8px;
+  color:#5e6b63;font-size:11px
+}
+.heroMicroTrust>span:first-child{width:20px;height:20px;border-radius:7px;background:#eef8f1;color:var(--green);display:grid;place-items:center;font-weight:950}
+.heroMicroTrust .dot{opacity:.4}
+.heroFeatureRow{max-width:1180px;margin:19px auto 0!important;border-top:1px solid #edf1ed!important;border-bottom:1px solid #edf1ed;padding:18px 0!important;background:#fff}
+.heroFeatureRow>div{min-height:62px!important}
+.heroFeatureIcon{width:42px;height:42px;border-radius:50%;background:#edf9f1;display:grid;place-items:center;font-size:23px!important}
+.heroFeatureRow b{font-size:13px!important;color:#1c2d23!important}
+
+.categorySection{background:#fff}
+.categoryGrid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
+.categoryTile{
+  appearance:none;border:1px solid #e5ece6;background:linear-gradient(180deg,#fff,#fbfdfb);border-radius:16px;
+  padding:15px 10px 13px;min-height:125px;cursor:pointer;text-align:center;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;transition:.18s ease;color:var(--ink)
+}
+.categoryTile:hover{transform:translateY(-2px);border-color:#abd7ba;box-shadow:0 10px 25px rgba(22,105,57,.08)}
+.catIcon{width:46px;height:46px;border-radius:14px;background:#edf9f1;color:var(--green);display:grid;place-items:center;font-size:22px;font-weight:950;margin-bottom:8px}
+.categoryTile b{font-size:12px}
+.categoryTile small{font-size:9px;color:#78857d;line-height:1.35;margin-top:5px}
+
+.pricingSection{background:linear-gradient(180deg,#f5fbf6 0%,#f1f8f3 100%)!important}
+.pricingFocus{display:grid;grid-template-columns:1fr 1fr .92fr;gap:18px;margin-top:26px;align-items:stretch}
+.pricingFocus .price{min-height:380px;background:#fff!important;border-radius:22px!important;padding:24px!important}
+.pricingFocus .price.featured{border:1.7px solid #27a85d!important;box-shadow:0 15px 35px rgba(12,125,61,.09)!important}
+.pricingFocus .badge{left:18px;right:auto;top:-13px;padding:7px 13px;font-size:10px}
+.priceWhy{border-radius:22px;background:rgba(255,255,255,.66);padding:19px;display:grid;gap:7px;border:1px solid #e2eee5}
+.priceWhyItem{display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:start;padding:10px}
+.priceWhyItem>span{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--green);display:grid;place-items:center;font-size:19px;font-weight:950;border:1px solid #e5eee7}
+.priceWhyItem b{display:block;font-size:13px}
+.priceWhyItem small{display:block;color:#6a786f;font-size:10px;line-height:1.45;margin-top:3px}
+.pricingSmall{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pricingSmall article{background:rgba(255,255,255,.72);border:1px solid #e1ebe3;border-radius:15px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.pricingSmall b{font-size:12px}.pricingSmall span{font-size:10px;color:#6b786f}
+.pricingSmall button{border:0;border-radius:10px;padding:9px 12px;font-weight:850;font-size:10px;background:#168f4b;color:#fff;cursor:pointer}
+.pricingSmall button[disabled]{background:#edf2ee;color:#859087}
+
+.trustStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:28px;background:#fff;border:1px solid #e5ece6;border-radius:18px;overflow:hidden}
+.trustStrip>div{display:grid;grid-template-columns:auto 1fr;column-gap:9px;padding:16px;border-right:1px solid #e8eee9}
+.trustStrip>div:last-child{border-right:0}
+.trustStrip span{grid-row:1/3;width:36px;height:36px;border-radius:11px;background:#edf9f1;color:var(--green);display:grid;place-items:center;font-weight:950}
+.trustStrip b{font-size:11px;align-self:end}
+.trustStrip small{font-size:9px;color:#77847c;align-self:start;margin-top:2px}
+
+@media(max-width:950px){
+  .conceptHeroTop{grid-template-columns:1fr 1fr}
+  .categoryGrid{grid-template-columns:repeat(4,1fr)}
+  .pricingFocus{grid-template-columns:1fr 1fr}
+  .priceWhy{grid-column:1/-1;grid-template-columns:1fr 1fr}
+}
+@media(max-width:680px){
+  .conceptHeroCard{background:#fffefa!important}
+  .conceptHeroTop{grid-template-columns:1.04fr .96fr!important;min-height:380px!important}
+  .conceptHeroCopy{padding:24px 6px 22px 14px!important}
+  .conceptHero .eyebrow{font-size:8px!important;padding:6px 8px!important}
+  .conceptHero h1{font-size:clamp(41px,11.4vw,51px)!important;line-height:.9!important;margin:14px 0 13px!important}
+  .conceptHero p{font-size:12.5px!important;line-height:1.47!important}
+  .conceptHeroVisual{min-height:380px!important}
+  .conceptHeroVisual img{object-position:48% center!important}
+  .heroPhotoCta{
+    position:static!important;transform:none!important;margin:10px 12px 0!important;width:calc(100% - 24px)!important;
+    min-height:56px!important
+  }
+  .heroMicroTrust{margin:9px 12px 0!important;padding:0!important;gap:6px;font-size:9px;flex-wrap:wrap}
+  .heroMicroTrust .dot{display:none}
+  .heroFeatureRow{margin:12px 0 0!important;padding:10px 6px!important}
+  .heroFeatureIcon{width:34px;height:34px;font-size:18px!important}
+  .heroFeatureRow b{font-size:9px!important}
+  .categoryGrid{grid-template-columns:repeat(4,1fr);gap:7px}
+  .categoryTile{min-height:104px;padding:9px 5px;border-radius:13px}
+  .catIcon{width:38px;height:38px;font-size:18px;margin-bottom:6px}
+  .categoryTile b{font-size:9px}.categoryTile small{display:none}
+  .pricingFocus{grid-template-columns:1fr 1fr;gap:9px}
+  .pricingFocus .price{min-height:0!important;padding:16px!important}
+  .pricingFocus .priceWhy{grid-column:1/-1;grid-template-columns:1fr 1fr;padding:10px}
+  .priceWhyItem{padding:8px;gap:8px}
+  .priceWhyItem>span{width:34px;height:34px;font-size:15px}
+  .priceWhyItem b{font-size:10px}.priceWhyItem small{font-size:8px}
+  .pricingSmall{grid-template-columns:1fr}
+  .pricingSmall article{grid-template-columns:1fr auto}
+  .pricingSmall span{grid-row:2;grid-column:1/-1}
+  .trustStrip{grid-template-columns:1fr 1fr}
+  .trustStrip>div{border-bottom:1px solid #e8eee9}
+  .trustStrip>div:nth-child(2){border-right:0}
+}
+
 </style>
 </head>
-<body>
-<header class="topbar"><div class="wrap nav"><a class="brand" href="#" aria-label="Fixdit"><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.2 24.2L22.8 9.6" stroke="white" stroke-width="3.2" stroke-linecap="round"/><path d="M18.7 6.9a5.1 5.1 0 0 0 6.4 6.4l-3.2-3.2 3.4-3.4a5.1 5.1 0 0 0-6.6.2Z" fill="white"/><circle cx="7.1" cy="25.3" r="2.5" stroke="white" stroke-width="2.4"/><path d="M8.2 7.7l16 16" stroke="white" stroke-width="2.7" stroke-linecap="round" opacity=".9"/><path d="M6.5 5.3l4.2 1.2-3 3-1.2-4.2Z" fill="white"/></svg></span><span class="wordmark"><b>Fixdit</b><span>Fix het zelf</span></span></a><nav class="navlinks" aria-label="Hoofdnavigatie"><a href="#hoe">Zo werkt het</a><a href="#waarom">Waarom Fixdit</a><a href="#prijzen">Prijzen</a><div class="langmenu" id="languageMenu"><button class="langbtn" id="languageButton" type="button" aria-haspopup="true" aria-expanded="false">NL</button><div class="langpanel" id="languagePanel" role="menu"><button class="langoption" type="button" data-lang="nl">🇳🇱 Nederlands</button><button class="langoption" type="button" data-lang="en">🇬🇧 English</button><button class="langoption" type="button" data-lang="de">🇩🇪 Deutsch</button></div></div><button class="navcta" id="navTry">Probeer gratis</button></nav></div></header>
+<body class="fixdit-light">
+<header class="topbar"><div class="wrap nav"><a class="brand" href="#" aria-label="Fixdit"><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4 5.4a7 7 0 0 0-8.1 8.9L5.7 20.9a3.9 3.9 0 1 0 5.5 5.5l6.6-6.6a7 7 0 0 0 8.9-8.1l-4.3 4.3-4.1-1.1-1.1-4.1 4.3-4.3a7 7 0 0 0-1.1-1.1Z" fill="white"/><circle cx="8.5" cy="23.5" r="1.55" fill="#168a4a"/></svg></span><span class="wordmark"><b>Fixdit</b><span>Fix het zelf</span></span></a><nav class="navlinks" aria-label="Hoofdnavigatie"><a href="#hoe">Zo werkt het</a><a href="#waarom">Waarom Fixdit</a><a href="#prijzen">Prijzen</a><div class="langmenu" id="languageMenu"><button class="langbtn" id="languageButton" type="button" aria-haspopup="true" aria-expanded="false">NL</button><div class="langpanel" id="languagePanel" role="menu"><button class="langoption" type="button" data-lang="nl">🇳🇱 Nederlands</button><button class="langoption" type="button" data-lang="en">🇬🇧 English</button><button class="langoption" type="button" data-lang="de">🇩🇪 Deutsch</button></div></div><button class="navcta" id="navTry">Probeer gratis</button>
+<button class="mobileMenuBtn" id="mobileMenuBtn" type="button" aria-label="Menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<div class="mobileMenuPanel" id="mobileMenuPanel">
+  <a href="#start">Start analyse</a>
+  <a href="#hoe">Zo werkt het</a>
+  <a href="#waarom">Waarom Fixdit</a>
+  <a href="#prijzen">Prijzen</a>
+</div>
+</nav></div></header>
 <main>
-<section class="wrap hero"><div><div class="eyebrow">Slimme reparatiehulp voor thuis</div><h1>Kapot? Maak eerst een <em>foto.</em></h1><p>Fixdit helpt je begrijpen wat er mis kan zijn, wat je veilig zelf kunt proberen en wanneer je beter een reparateur inschakelt.</p><div class="actions"><a class="primary" href="#start">Start gratis analyse →</a><button class="secondary" id="demoBtn">Bekijk voorbeelddiagnose</button></div><div class="trust"><span>3 fixes gratis</span><span>Geen account voor je eerste fix</span><span>Veiligheid eerst</span></div><div class="benefits"><div class="benefit"><b>Snel duidelijkheid</b><span>Van probleem naar eerste plan.</span></div><div class="benefit"><b>Veilige stappen</b><span>Geen risicovol doe-het-zelfadvies.</span></div><div class="benefit"><b>Kosten inzicht</b><span>Zelf doen of monteur vergelijken.</span></div><div class="benefit"><b>Voor thuis</b><span>Mobiel, simpel en praktisch.</span></div></div></div><div class="product"><div class="demo"><div class="demohead"><b>Voorbeeldanalyse</b><span class="live">Productvoorbeeld</span></div><div class="demophoto"><img src="https://images.pexels.com/photos/37174867/pexels-photo-37174867/free-photo-of-technician-repairing-home-appliance-in-workshop.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Reparatie van een huishoudelijk apparaat"><div class="photolabel"><small>Herkend</small><strong>Bosch Serie 4 vaatwasser</strong></div></div><div class="result"><div class="reshead"><div><small>Waarschijnlijk probleem</small><h3>Foutcode E24 · afvoerprobleem</h3></div><div class="score"><b>82%</b><span>waarschijnlijk</span></div></div><div class="tags"><span class="tag good">Zelf te proberen</span><span class="tag warn">Risico: middel</span><span class="tag">± 15–25 min</span></div><div class="metrics"><div class="metric"><small>Zelf oplossen</small><b>€0–€25</b></div><div class="metric"><small>Monteur</small><b>€90–€180</b></div><div class="metric wide"><small>Moeilijkheid</small><b>2 / 5</b></div></div></div></div></div></section>
+<section class="wrap hero conceptHero">
+  <div class="conceptHeroCard">
+    <div class="conceptHeroTop">
+      <div class="conceptHeroCopy">
+        <div class="eyebrow">Slimme reparatiehulp voor thuis</div>
+        <h1>Kapot?<br>Maak eerst<br>een <em>foto.</em></h1>
+        <p>Fixdit helpt je begrijpen wat er mis kan zijn, wat je veilig zelf kunt proberen en wanneer je beter een reparateur inschakelt.</p>
+      </div>
+      <div class="conceptHeroVisual" aria-hidden="true">
+        <img src="hero-fixdit.png" alt="Een telefoon fotografeert een koffieapparaat voor een Fixdit-analyse">
+        <div class="visualGlow"></div>
+      </div>
+    </div>
+
+    <a class="heroPhotoCta" href="#start">
+      <span class="cameraIcon">📷</span>
+      <strong>Maak een foto en krijg hulp</strong>
+      <span class="heroArrow">→</span>
+    </a>
+    <div class="heroMicroTrust"><span>✓</span><b>Veilig, snel en zonder gedoe</b><span class="dot">•</span><b>Foto’s worden niet opgeslagen</b></div>
+
+    <div class="heroFeatureRow">
+      <div><span class="heroFeatureIcon">⚡</span><b>Snelle oplossingen</b></div>
+      <div><span class="heroFeatureIcon">▤</span><b>Stap voor stap uitleg</b></div>
+      <div><span class="heroFeatureIcon">✓</span><b>Voor al je spullen</b></div>
+    </div>
+  </div>
+</section>
 <section class="wrap uploadsec" id="start"><div class="uploadshell"><div><div class="label">Start hier</div><h2>Laat zien wat er kapot is</h2><p class="lead">Maak een foto van het apparaat, de foutcode of het onderdeel en vertel kort wat er gebeurt.</p><div class="stepsmini"><div><b>1</b>Maak of upload een foto</div><div><b>2</b>Beschrijf het probleem in één zin</div><div><b>3</b>Krijg een duidelijk stappenplan</div></div><div class="quick"><button data-fill="Mijn vaatwasser geeft foutcode E24 en pompt niet meer af.">Vaatwasser E24</button><button data-fill="Mijn wasmachine pompt niet meer af en er blijft water in staan.">Wasmachine pompt niet af</button><button data-fill="Mijn koffiemachine lekt aan de onderkant.">Koffiemachine lekt</button></div></div><div class="uploadcard"><label class="upload" for="photoInput"><input id="photoInput" type="file" accept="image/*" hidden><img class="preview" id="preview" alt="Geüploade foto" hidden><button class="remove" id="removePhoto" type="button" hidden>×</button><div class="uploadcenter" id="uploadEmpty"><div class="plus">＋</div><strong>Maak een foto of kies er één</strong><small>Foutcode, typeplaatje, lekkage of kapot onderdeel.</small></div></label><div class="field"><label for="problem">Wat gebeurt er precies?</label><textarea id="problem" maxlength="500" placeholder="Bijv. Mijn Bosch vaatwasser pompt niet meer af en geeft foutcode E24."></textarea><div class="meta"><span>Hoe meer context, hoe beter.</span><span id="charCount">0/500</span></div></div><button class="analyze" id="analyzeBtn">Analyseer gratis · <span id="credits">3</span> over</button><p class="micro">Je foto en beschrijving worden alleen voor deze analyse naar de beveiligde Fixdit AI-backend gestuurd. Deel geen persoonlijke of gevoelige informatie.</p></div></div></section>
-<section class="section"><div class="wrap"><div class="sectionhead"><div><div class="label">Veelgebruikte checks</div><h2>Problemen die iedereen herkent</h2></div><p class="lead">Klik op een voorbeeld voor een voorbeelddiagnose.</p></div><div class="cards"><article class="card demoCard"><img src="https://images.pexels.com/photos/34734504/pexels-photo-34734504/free-photo-of-technician-repairing-home-appliance-indoors.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Wasmachine reparatie" loading="lazy"><div class="cardbody"><small>Wasmachine</small><strong>Pompt niet meer af</strong><span>Afvoer, filter, pomp</span></div></article><article class="card demoCard"><img src="https://images.pexels.com/photos/37174867/pexels-photo-37174867/free-photo-of-technician-repairing-home-appliance-in-workshop.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Vaatwasser reparatie" loading="lazy"><div class="cardbody"><small>Vaatwasser</small><strong>Geeft foutcode E24</strong><span>Afvoer, filter, slang</span></div></article><article class="card demoCard"><img src="https://images.pexels.com/photos/32588551/pexels-photo-32588551/free-photo-of-technician-repairing-electronic-device-in-workshop.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Koffiemachine reparatie" loading="lazy"><div class="cardbody"><small>Koffiemachine</small><strong>Lekt aan de onderkant</strong><span>Slang, reservoir, verstopping</span></div></article><article class="card demoCard"><img src="https://images.pexels.com/photos/32588545/pexels-photo-32588545/free-photo-of-technician-repairing-appliance-in-workshop.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Apparaat reparatie" loading="lazy"><div class="cardbody"><small>Huishoudelijk apparaat</small><strong>Werkt ineens niet meer</strong><span>Voeding, blokkade, slijtage</span></div></article></div></div></section>
+<section class="section categorySection">
+  <div class="wrap">
+    <div class="sectionhead">
+      <div>
+        <div class="label">Populaire categorieën</div>
+        <h2>Waar kunnen we je mee helpen?</h2>
+      </div>
+      <p class="lead">Kies een categorie of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.</p>
+    </div>
+    <div class="categoryGrid">
+      <button class="categoryTile" data-category="wasmachine" type="button">
+        <span class="catIcon">◉</span><b>Wasmachine</b><small>Afvoer, foutcodes, lekkage</small>
+      </button>
+      <button class="categoryTile" data-category="vaatwasser" type="button">
+        <span class="catIcon">▦</span><b>Vaatwasser</b><small>Filter, afvoer, foutcodes</small>
+      </button>
+      <button class="categoryTile" data-category="koffiemachine" type="button">
+        <span class="catIcon">☕</span><b>Koffiemachine</b><small>Lekken, verstopping, storing</small>
+      </button>
+      <button class="categoryTile" data-category="meubels" type="button">
+        <span class="catIcon">▱</span><b>Meubels</b><small>Los, beschadigd, vlekken</small>
+      </button>
+      <button class="categoryTile" data-category="loodgieter" type="button">
+        <span class="catIcon">⌁</span><b>Loodgieterij</b><small>Kraan, sifon, lekkage</small>
+      </button>
+      <button class="categoryTile" data-category="elektronica" type="button">
+        <span class="catIcon">⌁</span><b>Elektronica</b><small>TV, telefoon, apparaten</small>
+      </button>
+      <button class="categoryTile" data-category="oppervlak" type="button">
+        <span class="catIcon">▰</span><b>Muur & vloer</b><small>Kras, gat, verf, schade</small>
+      </button>
+      <button class="categoryTile" data-category="anders" type="button">
+        <span class="catIcon">＋</span><b>Iets anders</b><small>Maak een foto, Fixdit zoekt het uit</small>
+      </button>
+    </div>
+  </div>
+</section>
 <section class="section" id="hoe"><div class="wrap"><div class="label">Zo werkt het</div><h2>Van foto naar een helder plan.</h2><div class="flows"><article class="flow"><div class="visual"><div class="ui"><div class="chips"><span class="chip">Bosch</span><span class="chip">Serie 4</span><span class="chip green">E24</span></div><div class="uibox"><b>Probleem herkennen</b><span>Merk, type en foutcode structureren.</span></div></div></div><div class="num">01</div><h3>Herkennen</h3><p>Fixdit verzamelt de informatie die nodig is om het probleem gericht te onderzoeken.</p></article><article class="flow"><div class="visual"><div class="ui"><div class="uibox"><b>82% waarschijnlijk</b><span>Risico: middel · 15–25 min</span></div><div class="chips"><span class="chip green">Zelf te proberen</span><span class="chip">€0–€25</span></div></div></div><div class="num">02</div><h3>Inschatten</h3><p>Je krijgt een duidelijke indicatie van oorzaak, risico, moeilijkheid, tijd en kosten.</p></article><article class="flow"><div class="visual"><div class="ui"><div class="uibox"><b>1. Stekker eruit</b><span>Veilig beginnen.</span></div><div class="uibox"><b>2. Filter controleren</b><span>Alleen verantwoorde stappen.</span></div></div></div><div class="num">03</div><h3>Veilig handelen</h3><p>Bij gas, netspanning, beschadigde accu's of andere risico's adviseert Fixdit een vakman.</p></article></div></div></section>
 <section class="section" id="waarom"><div class="wrap"><div class="sectionhead"><div><div class="label">Waarom Fixdit</div><h2>Geen algemene chat. Een reparatieflow.</h2></div><p class="lead">ChatGPT kan helpen met reparatievragen. Fixdit moet daarom juist beter zijn in de hele ervaring rondom repareren.</p></div><div class="compare"><div class="comparebox generic"><h3>Algemene chatbot</h3><ul><li>Je moet zelf bedenken welke informatie nodig is</li><li>Antwoorden verschillen sterk met je prompt</li><li>Geen vaste reparatieflow of voortgang</li><li>Geen standaard kosten-, risico- en moeilijkheidsoverzicht</li></ul></div><div class="comparebox fix"><h3>Fixdit</h3><ul><li>Begeleide foto, foutcode en modelinformatie</li><li>Vaste veiligheidscontrole vóór doe-het-zelfstappen</li><li>Heldere diagnosekaart met tijd, kosten en moeilijkheid</li><li>Reparatiesessie: opgelost, niet opgelost, volgende stap</li><li>Later: onderdelen, handleidingen en reparateurs op één plek</li></ul></div></div></div></section>
-<section class="section" id="prijzen"><div class="wrap"><div class="label">Prijzen</div><h2>Eerst proberen. Daarna kies jij.</h2><p class="lead">De betaalfunctie wordt aangesloten zodra de backend live is. De prijsstructuur staat al klaar.</p><div class="pricing"><article class="price"><div><small>Proberen</small><div class="amount">€0</div><p>Fixdit eerst zonder risico ervaren.</p><ul><li>3 gratis fixes</li><li>Eerste fix zonder account</li><li>Geen betaalkaart nodig</li></ul></div><button id="freeBtn">Start gratis</button></article><article class="price"><div><small>Fix Pack</small><div class="amount">€3,99</div><span class="subprice">eenmalig</span><p>Voor losse reparaties.</p><ul><li>5 extra fixes</li><li>Geen abonnement</li><li>Credits verlopen niet</li></ul></div><button data-pay disabled>Nog niet actief</button></article><article class="price featured"><span class="badge">Aanrader</span><div><small>Jaarabonnement</small><div class="amount">€39</div><span class="subprice">per jaar</span><p>Voor huishoudens die Fixdit vaker gebruiken.</p><ul><li>120 fixes per jaar</li><li>Goedkoopste prijs per fix</li><li>Nieuwe functies als eerste</li></ul></div><button data-pay disabled>Nog niet actief</button></article><article class="price"><div><small>Thuis Pack</small><div class="amount">€9,99</div><span class="subprice">eenmalig</span><p>Voor meerdere apparaten.</p><ul><li>20 extra fixes</li><li>Geen abonnement</li><li>Directe bundel</li></ul></div><button data-pay disabled>Nog niet actief</button></article></div></div></section>
+<section class="section pricingSection" id="prijzen">
+  <div class="wrap">
+    <div class="label">Prijzen</div>
+    <h2>Eerlijke prijzen. Maximale hulp.</h2>
+    <p class="lead">Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.</p>
+
+    <div class="pricingFocus">
+      <article class="price featured">
+        <span class="badge">Meest gekozen</span>
+        <div>
+          <small>Jaarabonnement</small>
+          <div class="amount">€39</div>
+          <span class="subprice">per jaar</span>
+          <p>Voor huishoudens die Fixdit vaker gebruiken.</p>
+          <ul>
+            <li>120 fixes per jaar</li>
+            <li>Goedkoopste prijs per fix</li>
+            <li>Nieuwe functies als eerste</li>
+            <li>Fixpaspoort voor je reparaties</li>
+          </ul>
+        </div>
+        <button data-pay disabled>Nog niet actief</button>
+      </article>
+
+      <article class="price">
+        <div>
+          <small>Thuis Pack</small>
+          <div class="amount">€9,99</div>
+          <span class="subprice">eenmalig</span>
+          <p>Voor meerdere problemen zonder abonnement.</p>
+          <ul>
+            <li>20 extra fixes</li>
+            <li>Geen abonnement</li>
+            <li>Directe bundel</li>
+            <li>Voor apparaten, meubels en meer</li>
+          </ul>
+        </div>
+        <button data-pay disabled>Nog niet actief</button>
+      </article>
+
+      <aside class="priceWhy">
+        <div class="priceWhyItem"><span>€</span><div><b>Bespaar op reparatiekosten</b><small>Fixdit helpt eerst veilig bepalen wat je zelf kunt doen.</small></div></div>
+        <div class="priceWhyItem"><span>↻</span><div><b>Langer gebruiken, minder vervangen</b><small>Een kleine fix kan onnodige vervanging voorkomen.</small></div></div>
+        <div class="priceWhyItem"><span>⌂</span><div><b>Wie moet je bellen?</b><small>Als zelf oplossen niet verstandig is, krijg je het juiste type vakman.</small></div></div>
+        <div class="priceWhyItem"><span>✓</span><div><b>Nederland als uitgangspunt</b><small>Ook in Engels of Duits blijven nood- en contactroutes Nederlands.</small></div></div>
+      </aside>
+    </div>
+
+    <div class="pricingSmall">
+      <article><b>Gratis proberen</b><span>3 gratis fixes · eerste fix zonder account</span><button id="freeBtn">Start gratis</button></article>
+      <article><b>Fix Pack · €3,99</b><span>5 extra fixes · geen abonnement</span><button data-pay disabled>Nog niet actief</button></article>
+    </div>
+
+    <div class="trustStrip">
+      <div><span>⌂</span><b>Nederland gericht</b><small>Lokale veiligheids- en contactinfo</small></div>
+      <div><span>文</span><b>NL · EN · DE</b><small>Dezelfde Fixdit-flow in 3 talen</small></div>
+      <div><span>◈</span><b>Veiligheidscheck</b><small>Stopadvies bij echte risico’s</small></div>
+      <div><span>◌</span><b>Foto’s niet opgeslagen</b><small>Alleen gebruikt voor de analyse</small></div>
+    </div>
+  </div>
+</section>
 </main>
 <footer class="wrap foot"><span>© 2026 Fixdit · Zelf repareren, slim geholpen.</span><span><a href="privacy.html">Privacy</a> · <a href="voorwaarden.html">Voorwaarden</a></span></footer>
 <div class="mobilebar"><a href="#start">Analyseer gratis</a><button id="mobileDemo">Bekijk demo</button></div>
@@ -48,11 +431,11 @@
 const API_URL='https://fixdit-ai.nijlandbjorn.workers.dev';
 const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
 const I18N={
-  en:{
+  en:{"Veilig, snel en zonder gedoe":"Safe, fast and hassle-free","Foto’s worden niet opgeslagen":"Photos are not stored","Populaire categorieën":"Popular categories","Waar kunnen we je mee helpen?":"What can we help you with?","Kies een categorie of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.":"Choose a category or take a photo right away. Fixdit then selects the right route automatically.","Afvoer, foutcodes, lekkage":"Drainage, error codes, leaks","Filter, afvoer, foutcodes":"Filter, drainage, error codes","Lekken, verstopping, storing":"Leaks, blockage, faults","Meubels":"Furniture","Los, beschadigd, vlekken":"Loose, damaged, stains","Loodgieterij":"Plumbing","Kraan, sifon, lekkage":"Tap, trap, leaks","Elektronica":"Electronics","TV, telefoon, apparaten":"TV, phone, devices","Muur & vloer":"Wall & floor","Kras, gat, verf, schade":"Scratch, hole, paint, damage","Iets anders":"Something else","Maak een foto, Fixdit zoekt het uit":"Take a photo, Fixdit will work it out","Eerlijke prijzen. Maximale hulp.":"Fair pricing. Maximum help.","Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.":"Start with 3 free fixes. After that, only choose a plan if Fixdit is valuable to you.","Meest gekozen":"Most chosen","Fixpaspoort voor je reparaties":"Fix Passport for your repairs","Voor meerdere problemen zonder abonnement.":"For multiple problems without a subscription.","Voor apparaten, meubels en meer":"For appliances, furniture and more","Bespaar op reparatiekosten":"Save on repair costs","Fixdit helpt eerst veilig bepalen wat je zelf kunt doen.":"Fixdit first helps determine safely what you can do yourself.","Langer gebruiken, minder vervangen":"Use longer, replace less","Een kleine fix kan onnodige vervanging voorkomen.":"A small fix can prevent unnecessary replacement.","Wie moet je bellen?":"Who should you call?","Als zelf oplossen niet verstandig is, krijg je het juiste type vakman.":"If DIY is not sensible, you get the right type of professional.","Nederland als uitgangspunt":"The Netherlands as the default","Ook in Engels of Duits blijven nood- en contactroutes Nederlands.":"Even in English or German, emergency and contact routes remain Dutch.","Gratis proberen":"Try free","3 gratis fixes · eerste fix zonder account":"3 free fixes · first fix without an account","Fix Pack · €3,99":"Fix Pack · €3.99","5 extra fixes · geen abonnement":"5 extra fixes · no subscription","Nederland gericht":"Designed for the Netherlands","Lokale veiligheids- en contactinfo":"Local safety and contact information","NL · EN · DE":"NL · EN · DE","Dezelfde Fixdit-flow in 3 talen":"The same Fixdit flow in 3 languages","Veiligheidscheck":"Safety check","Stopadvies bij echte risico’s":"Stop advice for genuine risks","Foto’s niet opgeslagen":"Photos not stored","Alleen gebruikt voor de analyse":"Used only for the analysis",
     "Fix het zelf":"Fix it yourself","Zo werkt het":"How it works","Waarom Fixdit":"Why Fixdit","Prijzen":"Pricing","Probeer gratis":"Try free",
     "Slimme reparatiehulp voor thuis":"Smart repair help for home","Kapot? Maak eerst een":"Broken? First take a","foto.":"photo.",
     "Fixdit helpt je begrijpen wat er mis kan zijn, wat je veilig zelf kunt proberen en wanneer je beter een reparateur inschakelt.":"Fixdit helps you understand what may be wrong, what you can safely try yourself, and when it is better to call a professional.",
-    "Start gratis analyse →":"Start free analysis →","Bekijk voorbeelddiagnose":"View sample diagnosis","3 fixes gratis":"3 fixes free","Geen account voor je eerste fix":"No account for your first fix","Veiligheid eerst":"Safety first",
+    "Start gratis analyse →":"Start free analysis →","Bekijk voorbeelddiagnose":"View sample diagnosis","Maak een foto en krijg hulp":"Take a photo and get help","Snelle oplossingen":"Quick solutions","Stap voor stap uitleg":"Step-by-step guidance","Voor al je spullen":"For all your belongings","Start analyse":"Start analysis","3 fixes gratis":"3 fixes free","Geen account voor je eerste fix":"No account for your first fix","Veiligheid eerst":"Safety first",
     "Snel duidelijkheid":"Quick clarity","Van probleem naar eerste plan.":"From problem to a first plan.","Veilige stappen":"Safe steps","Geen risicovol doe-het-zelfadvies.":"No risky DIY advice.","Kosten inzicht":"Cost insight","Zelf doen of monteur vergelijken.":"Compare DIY with a technician.","Voor thuis":"For home","Mobiel, simpel en praktisch.":"Mobile, simple and practical.",
     "Voorbeeldanalyse":"Sample analysis","Productvoorbeeld":"Product preview","Herkend":"Recognized","Bosch Serie 4 vaatwasser":"Bosch Serie 4 dishwasher","Waarschijnlijk probleem":"Likely problem","Foutcode E24 · afvoerprobleem":"Error E24 · drainage issue","waarschijnlijk":"likely","Zelf te proberen":"Safe to try","Risico: middel":"Risk: medium","Zelf oplossen":"DIY cost","Monteur":"Technician","Moeilijkheid":"Difficulty",
     "Start hier":"Start here","Laat zien wat er kapot is":"Show us what is broken","Maak een foto van het apparaat, de foutcode of het onderdeel en vertel kort wat er gebeurt.":"Take a photo of the appliance, error code or part and briefly describe what is happening.",
@@ -65,11 +448,11 @@ const I18N={
     "Eerst proberen. Daarna kies jij.":"Try it first. Then you decide.","De betaalfunctie wordt aangesloten zodra de backend live is. De prijsstructuur staat al klaar.":"Payments will be connected once the backend is ready. The pricing structure is already prepared.","Proberen":"Try","Fixdit eerst zonder risico ervaren.":"Try Fixdit without risk first.","Eerste fix zonder account":"First fix without an account","Geen betaalkaart nodig":"No payment card needed","Start gratis":"Start free","Fix Pack":"Fix Pack","eenmalig":"one-time","Voor losse reparaties.":"For occasional repairs.","5 extra fixes":"5 extra fixes","Geen abonnement":"No subscription","Credits verlopen niet":"Credits do not expire","Nog niet actief":"Not active yet","Aanrader":"Recommended","Jaarabonnement":"Annual plan","per jaar":"per year","Voor huishoudens die Fixdit vaker gebruiken.":"For households that use Fixdit more often.","120 fixes per jaar":"120 fixes per year","Goedkoopste prijs per fix":"Lowest price per fix","Nieuwe functies als eerste":"New features first","Thuis Pack":"Home Pack","Voor meerdere apparaten.":"For multiple appliances.","20 extra fixes":"20 extra fixes","Directe bundel":"Instant bundle",
     "© 2026 Fixdit · Zelf repareren, slim geholpen.":"© 2026 Fixdit · Repair it yourself, with smart help.","Privacy":"Privacy","Voorwaarden":"Terms","Analyseer gratis":"Analyze free","Bekijk demo":"View demo","Apparaat herkennen…":"Identifying object…","Fixdit analyseert je foto en beschrijving.":"Fixdit is analyzing your photo and description.","Foto bekijken":"Inspecting photo","Analyse klaar":"Analysis ready","Resultaat":"Result","Fixdit heeft je probleem geanalyseerd.":"Fixdit has analyzed your problem.","Zekerheid":"Confidence","Risico":"Risk","Tijd":"Time","Kosten zelf":"DIY cost","Nog 2 gratis fixes":"2 free fixes left","Je eerste analyse is gelukt. Je gratis fixes worden server-side bijgehouden. Verifieer straks je e-mailadres om je toegang beter te beveiligen.":"Your first analysis is complete. Your free fixes are tracked server-side. Verify your email later to better secure your access.","Bewaar fixes":"Save fixes"
   },
-  de:{
+  de:{"Veilig, snel en zonder gedoe":"Sicher, schnell und unkompliziert","Foto’s worden niet opgeslagen":"Fotos werden nicht gespeichert","Populaire categorieën":"Beliebte Kategorien","Waar kunnen we je mee helpen?":"Wobei können wir dir helfen?","Kies een categorie of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.":"Wähle eine Kategorie oder mach direkt ein Foto. Fixdit wählt danach automatisch den passenden Weg.","Afvoer, foutcodes, lekkage":"Ablauf, Fehlercodes, Lecks","Filter, afvoer, foutcodes":"Filter, Ablauf, Fehlercodes","Lekken, verstopping, storing":"Lecks, Verstopfung, Störung","Meubels":"Möbel","Los, beschadigd, vlekken":"Locker, beschädigt, Flecken","Loodgieterij":"Sanitär","Kraan, sifon, lekkage":"Hahn, Siphon, Leck","Elektronica":"Elektronik","TV, telefoon, apparaten":"TV, Telefon, Geräte","Muur & vloer":"Wand & Boden","Kras, gat, verf, schade":"Kratzer, Loch, Farbe, Schaden","Iets anders":"Etwas anderes","Maak een foto, Fixdit zoekt het uit":"Mach ein Foto, Fixdit findet es heraus","Eerlijke prijzen. Maximale hulp.":"Faire Preise. Maximale Hilfe.","Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.":"Starte mit 3 kostenlosen Fixes. Danach wählst du nur etwas, wenn Fixdit für dich einen Mehrwert hat.","Meest gekozen":"Am beliebtesten","Fixpaspoort voor je reparaties":"Fix-Pass für deine Reparaturen","Voor meerdere problemen zonder abonnement.":"Für mehrere Probleme ohne Abo.","Voor apparaten, meubels en meer":"Für Geräte, Möbel und mehr","Bespaar op reparatiekosten":"Reparaturkosten sparen","Fixdit helpt eerst veilig bepalen wat je zelf kunt doen.":"Fixdit hilft zuerst sicher zu bestimmen, was du selbst machen kannst.","Langer gebruiken, minder vervangen":"Länger nutzen, weniger ersetzen","Een kleine fix kan onnodige vervanging voorkomen.":"Eine kleine Reparatur kann unnötigen Ersatz verhindern.","Wie moet je bellen?":"Wen solltest du anrufen?","Als zelf oplossen niet verstandig is, krijg je het juiste type vakman.":"Wenn Selbermachen nicht sinnvoll ist, bekommst du die passende Fachkraft.","Nederland als uitgangspunt":"Niederlande als Ausgangspunkt","Ook in Engels of Duits blijven nood- en contactroutes Nederlands.":"Auch auf Englisch oder Deutsch bleiben Notfall- und Kontaktwege niederländisch.","Gratis proberen":"Gratis testen","3 gratis fixes · eerste fix zonder account":"3 kostenlose Fixes · erster Fix ohne Konto","Fix Pack · €3,99":"Fix Pack · €3,99","5 extra fixes · geen abonnement":"5 zusätzliche Fixes · kein Abo","Nederland gericht":"Für die Niederlande","Lokale veiligheids- en contactinfo":"Lokale Sicherheits- und Kontaktinfos","NL · EN · DE":"NL · EN · DE","Dezelfde Fixdit-flow in 3 talen":"Derselbe Fixdit-Ablauf in 3 Sprachen","Veiligheidscheck":"Sicherheitscheck","Stopadvies bij echte risico’s":"Stopp-Hinweis bei echten Risiken","Foto’s niet opgeslagen":"Fotos werden nicht gespeichert","Alleen gebruikt voor de analyse":"Nur für die Analyse verwendet",
     "Fix het zelf":"Selbst reparieren","Zo werkt het":"So funktioniert's","Waarom Fixdit":"Warum Fixdit","Prijzen":"Preise","Probeer gratis":"Gratis testen",
     "Slimme reparatiehulp voor thuis":"Smarte Reparaturhilfe für zu Hause","Kapot? Maak eerst een":"Kaputt? Mach zuerst ein","foto.":"Foto.",
     "Fixdit helpt je begrijpen wat er mis kan zijn, wat je veilig zelf kunt proberen en wanneer je beter een reparateur inschakelt.":"Fixdit hilft dir zu verstehen, was defekt sein könnte, was du sicher selbst versuchen kannst und wann du besser einen Fachbetrieb rufst.",
-    "Start gratis analyse →":"Kostenlose Analyse starten →","Bekijk voorbeelddiagnose":"Beispieldiagnose ansehen","3 fixes gratis":"3 Reparaturen gratis","Geen account voor je eerste fix":"Kein Konto für die erste Reparatur","Veiligheid eerst":"Sicherheit zuerst",
+    "Start gratis analyse →":"Kostenlose Analyse starten →","Bekijk voorbeelddiagnose":"Beispieldiagnose ansehen","Maak een foto en krijg hulp":"Foto machen und Hilfe bekommen","Snelle oplossingen":"Schnelle Lösungen","Stap voor stap uitleg":"Schritt-für-Schritt-Hilfe","Voor al je spullen":"Für all deine Sachen","Start analyse":"Analyse starten","3 fixes gratis":"3 Reparaturen gratis","Geen account voor je eerste fix":"Kein Konto für die erste Reparatur","Veiligheid eerst":"Sicherheit zuerst",
     "Snel duidelijkheid":"Schnell Klarheit","Van probleem naar eerste plan.":"Vom Problem zum ersten Plan.","Veilige stappen":"Sichere Schritte","Geen risicovol doe-het-zelfadvies.":"Keine riskanten DIY-Anweisungen.","Kosten inzicht":"Kostenüberblick","Zelf doen of monteur vergelijken.":"Selbst machen oder Fachkraft vergleichen.","Voor thuis":"Für zu Hause","Mobiel, simpel en praktisch.":"Mobil, einfach und praktisch.",
     "Voorbeeldanalyse":"Beispielanalyse","Productvoorbeeld":"Produktbeispiel","Herkend":"Erkannt","Bosch Serie 4 vaatwasser":"Bosch Serie 4 Geschirrspüler","Waarschijnlijk probleem":"Wahrscheinliches Problem","Foutcode E24 · afvoerprobleem":"Fehler E24 · Ablaufproblem","waarschijnlijk":"wahrscheinlich","Zelf te proberen":"Selbst prüfbar","Risico: middel":"Risiko: mittel","Zelf oplossen":"Selbst lösen","Monteur":"Fachkraft","Moeilijkheid":"Schwierigkeit",
     "Start hier":"Hier starten","Laat zien wat er kapot is":"Zeig, was kaputt ist","Maak een foto van het apparaat, de foutcode of het onderdeel en vertel kort wat er gebeurt.":"Mach ein Foto vom Gerät, Fehlercode oder Bauteil und beschreibe kurz, was passiert.",
@@ -429,7 +812,30 @@ function demoAnalyze(){
   open();q('#loadTitle').textContent=demo.load;q('#loadStep').textContent=demo.step;
   setTimeout(()=>{renderDiagnosis({problemType:'appliance',device:demo.device,brand:'Bosch',model:'Serie 4',errorCode:'E24',solutionTitle:demo.summary,summary:demo.summary,whatToDoNow:demo.steps[0],confidence:'hoog',risk:'middel',difficulty:2,estimatedTime:'15–25 min',selfRepairCost:'€0–€25',professionalCost:'€90–€180',possibleCauses:[demo.summary],safeSteps:demo.steps,avoid:[],stopReason:'',professionalRecommended:false});q('#loader').style.display='none';q('#diagnosis').classList.add('show')},650)
 }
-q('#analyzeBtn').onclick=realAnalyze;q('#demoBtn').onclick=demoAnalyze;q('#mobileDemo').onclick=demoAnalyze;qa('.demoCard').forEach(c=>c.onclick=demoAnalyze);q('#emailBtn').onclick=()=>alert({nl:'Je resterende gratis fixes worden nu veilig server-side bijgehouden. E-mailverificatie voegen we hierna toe.',en:'Your remaining free fixes are securely tracked server-side. Email verification will be added next.',de:'Deine verbleibenden kostenlosen Reparaturen werden sicher serverseitig gespeichert. Die E-Mail-Verifizierung folgt als Nächstes.'}[currentLang]);const languageButton=q('#languageButton'),languagePanel=q('#languagePanel');languageButton.onclick=e=>{e.stopPropagation();const open=languagePanel.classList.toggle('open');languageButton.setAttribute('aria-expanded',String(open))};qa('.langoption').forEach(b=>b.onclick=()=>{applyLanguage(b.dataset.lang);languagePanel.classList.remove('open');languageButton.setAttribute('aria-expanded','false')});document.addEventListener('click',e=>{if(!q('#languageMenu').contains(e.target)){languagePanel.classList.remove('open');languageButton.setAttribute('aria-expanded','false')}});initI18n();applyLanguage(currentLang);
+const mmBtn=q('#mobileMenuBtn'),mmPanel=q('#mobileMenuPanel');
+if(mmBtn&&mmPanel){
+  mmBtn.onclick=e=>{e.stopPropagation();const isOpen=mmPanel.classList.toggle('open');mmBtn.setAttribute('aria-expanded',String(isOpen))};
+  mmPanel.querySelectorAll('a').forEach(a=>a.onclick=()=>{mmPanel.classList.remove('open');mmBtn.setAttribute('aria-expanded','false')});
+}
+
+const categoryPrompts={
+  wasmachine:{nl:'Ik heb een probleem met mijn wasmachine.',en:'I have a problem with my washing machine.',de:'Ich habe ein Problem mit meiner Waschmaschine.'},
+  vaatwasser:{nl:'Ik heb een probleem met mijn vaatwasser.',en:'I have a problem with my dishwasher.',de:'Ich habe ein Problem mit meinem Geschirrspüler.'},
+  koffiemachine:{nl:'Ik heb een probleem met mijn koffiemachine.',en:'I have a problem with my coffee machine.',de:'Ich habe ein Problem mit meiner Kaffeemaschine.'},
+  meubels:{nl:'Ik heb een probleem met een meubel.',en:'I have a problem with a piece of furniture.',de:'Ich habe ein Problem mit einem Möbelstück.'},
+  loodgieter:{nl:'Ik heb een probleem met een kraan, afvoer of lekkage.',en:'I have a problem with a tap, drain or leak.',de:'Ich habe ein Problem mit einem Wasserhahn, Abfluss oder Leck.'},
+  elektronica:{nl:'Ik heb een probleem met een elektronisch apparaat.',en:'I have a problem with an electronic device.',de:'Ich habe ein Problem mit einem elektronischen Gerät.'},
+  oppervlak:{nl:'Ik heb schade aan een muur, vloer of ander oppervlak.',en:'I have damage to a wall, floor or another surface.',de:'Ich habe Schäden an einer Wand, einem Boden oder einer anderen Oberfläche.'},
+  anders:{nl:'',en:'',de:''}
+};
+qa('.categoryTile').forEach(btn=>btn.onclick=()=>{
+  const item=categoryPrompts[btn.dataset.category]||categoryPrompts.anders;
+  q('#problem').value=item[currentLang]||'';
+  q('#start').scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>q('#photoInput').click(),500);
+});
+
+q('#analyzeBtn').onclick=realAnalyze;q('#demoBtn').onclick=demoAnalyze;q('#mobileDemo').onclick=demoAnalyze;qa('.demoCard').forEach(c=>c.onclick=demoAnalyze);q('#emailBtn').onclick=()=>alert({nl:'Je resterende gratis fixes worden nu veilig server-side bijgehouden. E-mailverificatie voegen we hierna toe.',en:'Your remaining free fixes are securely tracked server-side. Email verification will be added next.',de:'Deine verbleibenden kostenlosen Reparaturen werden sicher serverseitig gespeichert. Die E-Mail-Verifizierung folgt als Nächstes.'}[currentLang]);const languageButton=q('#languageButton'),languagePanel=q('#languagePanel');languageButton.onclick=e=>{e.stopPropagation();const open=languagePanel.classList.toggle('open');languageButton.setAttribute('aria-expanded',String(open))};qa('.langoption').forEach(b=>b.onclick=()=>{applyLanguage(b.dataset.lang);languagePanel.classList.remove('open');languageButton.setAttribute('aria-expanded','false')});document.addEventListener('click',e=>{if(!q('#languageMenu').contains(e.target)){languagePanel.classList.remove('open');languageButton.setAttribute('aria-expanded','false')}if(mmPanel&&!mmPanel.contains(e.target)&&!mmBtn.contains(e.target)){mmPanel.classList.remove('open');mmBtn.setAttribute('aria-expanded','false')}});initI18n();applyLanguage(currentLang);
 </script>
 <div class="toast" id="toast">Opgeslagen</div></body>
 </html>
