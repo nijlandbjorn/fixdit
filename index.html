@@ -530,36 +530,50 @@ h1{
   .menubtn{height:52px;width:52px}
 
   .heroGrid{
-    grid-template-columns:1.10fr .90fr;
-    min-height:500px;
+    grid-template-columns:1.08fr .92fr;
+    min-height:430px;
+    align-items:start;
   }
   .heroCopy{
-    padding:48px 8px 20px 0;
+    padding:20px 10px 8px 0;
+    justify-content:flex-start;
+    align-self:start;
   }
   .kicker{
     font-size:8px;
     padding:7px 9px;
     white-space:nowrap;
+    margin-top:0;
   }
   h1{
-    font-size:clamp(45px,12.1vw,56px);
-    line-height:.89;
-    margin:17px 0 16px;
+    font-size:clamp(46px,12vw,56px);
+    line-height:.88;
+    margin:12px 0 12px;
   }
   .heroCopy p{
     font-size:13px;
-    line-height:1.48;
+    line-height:1.42;
+    max-width:290px;
   }
   .heroVisual{
-    min-height:500px;
+    min-height:430px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+    padding-top:8px;
+    padding-left:12px;
   }
   .heroVisual img{
+    width:100%;
+    max-width:315px;
+    height:370px;
     object-fit:cover;
     object-position:center;
+    border-radius:0;
   }
   .ctaRow{
-    margin-top:-1px;
-    padding-top:11px;
+    margin-top:-6px;
+    padding-top:6px;
   }
   .cta{
     min-height:58px;
@@ -569,14 +583,14 @@ h1{
   .trustline{
     justify-content:center;
     font-size:9px;
-    margin-top:11px;
+    margin-top:10px;
   }
   .benefits{
-    margin-top:13px;
-    padding:15px 0 18px;
+    margin-top:10px;
+    padding:13px 0 16px;
   }
   .benefit{
-    min-height:68px;
+    min-height:62px;
     display:grid;
     justify-items:center;
     text-align:center;
@@ -585,7 +599,7 @@ h1{
   .iconbubble{width:42px;height:42px}
   .benefit b{font-size:9px}
 
-  #prijzen.section{padding:30px 0 36px!important}
+  #prijzen.section{padding:28px 0 36px!important}
   #prijzen .sectionHead h2{font-size:33px}
   #prijzen .sectionHead p{font-size:15px}
   .pricing{gap:10px}
@@ -615,12 +629,14 @@ h1{
 
 @media(max-width:410px){
   .heroGrid{
-    grid-template-columns:1.12fr .88fr;
-    min-height:475px;
+    grid-template-columns:1.08fr .92fr;
+    min-height:405px;
   }
-  .heroVisual{min-height:475px}
-  h1{font-size:42px}
-  .heroCopy p{font-size:12px}
+  .heroCopy{padding:16px 8px 6px 0}
+  .heroVisual{min-height:405px;padding-top:6px}
+  .heroVisual img{height:345px;max-width:295px}
+  h1{font-size:42px;margin:10px 0 11px}
+  .heroCopy p{font-size:12px;line-height:1.4}
   .price{min-height:350px}
   .price .amount{font-size:38px}
 }
