@@ -1627,6 +1627,7 @@ body.modalOpen{overflow:hidden}
     </a>
 
     <nav class="navlinks">
+      <a href="#fixpaspoort" id="passportTop">Fixpaspoort</a>
       <a href="#start" data-i18n="navStart">Start</a>
       <a href="#hoe" data-i18n="navHow">Hoe het werkt</a>
       <a href="#prijzen" data-i18n="navPrice">Prijzen</a>
@@ -1847,7 +1848,7 @@ body.modalOpen{overflow:hidden}
 <footer>
   <div class="wrap foot">
     <span>© 2026 Fixdit · Nederland</span>
-    <span><a href="privacy.html">Privacy</a> · <a href="voorwaarden.html">Voorwaarden</a></span>
+    <span><a href="#fixpaspoort" id="passportFooter">Fixpaspoort</a> · <a href="privacy.html">Privacy</a> · <a href="voorwaarden.html">Voorwaarden</a></span>
   </div>
 </footer>
 
@@ -2099,7 +2100,7 @@ function applyLanguage(lang){
   q('a[href="privacy.html"]').textContent={nl:'Privacy',en:'Privacy',de:'Datenschutz'}[lang];
   q('#toast').textContent='';
   q('#closeModal').setAttribute('aria-label',uiCopy[lang].close);q('#closePassport').setAttribute('aria-label',uiCopy[lang].close);
-  q('#passportBtn').textContent=uiCopy[lang].passport;q('#passportKicker').textContent=uiCopy[lang].passportKicker;q('#passportTitle').textContent=uiCopy[lang].passport;q('#passportIntro').textContent=uiCopy[lang].passportIntro;q('#passportEmpty').textContent=uiCopy[lang].passportEmpty;q('#clearPassport').textContent=uiCopy[lang].passportClear;
+  q('#passportTop').textContent=uiCopy[lang].passport;q('#passportFooter').textContent=uiCopy[lang].passport;q('#passportBtn').textContent=uiCopy[lang].passport;q('#passportKicker').textContent=uiCopy[lang].passportKicker;q('#passportTitle').textContent=uiCopy[lang].passport;q('#passportIntro').textContent=uiCopy[lang].passportIntro;q('#passportEmpty').textContent=uiCopy[lang].passportEmpty;q('#clearPassport').textContent=uiCopy[lang].passportClear;
   q('#followUpBannerTitle').textContent=uiCopy[lang].followTitle;q('#followUpBannerText').textContent=' '+uiCopy[lang].followText;q('#cancelFollowUp').textContent=uiCopy[lang].followCancel;
   updateAllCatsLabel();updateCredits();updateAnalyzeButton();
   if(lastDiagnosis)renderDiagnosis(lastDiagnosis);
@@ -2277,6 +2278,7 @@ function renderPassport(){
 }
 function openPassport(){previousFocus=document.activeElement;renderPassport();const o=q('#passportOverlay');o.classList.add('open');o.setAttribute('aria-hidden','false');document.body.classList.add('modalOpen');setTimeout(()=>q('.passportSheet').focus(),0)}
 function closePassport(){const o=q('#passportOverlay');o.classList.remove('open');o.setAttribute('aria-hidden','true');document.body.classList.remove('modalOpen');previousFocus?.focus?.()}
+q('#passportTop').onclick=q('#passportFooter').onclick=e=>{e.preventDefault();openPassport()};
 q('#passportBtn').onclick=()=>{menuPanel.classList.remove('open');menuBtn.setAttribute('aria-expanded','false');openPassport()};q('#closePassport').onclick=closePassport;q('#passportOverlay').onclick=e=>{if(e.target===q('#passportOverlay'))closePassport()};q('#clearPassport').onclick=()=>{localStorage.removeItem('fixdit_passport_v2');renderPassport();showToast(uiCopy[currentLang].passportDeleted)};
 
 function startFollowUp(source='camera'){if(!lastAnalysisId){return}followUpMode=true;clearPhoto();q('#followUpBanner').hidden=false;closeModal();q('#start').scrollIntoView({behavior:'smooth'});updateAnalyzeButton();q(source==='camera'?'#cameraInput':'#galleryInput').click()}
