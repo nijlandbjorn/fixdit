@@ -641,9 +641,111 @@ h1{
   .price .amount{font-size:38px}
 }
 
+
+/* ===== MOBILE HERO COMPACT V2 ===== */
+@media(max-width:680px){
+  .hero .wrap{width:calc(100% - 24px)!important}
+  .heroGrid{
+    position:relative!important;
+    display:block!important;
+    min-height:365px!important;
+    height:365px!important;
+    overflow:hidden!important;
+  }
+  .heroCopy{
+    position:relative!important;
+    z-index:3!important;
+    width:62%!important;
+    padding:14px 0 0 0!important;
+    margin:0!important;
+    justify-content:flex-start!important;
+  }
+  .kicker{
+    margin:0 0 10px 0!important;
+    font-size:7.5px!important;
+    padding:6px 8px!important;
+  }
+  .hero h1{
+    font-size:42px!important;
+    line-height:.88!important;
+    margin:0 0 12px!important;
+    letter-spacing:-.065em!important;
+  }
+  .heroCopy p{
+    max-width:100%!important;
+    font-size:12px!important;
+    line-height:1.42!important;
+    margin:0!important;
+  }
+  .heroVisual{
+    position:absolute!important;
+    z-index:1!important;
+    top:8px!important;
+    right:0!important;
+    width:40%!important;
+    height:315px!important;
+    min-height:0!important;
+    padding:0!important;
+    margin:0!important;
+    display:block!important;
+    overflow:hidden!important;
+    background:#fff!important;
+  }
+  .heroVisual img{
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    object-fit:cover!important;
+    object-position:center!important;
+  }
+  .ctaRow{
+    margin-top:0!important;
+    padding-top:8px!important;
+  }
+  .benefits{
+    margin-top:8px!important;
+    padding:11px 0 13px!important;
+  }
+}
+@media(max-width:410px){
+  .heroGrid{min-height:345px!important;height:345px!important}
+  .heroCopy{width:63%!important;padding-top:10px!important}
+  .hero h1{font-size:39px!important}
+  .heroCopy p{font-size:11.5px!important}
+  .heroVisual{width:39%!important;height:295px!important;top:6px!important}
+}
+
+
+/* ===== MOBILE HERO CTA-UP V3 ===== */
+@media(max-width:680px){
+  .ctaRow{
+    margin-top:-28px!important;
+    padding-top:0!important;
+    position:relative!important;
+    z-index:6!important;
+  }
+  .cta{
+    min-height:56px!important;
+  }
+  .trustline{
+    margin-top:7px!important;
+  }
+  .benefits{
+    margin-top:4px!important;
+    padding:9px 0 12px!important;
+  }
+}
+@media(max-width:410px){
+  .ctaRow{
+    margin-top:-24px!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-MOBILE-HERO-V2 -->
+<!-- FIXDIT-CTA-UP-V3 -->
 
 <header class="topbar">
   <div class="wrap nav">
