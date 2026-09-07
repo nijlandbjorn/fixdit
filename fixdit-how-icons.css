@@ -39,3 +39,9 @@
     opacity:.05;
   }
 }
+#start,
+#hoe,
+#waarom,
+#prijzen{
+  scroll-margin-top:110px;
+}
