@@ -1618,7 +1618,10 @@ body.modalOpen{overflow:hidden}
 #start .dropIcon{display:none}
 #start .drop b{font-size:14px!important}#start .drop small{font-size:12px!important}
 #start #preview[hidden]{display:none!important}
-#start .preview:not([hidden]){max-height:220px;object-fit:contain}
+#start .drop:has(#preview:not([hidden])){padding:0!important;border-style:solid;background:#f2f7f4}
+#start .drop:has(#preview:not([hidden])) .dropInner{display:none!important}
+#start .preview:not([hidden]){display:block!important;position:relative!important;inset:auto!important;width:100%!important;height:220px!important;max-height:none;object-fit:contain;background:#f2f7f4}
+#start #removePhoto{z-index:3}
 #start .meta{font-size:12px!important;margin-top:8px}
 #start .photoActions{margin-bottom:18px}
 .exampleFlow{border-left:3px solid #0aa05b;background:#f1f8f3;padding:18px 20px;border-radius:0 16px 16px 0;margin:22px 0}
