@@ -1,0 +1,41 @@
+/* Fixdit how-it-works card illustrations */
+.howCard{
+  position:relative;
+  overflow:hidden;
+}
+.howCard::after{
+  content:"";
+  position:absolute;
+  right:-10px;
+  bottom:-10px;
+  width:136px;
+  height:136px;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  opacity:.08;
+  pointer-events:none;
+}
+.howCard.step1::after{
+  background-image:url('fixdit-step-1.svg');
+}
+.howCard.step2::after{
+  background-image:url('fixdit-step-2.svg');
+}
+.howCard.step3::after{
+  background-image:url('fixdit-step-3.svg');
+}
+.howCard>*{
+  position:relative;
+  z-index:1;
+}
+
+@media (max-width:680px){
+  .howCard::after{
+    width:118px;
+    height:118px;
+    right:-8px;
+    bottom:-8px;
+    opacity:.07;
+  }
+}
