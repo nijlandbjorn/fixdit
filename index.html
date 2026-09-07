@@ -1510,9 +1510,59 @@ h1{
   }
 }
 
+
+/* ===== CATEGORIES + PHOTO PICKER V13 ===== */
+.allCats{
+  border:0!important;
+  background:transparent!important;
+  color:var(--green)!important;
+  -webkit-text-fill-color:var(--green)!important;
+  font-weight:900;
+  cursor:pointer;
+  padding:8px 0;
+}
+.extraCategory[hidden]{display:none!important}
+
+.photoActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+}
+.photoAction{
+  min-height:48px;
+  border:1px solid #dfe8e1;
+  border-radius:13px;
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+  color:#0d1720!important;
+  -webkit-text-fill-color:#0d1720!important;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.photoAction.primaryPhoto{
+  border:0;
+  background:#0d974f!important;
+  background-image:linear-gradient(135deg,#0d954d,#16ad59)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+.photoAction span:first-child{font-size:18px}
+.drop{cursor:pointer}
+.drop:focus-visible{outline:3px solid rgba(13,151,79,.18);outline-offset:2px}
+
+@media(max-width:680px){
+  .photoActions{gap:7px}
+  .photoAction{min-height:46px;font-size:12px}
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-CATEGORIES-GALLERY-V13 -->
 <!-- FIXDIT-HERO-CONNECTED-V12 -->
 <!-- FIXDIT-UNIVERSAL-V11 -->
 <!-- FIXDIT-POLISH-V9 -->
@@ -1651,7 +1701,7 @@ h1{
           <h2 data-i18n="catTitle">Populaire categorieën</h2>
           <p data-i18n="catSub">Waar kunnen we je mee helpen?</p>
         </div>
-        <a class="allCats" href="#start" data-i18n="allCats">Bekijk alle categorieën →</a>
+        <button class="allCats" id="allCatsBtn" type="button" data-i18n="allCats">Bekijk alle categorieën →</button>
       </div>
 
       <div class="categoryGrid">
@@ -1662,6 +1712,15 @@ h1{
         <button class="category" data-prompt="plumbing" type="button"><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h7V5h4v3h3v4H8a3 3 0 0 0-3 3v2"/><path d="M5 17v4M2 21h6"/></svg></span><b data-i18n="c5">Loodgieterij</b><small data-i18n="c5s">Kraan · sifon · lekkage</small></button>
         <button class="category" data-prompt="electronics" type="button"><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><b data-i18n="c6">Elektronica</b><small data-i18n="c6s">TV · telefoon · apparaten</small></button>
         <button class="category" data-prompt="surface" type="button"><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 15 8-8 5 5-8 8H4z"/><path d="m14 5 2-2 5 5-2 2"/></svg></span><b data-i18n="c7">Muur & vloer</b><small data-i18n="c7s">Kras · gat · verf · schade</small></button>
+
+        <button class="category extraCategory" data-prompt="footwear" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14c3 0 5-1 7-4l2 4c1 2 3 3 7 3v3H5a2 2 0 0 1-1-4z"/><path d="M8 13h4"/></svg></span><b data-i18n="c9">Schoenen & textiel</b><small data-i18n="c9s">Zool · scheur · lijm · stof</small></button>
+        <button class="category extraCategory" data-prompt="aquarium" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15c3-2 5 2 8 0s5 2 10 0"/><path d="M8 10c1.4-1.2 3.2-1.2 4.5 0-1.3 1.2-3.1 1.2-4.5 0z"/></svg></span><b data-i18n="c10">Aquarium</b><small data-i18n="c10s">Bouwen · lekkage · onderhoud</small></button>
+        <button class="category extraCategory" data-prompt="bicycle" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="17" r="4"/><circle cx="18" cy="17" r="4"/><path d="M6 17l5-8 3 8M9 12h7l2 5M10 7h3"/></svg></span><b data-i18n="c11">Fiets</b><small data-i18n="c11s">Band · ketting · remmen</small></button>
+        <button class="category extraCategory" data-prompt="garden" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9"/><path d="M12 13c-5 0-7-3-7-7 5 0 7 3 7 7z"/><path d="M12 10c4 0 6-2 6-6-4 0-6 2-6 6z"/></svg></span><b data-i18n="c12">Tuin & buiten</b><small data-i18n="c12s">Hout · hek · gereedschap</small></button>
+        <button class="category extraCategory" data-prompt="cleaning" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3h8l-1 5H9z"/><path d="M10 8v3l-4 8h12l-4-8V8"/><path d="M9 15h6"/></svg></span><b data-i18n="c13">Schoonmaken</b><small data-i18n="c13s">Vlek · aanslag · geur</small></button>
+        <button class="category extraCategory" data-prompt="household" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16v10H4z"/><path d="M8 10V6h8v4"/><path d="M9 14h6"/></svg></span><b data-i18n="c14">Keuken & huishouden</b><small data-i18n="c14s">Kast · lade · gebruiksvoorwerp</small></button>
+        <button class="category extraCategory" data-prompt="build" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M6 21V9l6-5 6 5v12"/><path d="M9 21v-6h6v6"/></svg></span><b data-i18n="c15">Bouwen & monteren</b><small data-i18n="c15s">Maken · bevestigen · installeren</small></button>
+        <button class="category extraCategory" data-prompt="mechanical" type="button" hidden><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 13.5v-3l-2-.7-.6-1.4.9-1.9-2.1-2.1-1.9.9-1.4-.6L11.2 3h-3l-.7 2-1.4.6-1.9-.9-2.1 2.1.9 1.9-.6 1.4-2 .7v3l2 .7.6 1.4-.9 1.9 2.1 2.1 1.9-.9 1.4.6.7 2h3l.7-2 1.4-.6 1.9.9 2.1-2.1-.9-1.9.6-1.4z"/></svg></span><b data-i18n="c16">Mechanisch</b><small data-i18n="c16s">Scharnier · wiel · mechanisme</small></button>
         <button class="category" data-prompt="other" type="button"><span class="catIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span><b data-i18n="c8">Iets anders</b><small data-i18n="c8s">Maak een foto</small></button>
       </div>
     </div>
@@ -1681,16 +1740,25 @@ h1{
       </div>
 
       <div class="uploadbox">
-        <div class="drop" id="drop">
-          <input id="photoInput" type="file" accept="image/*" capture="environment">
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Kies een foto uit je galerij">
           <div class="dropInner">
             <div class="dropIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/></svg></div>
             <b data-i18n="uploadTitle">Maak of kies een foto</b>
-            <small data-i18n="uploadSub">Tik hier om je camera of galerij te openen</small>
+            <small data-i18n="uploadSub">Kies zelf camera of galerij</small>
           </div>
           <img class="preview" id="preview" alt="" hidden>
           <button class="removePhoto" id="removePhoto" type="button" hidden>×</button>
         </div>
+        <div class="photoActions">
+          <button class="photoAction primaryPhoto" id="cameraBtn" type="button">
+            <span>📷</span><span data-i18n="cameraBtn">Maak foto</span>
+          </button>
+          <button class="photoAction" id="galleryBtn" type="button">
+            <span>▣</span><span data-i18n="galleryBtn">Open galerij</span>
+          </button>
+        </div>
+        <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden>
+        <input id="galleryInput" type="file" accept="image/*" hidden>
 
         <div class="field">
           <label for="problem" data-i18n="problemLabel">Wat merk je?</label>
@@ -1882,7 +1950,7 @@ cta:'Maak een foto en krijg hulp',trust:'Veilig, snel en zonder gedoe. Foto’s 
 benefit1:'Snelle oplossingen',benefit2:'Stap voor stap uitleg',benefit3:'Voor al je spullen',
 pricingTitle:'Kies wat bij jou past',pricingSub:'Eerlijke prijzen. Maximale hulp.',pricingLead:'Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.',
 popular:'Meest gekozen',annual:'Jaarabonnement',perYear:'per jaar',annualText:'Voor huishoudens die Fixdit vaker gebruiken.',a1:'120 fixes per jaar',a2:'Goedkoopste prijs per fix',a3:'Nieuwe functies als eerste',a4:'Altijd en overal toegang',
-homePack:'Thuis Pack',once:'eenmalig',packText:'Voor meerdere problemen zonder abonnement.',p1:'20 extra fixes',p2:'Geen abonnement',p3:'Directe bundel',p4:'12 maanden geldig',inactive:'Nog niet actief',chooseAnnual:'Kies abonnement →',buyPack:'Koop bundel →',allCats:'Bekijk alle categorieën →',freeNote:'Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.',
+homePack:'Thuis Pack',once:'eenmalig',packText:'Voor meerdere problemen zonder abonnement.',p1:'20 extra fixes',p2:'Geen abonnement',p3:'Directe bundel',p4:'12 maanden geldig',inactive:'Nog niet actief',chooseAnnual:'Kies abonnement →',buyPack:'Koop bundel →',allCats:'Bekijk alle categorieën →',freeNote:'Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.',cameraBtn:'Maak foto',galleryBtn:'Open galerij',allCatsOpen:'Bekijk alle categorieën →',allCatsClose:'Minder categorieën ↑',c9:'Schoenen & textiel',c9s:'Zool · scheur · lijm · stof',c10:'Aquarium',c10s:'Bouwen · lekkage · onderhoud',c11:'Fiets',c11s:'Band · ketting · remmen',c12:'Tuin & buiten',c12s:'Hout · hek · gereedschap',c13:'Schoonmaken',c13s:'Vlek · aanslag · geur',c14:'Keuken & huishouden',c14s:'Kast · lade · gebruiksvoorwerp',c15:'Bouwen & monteren',c15s:'Maken · bevestigen · installeren',c16:'Mechanisch',c16s:'Scharnier · wiel · mechanisme',
 catTitle:'Populaire categorieën',catSub:'Waar kunnen we je mee helpen?',catLead:'Kies iets of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.',
 c1:'Wasmachine',c1s:'Afvoer · foutcode · lekkage',c2:'Vaatwasser',c2s:'Filter · afvoer · foutcode',c3:'Koffiemachine',c3s:'Lek · verstopping · storing',c4:'Meubels',c4s:'Los · schade · vlekken',c5:'Loodgieterij',c5s:'Kraan · sifon · lekkage',c6:'Elektronica',c6s:'TV · telefoon · apparaten',c7:'Muur & vloer',c7s:'Kras · gat · verf · schade',c8:'Iets anders',c8s:'Maak een foto',
 analyzerKicker:'JOUW PROBLEEM',analyzerTitle:'Laat Fixdit meekijken.',analyzerText:'Maak een duidelijke foto en vertel wat je wilt oplossen of maken. Fixdit kiest automatisch de juiste route: repareren, schoonmaken, onderhouden, monteren, bouwen of veilig stoppen.',
@@ -1899,7 +1967,7 @@ cta:'Take a photo and get help',trust:'Safe, fast and hassle-free. Photos are no
 benefit1:'Quick solutions',benefit2:'Step-by-step guidance',benefit3:'For all your belongings',
 pricingTitle:'Choose what suits you',pricingSub:'Fair pricing. Maximum help.',pricingLead:'Start with 3 free fixes. After that, only choose a plan if Fixdit is valuable to you.',
 popular:'Most chosen',annual:'Annual plan',perYear:'per year',annualText:'For households that use Fixdit more often.',a1:'120 fixes per year',a2:'Lowest price per fix',a3:'New features first',a4:'Fix Passport for your repairs',
-homePack:'Home Pack',once:'one-time',packText:'For several problems without a subscription.',p1:'20 extra fixes',p2:'No subscription',p3:'Instant bundle',p4:'For appliances, furniture and more',inactive:'Not active yet',chooseAnnual:'Choose plan →',buyPack:'Buy bundle →',allCats:'View all categories →',freeNote:'Your first 3 fixes are free. Payments will be enabled later.',
+homePack:'Home Pack',once:'one-time',packText:'For several problems without a subscription.',p1:'20 extra fixes',p2:'No subscription',p3:'Instant bundle',p4:'For appliances, furniture and more',inactive:'Not active yet',chooseAnnual:'Choose plan →',buyPack:'Buy bundle →',allCats:'View all categories →',freeNote:'Your first 3 fixes are free. Payments will be enabled later.',cameraBtn:'Take photo',galleryBtn:'Open gallery',allCatsOpen:'View all categories →',allCatsClose:'Show fewer categories ↑',c9:'Shoes & textiles',c9s:'Sole · tear · glue · fabric',c10:'Aquarium',c10s:'Build · leak · maintenance',c11:'Bicycle',c11s:'Tyre · chain · brakes',c12:'Garden & outdoors',c12s:'Wood · fence · tools',c13:'Cleaning',c13s:'Stain · deposits · odour',c14:'Kitchen & household',c14s:'Cabinet · drawer · household item',c15:'Build & assemble',c15s:'Make · mount · install',c16:'Mechanical',c16s:'Hinge · wheel · mechanism',
 catTitle:'Popular categories',catSub:'What can we help you with?',catLead:'Choose something or take a photo right away. Fixdit then selects the right route automatically.',
 c1:'Washing machine',c1s:'Drain · error · leak',c2:'Dishwasher',c2s:'Filter · drain · error',c3:'Coffee machine',c3s:'Leak · blockage · fault',c4:'Furniture',c4s:'Loose · damage · stains',c5:'Plumbing',c5s:'Tap · trap · leak',c6:'Electronics',c6s:'TV · phone · devices',c7:'Wall & floor',c7s:'Scratch · hole · paint · damage',c8:'Something else',c8s:'Take a photo',
 analyzerKicker:'YOUR PROBLEM',analyzerTitle:'Let Fixdit take a look.',analyzerText:'Take a clear photo and tell Fixdit what you want to fix or make. It automatically chooses the right route: repair, cleaning, maintenance, assembly, building or a safe stop.',
@@ -1916,7 +1984,7 @@ cta:'Foto machen und Hilfe bekommen',trust:'Sicher, schnell und unkompliziert. F
 benefit1:'Schnelle Lösungen',benefit2:'Schritt-für-Schritt-Hilfe',benefit3:'Für all deine Sachen',
 pricingTitle:'Wähle, was zu dir passt',pricingSub:'Faire Preise. Maximale Hilfe.',pricingLead:'Starte mit 3 kostenlosen Fixes. Danach wählst du nur etwas, wenn Fixdit für dich einen Mehrwert hat.',
 popular:'Am beliebtesten',annual:'Jahresabo',perYear:'pro Jahr',annualText:'Für Haushalte, die Fixdit öfter nutzen.',a1:'120 Fixes pro Jahr',a2:'Günstigster Preis pro Fix',a3:'Neue Funktionen zuerst',a4:'Fix-Pass für deine Reparaturen',
-homePack:'Home Pack',once:'einmalig',packText:'Für mehrere Probleme ohne Abo.',p1:'20 zusätzliche Fixes',p2:'Kein Abo',p3:'Direktes Paket',p4:'Für Geräte, Möbel und mehr',inactive:'Noch nicht aktiv',chooseAnnual:'Abo wählen →',buyPack:'Paket kaufen →',allCats:'Alle Kategorien ansehen →',freeNote:'Die ersten 3 Fixes sind kostenlos. Zahlungen aktivieren wir später.',
+homePack:'Home Pack',once:'einmalig',packText:'Für mehrere Probleme ohne Abo.',p1:'20 zusätzliche Fixes',p2:'Kein Abo',p3:'Direktes Paket',p4:'Für Geräte, Möbel und mehr',inactive:'Noch nicht aktiv',chooseAnnual:'Abo wählen →',buyPack:'Paket kaufen →',allCats:'Alle Kategorien ansehen →',freeNote:'Die ersten 3 Fixes sind kostenlos. Zahlungen aktivieren wir später.',cameraBtn:'Foto machen',galleryBtn:'Galerie öffnen',allCatsOpen:'Alle Kategorien ansehen →',allCatsClose:'Weniger Kategorien ↑',c9:'Schuhe & Textilien',c9s:'Sohle · Riss · Kleber · Stoff',c10:'Aquarium',c10s:'Bauen · Leck · Wartung',c11:'Fahrrad',c11s:'Reifen · Kette · Bremsen',c12:'Garten & draußen',c12s:'Holz · Zaun · Werkzeug',c13:'Reinigung',c13s:'Fleck · Belag · Geruch',c14:'Küche & Haushalt',c14s:'Schrank · Schublade · Haushaltsgegenstand',c15:'Bauen & montieren',c15s:'Bauen · befestigen · installieren',c16:'Mechanisch',c16s:'Scharnier · Rad · Mechanismus',
 catTitle:'Beliebte Kategorien',catSub:'Wobei können wir dir helfen?',catLead:'Wähle etwas oder mach direkt ein Foto. Fixdit wählt danach automatisch den richtigen Weg.',
 c1:'Waschmaschine',c1s:'Ablauf · Fehler · Leck',c2:'Geschirrspüler',c2s:'Filter · Ablauf · Fehler',c3:'Kaffeemaschine',c3s:'Leck · Verstopfung · Störung',c4:'Möbel',c4s:'Locker · Schaden · Flecken',c5:'Sanitär',c5s:'Hahn · Siphon · Leck',c6:'Elektronik',c6s:'TV · Telefon · Geräte',c7:'Wand & Boden',c7s:'Kratzer · Loch · Farbe · Schaden',c8:'Etwas anderes',c8s:'Foto machen',
 analyzerKicker:'DEIN PROBLEM',analyzerTitle:'Lass Fixdit mitsehen.',analyzerText:'Mach ein klares Foto und beschreibe kurz, was du bemerkst. Fixdit wählt automatisch den richtigen Weg: reinigen, reparieren, prüfen oder stoppen.',
@@ -1948,6 +2016,7 @@ function applyLanguage(lang){
     de:'Zum Beispiel: In meinem Geschirrspüler bleibt unten Wasser stehen...'
   };
   q('#problem').placeholder=placeholders[lang];
+  if(document.querySelector('#allCatsBtn')) updateAllCatsLabel();
 }
 
 const langBtn=q('#langBtn'),langPanel=q('#langPanel'),menuBtn=q('#menuBtn'),menuPanel=q('#menuPanel');
@@ -1993,16 +2062,41 @@ async function fileToDataUrl(file){
   canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);
   return canvas.toDataURL('image/jpeg',.82);
 }
-q('#photoInput').addEventListener('change',async e=>{
-  const file=e.target.files?.[0]; if(!file)return;
+async function handlePhotoFile(file){
+  if(!file)return;
   try{
     imageData=await fileToDataUrl(file);
-    q('#preview').src=imageData;q('#preview').hidden=false;q('#removePhoto').hidden=false;
-  }catch{alert('Foto kon niet worden geladen.')}
-});
-q('#removePhoto').onclick=e=>{e.preventDefault();e.stopPropagation();imageData='';q('#preview').hidden=true;q('#preview').src='';q('#removePhoto').hidden=true;q('#photoInput').value=''};
+    q('#preview').src=imageData;
+    q('#preview').hidden=false;
+    q('#removePhoto').hidden=false;
+  }catch{
+    alert({nl:'Foto kon niet worden geladen.',en:'The photo could not be loaded.',de:'Das Foto konnte nicht geladen werden.'}[currentLang]);
+  }
+}
+q('#cameraInput').addEventListener('change',e=>handlePhotoFile(e.target.files?.[0]));
+q('#galleryInput').addEventListener('change',e=>handlePhotoFile(e.target.files?.[0]));
 
-q('#heroCta').onclick=()=>{q('#start').scrollIntoView({behavior:'smooth'});setTimeout(()=>q('#photoInput').click(),450)};
+q('#cameraBtn').onclick=()=>q('#cameraInput').click();
+q('#galleryBtn').onclick=()=>q('#galleryInput').click();
+q('#drop').onclick=e=>{
+  if(e.target.closest('#removePhoto'))return;
+  q('#galleryInput').click();
+};
+q('#drop').onkeydown=e=>{
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();q('#galleryInput').click();}
+};
+
+q('#removePhoto').onclick=e=>{
+  e.preventDefault();e.stopPropagation();
+  imageData='';
+  q('#preview').hidden=true;
+  q('#preview').src='';
+  q('#removePhoto').hidden=true;
+  q('#cameraInput').value='';
+  q('#galleryInput').value='';
+};
+
+q('#heroCta').onclick=()=>q('#start').scrollIntoView({behavior:'smooth'});
 
 const promptText={
 washing:{nl:'Ik heb een probleem met mijn wasmachine.',en:'I have a problem with my washing machine.',de:'Ich habe ein Problem mit meiner Waschmaschine.'},
@@ -2012,14 +2106,33 @@ furniture:{nl:'Ik heb een probleem met een meubel.',en:'I have a problem with a 
 plumbing:{nl:'Ik heb een probleem met een kraan, afvoer of lekkage.',en:'I have a problem with a tap, drain or leak.',de:'Ich habe ein Problem mit einem Wasserhahn, Abfluss oder Leck.'},
 electronics:{nl:'Ik heb een probleem met een elektronisch apparaat.',en:'I have a problem with an electronic device.',de:'Ich habe ein Problem mit einem elektronischen Gerät.'},
 surface:{nl:'Ik heb schade aan een muur, vloer of ander oppervlak.',en:'I have damage to a wall, floor or another surface.',de:'Ich habe Schäden an einer Wand, einem Boden oder einer anderen Oberfläche.'},
+footwear:{nl:'Ik heb een probleem met schoenen, kleding of textiel.',en:'I have a problem with shoes, clothing or textiles.',de:'Ich habe ein Problem mit Schuhen, Kleidung oder Textilien.'},
+aquarium:{nl:'Ik heb een vraag of probleem met een aquarium.',en:'I have a question or problem with an aquarium.',de:'Ich habe eine Frage oder ein Problem mit einem Aquarium.'},
+bicycle:{nl:'Ik heb een probleem met mijn fiets.',en:'I have a problem with my bicycle.',de:'Ich habe ein Problem mit meinem Fahrrad.'},
+garden:{nl:'Ik heb een klus of probleem in de tuin of buiten.',en:'I have a garden or outdoor job/problem.',de:'Ich habe eine Aufgabe oder ein Problem im Garten oder draußen.'},
+cleaning:{nl:'Ik wil iets schoonmaken of een vlek verwijderen.',en:'I want to clean something or remove a stain.',de:'Ich möchte etwas reinigen oder einen Fleck entfernen.'},
+household:{nl:'Ik heb een probleem met iets in de keuken of het huishouden.',en:'I have a problem with a kitchen or household item.',de:'Ich habe ein Problem mit einem Küchen- oder Haushaltsgegenstand.'},
+build:{nl:'Ik wil iets bouwen, monteren of installeren.',en:'I want to build, assemble or install something.',de:'Ich möchte etwas bauen, montieren oder installieren.'},
+mechanical:{nl:'Ik heb een mechanisch probleem met een onderdeel of mechanisme.',en:'I have a mechanical problem with a part or mechanism.',de:'Ich habe ein mechanisches Problem mit einem Teil oder Mechanismus.'},
 other:{nl:'',en:'',de:''}
 };
 qa('.category').forEach(btn=>btn.onclick=()=>{
-  q('#problem').value=promptText[btn.dataset.prompt][currentLang]||'';
+  q('#problem').value=promptText[btn.dataset.prompt]?.[currentLang]||'';
   q('#chars').textContent=`${q('#problem').value.length} / 500`;
   q('#start').scrollIntoView({behavior:'smooth'});
-  setTimeout(()=>q('#photoInput').click(),450);
 });
+
+
+let allCategoriesOpen=false;
+function updateAllCatsLabel(){
+  const t=translations[currentLang]||translations.nl;
+  q('#allCatsBtn').textContent=allCategoriesOpen?(t.allCatsClose||'Minder categorieën ↑'):(t.allCatsOpen||t.allCats||'Bekijk alle categorieën →');
+}
+q('#allCatsBtn').onclick=()=>{
+  allCategoriesOpen=!allCategoriesOpen;
+  qa('.extraCategory').forEach(el=>el.hidden=!allCategoriesOpen);
+  updateAllCatsLabel();
+};
 
 const overlay=q('#overlay'),loader=q('#loader'),result=q('#result');
 function openModal(){overlay.classList.add('open');loader.style.display='block';result.classList.remove('show')}
@@ -2238,7 +2351,7 @@ function renderDiagnosis(d){
     saved.unshift({date:new Date().toISOString(),language:currentLang,problem:q('#problem').value.trim(),diagnosis:d});
     localStorage.setItem('fixdit_passport_v1',JSON.stringify(saved.slice(0,20)));showToast(copy.saved);
   };
-  q('#followupPhoto').onclick=()=>{closeModal();setTimeout(()=>q('#photoInput').click(),180)};
+  q('#followupPhoto').onclick=()=>{closeModal();setTimeout(()=>q('#galleryInput').click(),180)};
   q('#feedbackYes').onclick=()=>{q('#feedbackYes').classList.add('selected');q('#feedbackNo').classList.remove('selected');localStorage.setItem('fixdit_last_feedback','yes');showToast(copy.thanks)};
   q('#feedbackNo').onclick=()=>{q('#feedbackNo').classList.add('selected');q('#feedbackYes').classList.remove('selected');localStorage.setItem('fixdit_last_feedback','no');showToast(copy.thanks)};
 }
