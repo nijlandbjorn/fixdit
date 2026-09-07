@@ -32,10 +32,10 @@
 
 @media (max-width:680px){
   .howCard::after{
-    width:110px;
-    height:110px;
-    right:-20px;
-    bottom:-16px;
-    opacity:.055;
+    width:96px;
+    height:96px;
+    right:-14px;
+    bottom:-22px;
+    opacity:.05;
   }
 }
