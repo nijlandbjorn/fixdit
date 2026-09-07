@@ -1601,7 +1601,34 @@ body.modalOpen{overflow:hidden}
 }
 
 </style>
-</head>
+<style id="form-polish">
+#start .uploadbox{padding:24px!important}
+#start .field{margin:0 0 18px!important}
+#start .field>label,#carChoicesLabel{display:block;font-size:14px!important;line-height:1.5;font-weight:750;margin-bottom:9px}
+#start textarea{font:inherit!important;font-size:16px!important;line-height:1.6!important;min-height:130px!important;padding:16px!important;border-radius:16px!important}
+#carPanel{padding:18px!important;margin:0 0 22px!important;background:#f2f8f4!important;border:1px solid #deebe2;border-radius:18px}
+#carSafetyIntro{font-size:13px!important;line-height:1.6!important;margin:0 0 16px}
+.carSelectWrap{position:relative}
+#carChoices{display:block;width:100%;min-height:54px;padding:14px 46px 14px 16px;appearance:none;-webkit-appearance:none;border:1px solid #cbded1;border-radius:13px;background:#fff;color:#142d20;font-family:inherit;font-weight:650;font-size:16px;line-height:1.4;cursor:pointer;box-shadow:0 2px 5px #163e2110}
+#carChoices:hover{border-color:#129758}
+#carChoices:focus-visible{outline:3px solid #96d7b1;outline-offset:3px}
+.carSelectWrap svg{position:absolute;right:16px;top:17px;width:20px;height:20px;color:#13884e;pointer-events:none}
+#start .drop{min-height:108px!important;height:auto!important;padding:16px!important;margin-top:12px}
+#start .dropInner{min-height:0!important;gap:5px!important;padding:0!important}
+#start .dropIcon{display:none}
+#start .drop b{font-size:14px!important}#start .drop small{font-size:12px!important}
+#start #preview[hidden]{display:none!important}
+#start .preview:not([hidden]){max-height:220px;object-fit:contain}
+#start .meta{font-size:12px!important;margin-top:8px}
+#start .photoActions{margin-bottom:18px}
+.exampleFlow{border-left:3px solid #0aa05b;background:#f1f8f3;padding:18px 20px;border-radius:0 16px 16px 0;margin:22px 0}
+.exampleFlow small{display:block;color:#147d4c;font-size:11px;letter-spacing:.1em;font-weight:800}
+.exampleFlow strong{display:block;font-size:18px;margin-top:7px}
+.exampleFlow p{font-size:14px!important;line-height:1.65!important;margin:8px 0 0!important}
+#prijzen .price li,#prijzen .price p{font-size:14px!important;line-height:1.6!important}
+#prijzen button:disabled{cursor:default;opacity:.65}
+@media(max-width:640px){#start .uploadbox{padding:18px!important}#start .analyzerCopy>p{font-size:16px!important;line-height:1.65!important}.stepsMini span{font-size:14px!important}.category b{font-size:12px!important}#prijzen .price li{font-size:13px!important}.exampleFlow{margin:18px 0}}
+</style></head>
 <body>
 <!-- FIXDIT RELEASE 6.0 | four-axis architecture | approved hero preserved -->
 <!-- FIXDIT-STABLE-DOMAIN-FIRST-V17 -->
@@ -1695,51 +1722,7 @@ body.modalOpen{overflow:hidden}
     </div>
   </section>
 
-  <section class="section" id="prijzen">
-    <div class="wrap">
-      <div class="sectionHead">
-        <div>
-          <h2 data-i18n="pricingTitle">Kies wat bij jou past</h2>
-          <p data-i18n="pricingSub">Eerlijke prijzen. Maximale hulp.</p>
-        </div>
-        <p data-i18n="pricingLead">Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.</p>
-      </div>
 
-      <div class="pricing">
-        <article class="price featured">
-          <span class="badge" data-i18n="popular">Meest gekozen</span>
-          <div>
-            <small data-i18n="annual">Jaarabonnement</small>
-            <div><span class="amount">€39</span><span class="per" data-i18n="perYear">per jaar</span></div>
-            <p data-i18n="annualText">Voor huishoudens die Fixdit vaker gebruiken.</p>
-            <ul>
-              <li data-i18n="a1">120 fixes per jaar</li>
-              <li data-i18n="a2">Goedkoopste prijs per fix</li>
-              <li data-i18n="a3">Nieuwe functies als eerste</li>
-              <li data-i18n="a4">Altijd en overal toegang</li>
-            </ul>
-          </div>
-          <button class="buy paySoon" type="button" data-plan="annual" data-i18n="chooseAnnual">Kies abonnement →</button>
-        </article>
-
-        <article class="price">
-          <div>
-            <small data-i18n="homePack">Thuis Pack</small>
-            <div><span class="amount">€9,99</span><span class="per" data-i18n="once">eenmalig</span></div>
-            <p data-i18n="packText">Voor meerdere problemen zonder abonnement.</p>
-            <ul>
-              <li data-i18n="p1">20 extra fixes</li>
-              <li data-i18n="p2">Geen abonnement</li>
-              <li data-i18n="p3">Directe bundel</li>
-              <li data-i18n="p4">12 maanden geldig</li>
-            </ul>
-          </div>
-          <button class="buy secondary paySoon" type="button" data-plan="pack" data-i18n="buyPack">Koop bundel →</button>
-        </article>
-      </div>
-      <p class="pricingNote" data-i18n="freeNote">Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.</p>
-    </div>
-  </section>
 
   <section class="section soft">
     <div class="wrap">
@@ -1778,20 +1761,25 @@ body.modalOpen{overflow:hidden}
       <div class="analyzerCopy">
         <small class="muted" data-i18n="analyzerKicker">JOUW PROBLEEM</small>
         <h2 data-i18n="analyzerTitle">Laat Fixdit meekijken.</h2>
-        <p data-i18n="analyzerText">Maak een duidelijke foto en vertel kort wat je merkt. Fixdit kiest automatisch de juiste route: schoonmaken, repareren, controleren of stoppen.</p>
-        <div class="stepsMini">
-          <div><i>1</i><span data-i18n="s1">Maak een duidelijke foto</span></div>
-          <div><i>2</i><span data-i18n="s2">Beschrijf kort wat er mis is</span></div>
-          <div><i>3</i><span data-i18n="s3">Krijg een concreet plan + veiligheidscheck</span></div>
+        <p data-i18n="analyzerText">Beschrijf je probleem. Voeg eventueel een foto toe. Je krijgt een passende volgende stap: een gerichte vraag, een controle of professionele hulp.</p>
+        <aside class="exampleFlow"><small data-i18n="exampleLabel">VOORBEELD</small><strong data-i18n="exampleProblem">Vaatwasser pompt niet af?</strong><p data-i18n="examplePath">Gerichte vraag → passende controle → zo nodig een witgoedmonteur.</p></aside><div class="stepsMini">
+          <div><i>1</i><span data-i18n="s1">Beschrijf wat je merkt</span></div>
+          <div><i>2</i><span data-i18n="s2">Voeg eventueel een foto toe</span></div>
+          <div><i>3</i><span data-i18n="s3">Bekijk wat je nu kunt doen</span></div>
         </div>
       </div>
 
       <div class="uploadbox">
+        <div class="field">
+          <div id="carPanel" class="moreInfoBox" hidden><p id="carSafetyIntro"></p><label for="carChoices" id="carChoicesLabel"></label><div class="carSelectWrap"><select id="carChoices"></select><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div><label for="problem" data-i18n="problemLabel">Wat merk je?</label>
+          <textarea id="problem" maxlength="500" placeholder="Bijvoorbeeld: er blijft water onderin mijn vaatwasser staan..."></textarea>
+          <div class="meta"><span id="chars">0 / 500</span><span id="creditText">3 gratis fixes</span></div>
+        </div>
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Kies een foto uit je galerij">
           <div class="dropInner">
             <div class="dropIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/></svg></div>
-            <b data-i18n="uploadTitle">Maak of kies een foto</b>
-            <small data-i18n="uploadSub">Kies zelf camera of galerij</small>
+            <b data-i18n="uploadTitle">Foto toevoegen (optioneel)</b>
+            <small data-i18n="uploadSub">Een overzicht of detail kan helpen</small>
           </div>
           <img class="preview" id="preview" alt="" hidden>
           <button class="removePhoto" id="removePhoto" type="button" hidden>×</button>
@@ -1812,11 +1800,7 @@ body.modalOpen{overflow:hidden}
           <button id="cancelFollowUp" type="button">Annuleer</button>
         </div>
 
-        <div class="field">
-          <div id="carPanel" class="moreInfoBox" hidden><p id="carSafetyIntro"></p><label for="carChoices" id="carChoicesLabel"></label><select id="carChoices"></select></div><label for="problem" data-i18n="problemLabel">Wat merk je?</label>
-          <textarea id="problem" maxlength="500" placeholder="Bijvoorbeeld: er blijft water onderin mijn vaatwasser staan..."></textarea>
-          <div class="meta"><span id="chars">0 / 500</span><span id="creditText">3 gratis fixes</span></div>
-        </div>
+
         <button class="analyze" id="analyzeBtn" type="button"><span data-i18n="analyze">Analyseer gratis</span> · <span id="credits">3</span></button>
       </div>
     </div>
@@ -1824,7 +1808,7 @@ body.modalOpen{overflow:hidden}
 
   <section class="section soft" id="hoe">
     <div class="wrap">
-      <div class="sectionHead"><div><h2 data-i18n="howTitle">Zo werkt Fixdit</h2><p data-i18n="howSub">Van foto naar eerste veilige actie.</p></div></div>
+      <div class="sectionHead"><div><h2 data-i18n="howTitle">Zo werkt Fixdit</h2><p data-i18n="howSub">Van je beschrijving naar een passende volgende stap.</p></div></div>
       <div class="howGrid">
         <div class="card"><div class="cardNum">1</div><h3 data-i18n="how1">Fixdit herkent het probleemtype</h3><p data-i18n="how1p">Apparaat, meubel, vlek, lekkage, elektronica of iets anders.</p></div>
         <div class="card"><div class="cardNum">2</div><h3 data-i18n="how2">Je krijgt concrete stappen</h3><p data-i18n="how2p">Geen algemene chat, maar precies wat je nu veilig kunt controleren of doen.</p></div>
@@ -1837,10 +1821,55 @@ body.modalOpen{overflow:hidden}
     <div class="wrap">
       <div class="sectionHead"><div><h2 data-i18n="whyTitle">Meer dan alleen een AI-antwoord</h2><p data-i18n="whySub">Fixdit is gebouwd als reparatieflow, niet als algemene chat.</p></div></div>
       <div class="wowGrid">
-        <div class="card"><h3 data-i18n="w1">Fixscore</h3><p data-i18n="w1p">Een duidelijke indicatie of dit verstandig is om zelf te proberen.</p></div>
-        <div class="card"><h3 data-i18n="w2">Bespaarmeter</h3><p data-i18n="w2p">Vergelijk mogelijke doe-het-zelfkosten met een professionele reparatie.</p></div>
+        <div class="card"><h3 data-i18n="w1">Een duidelijke volgende stap</h3><p data-i18n="w1p">Je ziet wat je nu kunt doen en wanneer je moet stoppen.</p></div>
+        <div class="card"><h3 data-i18n="w2">Bewaar je advies</h3><p data-i18n="w2p">Vind opgeslagen resultaten terug in het Fixpaspoort in deze browser.</p></div>
         <div class="card"><h3 data-i18n="w3">Wie moet je bellen?</h3><p data-i18n="w3p">Als zelf oplossen niet slim is, krijg je direct het juiste type vakman.</p></div>
       </div>
+    </div>
+  </section>
+  <section class="section" id="prijzen">
+    <div class="wrap">
+      <div class="sectionHead">
+        <div>
+          <h2 data-i18n="pricingTitle">Later meer fixes nodig?</h2>
+          <p data-i18n="pricingSub">Voorgenomen pakketten. Betalen is nog niet beschikbaar.</p>
+        </div>
+        <p data-i18n="pricingLead">Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.</p>
+      </div>
+
+      <div class="pricing">
+        <article class="price featured">
+          <span class="badge" data-i18n="popular">Binnenkort</span>
+          <div>
+            <small data-i18n="annual">Jaarabonnement</small>
+            <div><span class="amount">€39</span><span class="per" data-i18n="perYear">per jaar</span></div>
+            <p data-i18n="annualText">Voor huishoudens die Fixdit vaker gebruiken.</p>
+            <ul>
+              <li data-i18n="a1">120 fixes per jaar</li>
+              <li data-i18n="a2">Voor regelmatig gebruik</li>
+              <li data-i18n="a3">Nog niet te bestellen</li>
+              <li data-i18n="a4">Fixpaspoort in deze browser</li>
+            </ul>
+          </div>
+          <button class="buy paySoon" type="button" data-plan="annual" data-i18n="chooseAnnual" disabled>Nog niet beschikbaar</button>
+        </article>
+
+        <article class="price">
+          <div>
+            <small data-i18n="homePack">Thuis Pack</small>
+            <div><span class="amount">€9,99</span><span class="per" data-i18n="once">eenmalig</span></div>
+            <p data-i18n="packText">Voor meerdere problemen zonder abonnement.</p>
+            <ul>
+              <li data-i18n="p1">20 extra fixes</li>
+              <li data-i18n="p2">Geen abonnement</li>
+              <li data-i18n="p3">Nog niet te bestellen</li>
+              <li data-i18n="p4">Voor verschillende problemen</li>
+            </ul>
+          </div>
+          <button class="buy secondary paySoon" type="button" data-plan="pack" data-i18n="buyPack" disabled>Nog niet beschikbaar</button>
+        </article>
+      </div>
+      <p class="pricingNote" data-i18n="freeNote">Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.</p>
     </div>
   </section>
 </main>
@@ -2340,6 +2369,7 @@ q('#problem').addEventListener('input',updateCarPanel);
 for(const [key,labels] of Object.entries({transmission_fault:['Schakel- of koppelingsprobleem','Gear or clutch problem','Schalt- oder Kupplungsproblem'],no_start:['Start niet','Will not start','Startet nicht'],tire_damage:['Bandschade','Tire damage','Reifenschaden'],warning_light:['Waarschuwingslampje','Warning light','Warnleuchte'],oil_warning:['Oliedrukwaarschuwing','Oil-pressure warning','Öldruckwarnung'],steering_fault:['Stuurprobleem','Steering problem','Lenkproblem'],fuel_smell:['Brandstoflucht','Fuel smell','Kraftstoffgeruch'],wrong_fuel:['Verkeerd getankt','Wrong fuel','Falsch getankt'],empty_fuel:['Brandstof op','Out of fuel','Kraftstoff leer'],charging_fault:['Laadprobleem','Charging problem','Ladeproblem'],locked_out:['Buitengesloten','Locked out','Ausgesperrt'],lights_fault:['Verlichting defect','Lighting fault','Beleuchtung defekt'],wiper_fault:['Wissers defect','Wiper fault','Scheibenwischer defekt'],stalling:['Motor valt uit of verliest vermogen','Stalling or loss of power','Motor geht aus oder verliert Leistung'],vibration:['Trilling','Vibration','Vibration']}))supportedLanguages.forEach((l,i)=>diagnosisCopy[l].kinds[key]=labels[i]);
 
 for(const l of supportedLanguages){translations[l].carCategory={nl:'Auto',en:'Car',de:'Auto'}[l];translations[l].carCategorySub={nl:'Starten · banden · lampjes',en:'Starting · tires · lights',de:'Starten · Reifen · Leuchten'}[l];}
+for(const [l,values] of Object.entries({"nl":{"pricingTitle":"Later meer fixes nodig?","pricingSub":"Voorgenomen pakketten. Betalen is nog niet beschikbaar.","popular":"Binnenkort","a2":"Voor regelmatig gebruik","a3":"Nog niet te bestellen","a4":"Fixpaspoort in deze browser","p3":"Nog niet te bestellen","p4":"Voor verschillende problemen","chooseAnnual":"Nog niet beschikbaar","buyPack":"Nog niet beschikbaar","analyzerText":"Beschrijf je probleem. Voeg eventueel een foto toe. Je krijgt een passende volgende stap: een gerichte vraag, een controle of professionele hulp.","s1":"Beschrijf wat je merkt","s2":"Voeg eventueel een foto toe","s3":"Bekijk wat je nu kunt doen","uploadTitle":"Foto toevoegen (optioneel)","uploadSub":"Een overzicht of detail kan helpen","w1":"Een duidelijke volgende stap","w1p":"Je ziet wat je nu kunt doen en wanneer je moet stoppen.","w2":"Bewaar je advies","w2p":"Vind opgeslagen resultaten terug in het Fixpaspoort in deze browser.","howSub":"Van je beschrijving naar een passende volgende stap.","exampleLabel":"VOORBEELD","exampleProblem":"Vaatwasser pompt niet af?","examplePath":"Gerichte vraag → passende controle → zo nodig een witgoedmonteur."},"en":{"pricingTitle":"Need more fixes later?","pricingSub":"Planned packages. Payments are not available yet.","popular":"Coming soon","a2":"For regular use","a3":"Not available to purchase yet","a4":"Fix Passport in this browser","p3":"Not available to purchase yet","p4":"For different problems","chooseAnnual":"Not available yet","buyPack":"Not available yet","analyzerText":"Describe your problem. Add a photo if helpful. Get an appropriate next step: a focused question, a check or professional help.","s1":"Describe what you notice","s2":"Optionally add a photo","s3":"See what to do next","uploadTitle":"Add a photo (optional)","uploadSub":"An overview or detail may help","w1":"A clear next step","w1p":"See what you can do now and when to stop.","w2":"Save your advice","w2p":"Find saved results in the Fix Passport in this browser.","howSub":"From your description to an appropriate next step.","exampleLabel":"EXAMPLE","exampleProblem":"Dishwasher not draining?","examplePath":"Focused question → appropriate check → appliance technician if needed."},"de":{"pricingTitle":"Später mehr Fixes nötig?","pricingSub":"Geplante Pakete. Zahlungen sind noch nicht verfügbar.","popular":"Demnächst","a2":"Für regelmäßige Nutzung","a3":"Noch nicht bestellbar","a4":"Fix-Pass in diesem Browser","p3":"Noch nicht bestellbar","p4":"Für verschiedene Probleme","chooseAnnual":"Noch nicht verfügbar","buyPack":"Noch nicht verfügbar","analyzerText":"Beschreibe dein Problem. Füge bei Bedarf ein Foto hinzu. Du erhältst einen passenden nächsten Schritt: eine gezielte Frage, eine Prüfung oder fachliche Hilfe.","s1":"Beschreibe deine Beobachtung","s2":"Füge bei Bedarf ein Foto hinzu","s3":"Sieh dir den nächsten Schritt an","uploadTitle":"Foto hinzufügen (optional)","uploadSub":"Eine Übersicht oder ein Detail kann helfen","w1":"Ein klarer nächster Schritt","w1p":"Du siehst, was du jetzt tun kannst und wann du stoppen solltest.","w2":"Hinweise speichern","w2p":"Gespeicherte Ergebnisse findest du im Fix-Pass in diesem Browser.","howSub":"Von deiner Beschreibung zum passenden nächsten Schritt.","exampleLabel":"BEISPIEL","exampleProblem":"Geschirrspüler pumpt nicht ab?","examplePath":"Gezielte Frage → passende Prüfung → bei Bedarf Hausgeräte-Kundendienst."}}))Object.assign(translations[l],values);
 applyLanguage(currentLang);renderCarChoices();updateCarPanel();loadStatus();track('page_view');
 </script>
 </body>
