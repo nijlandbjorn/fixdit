@@ -1140,9 +1140,65 @@ h1{
   }
 }
 
+
+/* ===== MOBILE HERO IMAGE-LARGER V8 ===== */
+@media(max-width:680px){
+  /* Larger image: starts a little further left, roughly after "BETROUWBAAR" */
+  .heroGrid{
+    grid-template-columns:minmax(0,58%) minmax(0,38%)!important;
+    column-gap:4%!important;
+  }
+
+  .heroVisual{
+    width:100%!important;
+    align-self:end!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:flex-end!important;
+  }
+
+  .heroVisual img{
+    width:112%!important;
+    max-width:none!important;
+    height:auto!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+    transform:translateX(2%)!important;
+  }
+
+  /* About 5 mm lower on a typical mobile screen (~19 px) */
+  .ctaRow{
+    margin-top:19px!important;
+    padding-top:0!important;
+  }
+
+  .cta{
+    min-height:48px!important;
+  }
+}
+
+@media(max-width:410px){
+  .heroGrid{
+    grid-template-columns:minmax(0,59%) minmax(0,37%)!important;
+    column-gap:4%!important;
+  }
+
+  .heroVisual img{
+    width:110%!important;
+  }
+
+  .ctaRow{
+    margin-top:18px!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-IMAGE-LARGER-V8 -->
 <!-- FIXDIT-FINAL-TWEAK-V7 -->
 <!-- FIXDIT-FULL-IMAGE-V6 -->
 <!-- FIXDIT-CTA-DIRECT-V5 -->
