@@ -103,3 +103,119 @@
     margin-bottom:14px!important;
   }
 }
+
+/* ===== FIXDIT UI V18.1 — mobile hierarchy + sticky-header fix ===== */
+#start{
+  scroll-margin-top:92px;
+}
+
+@media(max-width:680px){
+  #start.section{
+    padding-top:28px!important;
+    padding-bottom:38px!important;
+  }
+
+  #start .analyzerCopy{
+    padding-top:0!important;
+  }
+
+  #start .analyzerCopy>small{
+    display:block!important;
+    margin-bottom:6px!important;
+    font-size:9px!important;
+    letter-spacing:.10em!important;
+    font-weight:900!important;
+  }
+
+  #start .analyzerCopy h2{
+    margin:0 0 10px!important;
+    font-size:31px!important;
+    line-height:1.02!important;
+    letter-spacing:-.045em!important;
+  }
+
+  #start .analyzerCopy>p{
+    max-width:34rem!important;
+    margin:0 0 2px!important;
+    font-size:13px!important;
+    line-height:1.5!important;
+  }
+
+  #start .uploadbox{
+    margin-top:4px!important;
+    padding:15px!important;
+    border-radius:19px!important;
+  }
+
+  #start .field>label,
+  #carChoicesLabel{
+    font-size:13px!important;
+    margin-bottom:7px!important;
+  }
+
+  #start textarea{
+    min-height:104px!important;
+    padding:14px!important;
+    border-radius:15px!important;
+    font-size:15px!important;
+    line-height:1.5!important;
+  }
+
+  #start .meta{
+    margin-top:7px!important;
+    font-size:11px!important;
+  }
+
+  #start .drop{
+    min-height:86px!important;
+    padding:13px!important;
+    margin-top:10px!important;
+    border-radius:16px!important;
+  }
+
+  #start .drop b{
+    font-size:13px!important;
+  }
+
+  #start .drop small{
+    margin-top:3px!important;
+    font-size:11px!important;
+  }
+
+  #start .photoActions{
+    gap:8px!important;
+    margin-top:9px!important;
+    margin-bottom:12px!important;
+  }
+
+  #start .photoAction{
+    min-height:44px!important;
+    border-radius:12px!important;
+    font-size:12px!important;
+  }
+
+  #start .analyze{
+    min-height:48px!important;
+    margin-top:10px!important;
+    border-radius:13px!important;
+    font-size:14px!important;
+  }
+}
+
+@media(max-width:410px){
+  #start{
+    scroll-margin-top:86px;
+  }
+
+  #start .analyzerCopy h2{
+    font-size:29px!important;
+  }
+
+  #start .analyzerCopy>p{
+    font-size:12.5px!important;
+  }
+
+  #start textarea{
+    min-height:96px!important;
+  }
+}
