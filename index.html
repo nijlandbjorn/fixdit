@@ -285,6 +285,346 @@ footer{padding:30px 0 46px}
   .topbar,.sheet,.card,.price,.uploadbox,.resultcard,.langpanel,.menuPanel,.metric,.listBox{background-image:linear-gradient(#fff,#fff)!important}
   .primary,.cta,.analyze,.buy,.dangerCall{color:#fff!important;-webkit-text-fill-color:#fff!important}
 }
+
+/* ===== Exact approved white Fixdit layout ===== */
+:root{
+  --ink:#07172d;
+  --muted:#61708b;
+  --green:#07a658;
+  --green2:#1ebc6d;
+  --soft:#edf9f2;
+  --line:#e7ece8;
+}
+
+body{
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+  color:#07172d!important;
+  -webkit-text-fill-color:#07172d!important;
+}
+
+.topbar{
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+}
+.nav{height:82px}
+.brand img{width:55px;height:55px}
+.brandname{font-size:31px}
+.brandsub{font-size:10px;letter-spacing:.12em}
+.langbtn,.menubtn{
+  background:#fbfcfb!important;
+  background-image:linear-gradient(#fbfcfb,#fbfcfb)!important;
+  border-color:#e5e9e6!important;
+}
+
+/* Hero: exact white reference proportions */
+.hero{
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+  border-bottom:1px solid #eef1ef!important;
+}
+.heroGrid{
+  min-height:520px;
+  grid-template-columns:1.12fr .88fr;
+}
+.heroCopy{
+  padding:38px 30px 25px 4px;
+  justify-content:flex-start;
+  padding-top:48px;
+}
+.kicker{
+  margin-top:0;
+  background:#eff9f3!important;
+  color:#178151!important;
+  -webkit-text-fill-color:#178151!important;
+  font-size:10px;
+  padding:8px 13px;
+}
+h1{
+  font-size:clamp(61px,6.8vw,88px);
+  line-height:.89;
+  letter-spacing:-.073em;
+  margin:18px 0 17px;
+}
+.heroCopy p{
+  color:#63718b!important;
+  -webkit-text-fill-color:#63718b!important;
+  font-size:18px;
+  line-height:1.48;
+  max-width:540px;
+}
+.heroVisual{
+  min-height:520px;
+  overflow:hidden;
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+}
+.heroVisual img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+.heroVisual:before{display:none}
+
+.ctaRow{margin-top:-36px;position:relative;z-index:5}
+.cta{
+  width:100%;
+  max-width:none;
+  min-height:62px;
+  border-radius:18px;
+  background:#08aa5b!important;
+  background-image:linear-gradient(90deg,#029c50,#11b963)!important;
+  box-shadow:0 13px 26px rgba(0,145,73,.17);
+  font-size:18px;
+}
+.trustline{
+  justify-content:center;
+  margin-top:14px;
+  color:#61708b!important;
+  -webkit-text-fill-color:#61708b!important;
+  font-size:11px;
+}
+.benefits{
+  margin-top:17px;
+  padding:20px 0 22px;
+  border-bottom:1px solid #eef1ef;
+}
+.benefit{
+  min-height:72px;
+  justify-content:center;
+}
+.iconbubble{
+  width:48px;height:48px;
+  background:#eff9f3!important;
+}
+.benefit b{
+  color:#07172d!important;
+  -webkit-text-fill-color:#07172d!important;
+  font-size:13px;
+}
+
+/* Pricing exactly under the hero */
+#prijzen.section{
+  padding:32px 0 48px!important;
+}
+#prijzen .sectionHead{
+  margin-bottom:20px;
+  display:block;
+}
+#prijzen .sectionHead h2{
+  font-size:45px;
+  line-height:1;
+}
+#prijzen .sectionHead p{
+  margin-top:5px;
+  font-size:18px;
+  color:#61708b!important;
+  -webkit-text-fill-color:#61708b!important;
+}
+#prijzen .sectionHead>p:last-child{
+  display:none;
+}
+.pricing{
+  grid-template-columns:1fr 1fr;
+  max-width:none;
+  gap:18px;
+}
+.price{
+  min-height:390px;
+  border-radius:20px;
+  padding:24px 22px 21px;
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+}
+.price.featured{
+  border:1.8px solid #09a755!important;
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+}
+.badge{
+  top:-14px;
+  left:23px;
+  padding:7px 13px;
+  background:#08a856!important;
+  background-image:linear-gradient(#08a856,#08a856)!important;
+}
+.price small{
+  color:#07172d!important;
+  -webkit-text-fill-color:#07172d!important;
+  font-size:12px;
+  letter-spacing:0;
+  text-transform:none;
+  font-weight:900;
+}
+.price .amount{
+  font-size:52px;
+  color:#07172d!important;
+  -webkit-text-fill-color:#07172d!important;
+}
+.per{
+  color:#40506c!important;
+  -webkit-text-fill-color:#40506c!important;
+}
+.price p{display:none}
+.price ul{
+  color:#40506c!important;
+  -webkit-text-fill-color:#40506c!important;
+  font-size:13px;
+  gap:9px;
+}
+.price li:before{
+  background:#08a856!important;
+  background-image:linear-gradient(#08a856,#08a856)!important;
+}
+.buy{
+  min-height:54px;
+  border-radius:14px;
+  font-size:14px;
+  background:#08a856!important;
+  background-image:linear-gradient(90deg,#029d50,#10b960)!important;
+}
+.buy.secondary{
+  background:#f0f7f1!important;
+  background-image:linear-gradient(#f0f7f1,#f0f7f1)!important;
+  color:#07172d!important;
+  -webkit-text-fill-color:#07172d!important;
+}
+.pricingNote{
+  margin-top:12px;
+  color:#7a8697!important;
+  -webkit-text-fill-color:#7a8697!important;
+}
+
+/* Categories heading like reference */
+.section.soft{
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+}
+.categoryHead{align-items:center}
+.categoryHead p{display:none}
+.allCats{
+  color:#08a856!important;
+  -webkit-text-fill-color:#08a856!important;
+  text-decoration:none;
+  font-weight:900;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+/* Keep the functional lower part cleaner and consistent */
+#start{background:#f8fbf9!important;background-image:linear-gradient(#f8fbf9,#f8fbf9)!important}
+.analyzerCopy h2,.sectionHead h2{color:#07172d!important;-webkit-text-fill-color:#07172d!important}
+.uploadbox,.card,.resultcard,.price,.category,.sheet{
+  background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important;
+}
+
+@media(max-width:680px){
+  .wrap{width:calc(100% - 24px)}
+  .nav{height:76px}
+  .brand img{width:50px;height:50px}
+  .brandname{font-size:29px}
+  .brandsub{font-size:9px}
+  .langbtn{height:52px;min-width:82px;font-size:16px}
+  .menubtn{height:52px;width:52px}
+
+  .heroGrid{
+    grid-template-columns:1.10fr .90fr;
+    min-height:500px;
+  }
+  .heroCopy{
+    padding:48px 8px 20px 0;
+  }
+  .kicker{
+    font-size:8px;
+    padding:7px 9px;
+    white-space:nowrap;
+  }
+  h1{
+    font-size:clamp(45px,12.1vw,56px);
+    line-height:.89;
+    margin:17px 0 16px;
+  }
+  .heroCopy p{
+    font-size:13px;
+    line-height:1.48;
+  }
+  .heroVisual{
+    min-height:500px;
+  }
+  .heroVisual img{
+    object-fit:cover;
+    object-position:center;
+  }
+  .ctaRow{
+    margin-top:-1px;
+    padding-top:11px;
+  }
+  .cta{
+    min-height:58px;
+    font-size:15px;
+    padding:0 18px;
+  }
+  .trustline{
+    justify-content:center;
+    font-size:9px;
+    margin-top:11px;
+  }
+  .benefits{
+    margin-top:13px;
+    padding:15px 0 18px;
+  }
+  .benefit{
+    min-height:68px;
+    display:grid;
+    justify-items:center;
+    text-align:center;
+    gap:4px;
+  }
+  .iconbubble{width:42px;height:42px}
+  .benefit b{font-size:9px}
+
+  #prijzen.section{padding:30px 0 36px!important}
+  #prijzen .sectionHead h2{font-size:33px}
+  #prijzen .sectionHead p{font-size:15px}
+  .pricing{gap:10px}
+  .price{
+    min-height:365px;
+    padding:18px 13px 14px;
+    border-radius:16px;
+  }
+  .price small{font-size:11px}
+  .price .amount{font-size:42px}
+  .per{font-size:10px;margin-left:3px}
+  .price ul{font-size:10.5px;gap:7px;margin-top:14px}
+  .price li:before{width:18px;height:18px;margin-right:5px}
+  .buy{min-height:48px;font-size:11px;padding:8px 6px}
+  .badge{left:13px;top:-13px;font-size:8px}
+  .pricingNote{font-size:9px}
+
+  .sectionHead.categoryHead{
+    display:flex;
+    align-items:center;
+  }
+  .categoryHead h2{
+    font-size:28px;
+  }
+  .allCats{font-size:10px}
+}
+
+@media(max-width:410px){
+  .heroGrid{
+    grid-template-columns:1.12fr .88fr;
+    min-height:475px;
+  }
+  .heroVisual{min-height:475px}
+  h1{font-size:42px}
+  .heroCopy p{font-size:12px}
+  .price{min-height:350px}
+  .price .amount{font-size:38px}
+}
+
 </style>
 </head>
 <body>
@@ -384,10 +724,10 @@ footer{padding:30px 0 46px}
               <li data-i18n="a1">120 fixes per jaar</li>
               <li data-i18n="a2">Goedkoopste prijs per fix</li>
               <li data-i18n="a3">Nieuwe functies als eerste</li>
-              <li data-i18n="a4">Fixpaspoort voor je reparaties</li>
+              <li data-i18n="a4">Altijd en overal toegang</li>
             </ul>
           </div>
-          <button class="buy" disabled data-i18n="inactive">Nog niet actief</button>
+          <button class="buy paySoon" type="button" data-plan="annual" data-i18n="chooseAnnual">Kies abonnement →</button>
         </article>
 
         <article class="price">
@@ -399,10 +739,10 @@ footer{padding:30px 0 46px}
               <li data-i18n="p1">20 extra fixes</li>
               <li data-i18n="p2">Geen abonnement</li>
               <li data-i18n="p3">Directe bundel</li>
-              <li data-i18n="p4">Voor apparaten, meubels en meer</li>
+              <li data-i18n="p4">12 maanden geldig</li>
             </ul>
           </div>
-          <button class="buy secondary" disabled data-i18n="inactive">Nog niet actief</button>
+          <button class="buy secondary paySoon" type="button" data-plan="pack" data-i18n="buyPack">Koop bundel →</button>
         </article>
       </div>
       <p class="pricingNote" data-i18n="freeNote">Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.</p>
@@ -411,12 +751,12 @@ footer{padding:30px 0 46px}
 
   <section class="section soft">
     <div class="wrap">
-      <div class="sectionHead">
+      <div class="sectionHead categoryHead">
         <div>
           <h2 data-i18n="catTitle">Populaire categorieën</h2>
           <p data-i18n="catSub">Waar kunnen we je mee helpen?</p>
         </div>
-        <p data-i18n="catLead">Kies iets of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.</p>
+        <a class="allCats" href="#start" data-i18n="allCats">Bekijk alle categorieën →</a>
       </div>
 
       <div class="categoryGrid">
@@ -562,8 +902,8 @@ heroText:'Krijg stap voor stap hulp bij het repareren van je spullen. Snel, duid
 cta:'Maak een foto en krijg hulp',trust:'Veilig, snel en zonder gedoe. Foto’s worden niet opgeslagen.',
 benefit1:'Snelle oplossingen',benefit2:'Stap voor stap uitleg',benefit3:'Voor al je spullen',
 pricingTitle:'Kies wat bij jou past',pricingSub:'Eerlijke prijzen. Maximale hulp.',pricingLead:'Begin met 3 gratis fixes. Daarna kies je alleen iets als Fixdit voor jou waarde heeft.',
-popular:'Meest gekozen',annual:'Jaarabonnement',perYear:'per jaar',annualText:'Voor huishoudens die Fixdit vaker gebruiken.',a1:'120 fixes per jaar',a2:'Goedkoopste prijs per fix',a3:'Nieuwe functies als eerste',a4:'Fixpaspoort voor je reparaties',
-homePack:'Thuis Pack',once:'eenmalig',packText:'Voor meerdere problemen zonder abonnement.',p1:'20 extra fixes',p2:'Geen abonnement',p3:'Directe bundel',p4:'Voor apparaten, meubels en meer',inactive:'Nog niet actief',freeNote:'Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.',
+popular:'Meest gekozen',annual:'Jaarabonnement',perYear:'per jaar',annualText:'Voor huishoudens die Fixdit vaker gebruiken.',a1:'120 fixes per jaar',a2:'Goedkoopste prijs per fix',a3:'Nieuwe functies als eerste',a4:'Altijd en overal toegang',
+homePack:'Thuis Pack',once:'eenmalig',packText:'Voor meerdere problemen zonder abonnement.',p1:'20 extra fixes',p2:'Geen abonnement',p3:'Directe bundel',p4:'12 maanden geldig',inactive:'Nog niet actief',chooseAnnual:'Kies abonnement →',buyPack:'Koop bundel →',allCats:'Bekijk alle categorieën →',freeNote:'Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.',
 catTitle:'Populaire categorieën',catSub:'Waar kunnen we je mee helpen?',catLead:'Kies iets of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.',
 c1:'Wasmachine',c1s:'Afvoer · foutcode · lekkage',c2:'Vaatwasser',c2s:'Filter · afvoer · foutcode',c3:'Koffiemachine',c3s:'Lek · verstopping · storing',c4:'Meubels',c4s:'Los · schade · vlekken',c5:'Loodgieterij',c5s:'Kraan · sifon · lekkage',c6:'Elektronica',c6s:'TV · telefoon · apparaten',c7:'Muur & vloer',c7s:'Kras · gat · verf · schade',c8:'Iets anders',c8s:'Maak een foto',
 analyzerKicker:'JOUW PROBLEEM',analyzerTitle:'Laat Fixdit meekijken.',analyzerText:'Maak een duidelijke foto en vertel kort wat je merkt. Fixdit kiest automatisch de juiste route: schoonmaken, repareren, controleren of stoppen.',
@@ -580,7 +920,7 @@ cta:'Take a photo and get help',trust:'Safe, fast and hassle-free. Photos are no
 benefit1:'Quick solutions',benefit2:'Step-by-step guidance',benefit3:'For all your belongings',
 pricingTitle:'Choose what suits you',pricingSub:'Fair pricing. Maximum help.',pricingLead:'Start with 3 free fixes. After that, only choose a plan if Fixdit is valuable to you.',
 popular:'Most chosen',annual:'Annual plan',perYear:'per year',annualText:'For households that use Fixdit more often.',a1:'120 fixes per year',a2:'Lowest price per fix',a3:'New features first',a4:'Fix Passport for your repairs',
-homePack:'Home Pack',once:'one-time',packText:'For several problems without a subscription.',p1:'20 extra fixes',p2:'No subscription',p3:'Instant bundle',p4:'For appliances, furniture and more',inactive:'Not active yet',freeNote:'Your first 3 fixes are free. Payments will be enabled later.',
+homePack:'Home Pack',once:'one-time',packText:'For several problems without a subscription.',p1:'20 extra fixes',p2:'No subscription',p3:'Instant bundle',p4:'For appliances, furniture and more',inactive:'Not active yet',chooseAnnual:'Choose plan →',buyPack:'Buy bundle →',allCats:'View all categories →',freeNote:'Your first 3 fixes are free. Payments will be enabled later.',
 catTitle:'Popular categories',catSub:'What can we help you with?',catLead:'Choose something or take a photo right away. Fixdit then selects the right route automatically.',
 c1:'Washing machine',c1s:'Drain · error · leak',c2:'Dishwasher',c2s:'Filter · drain · error',c3:'Coffee machine',c3s:'Leak · blockage · fault',c4:'Furniture',c4s:'Loose · damage · stains',c5:'Plumbing',c5s:'Tap · trap · leak',c6:'Electronics',c6s:'TV · phone · devices',c7:'Wall & floor',c7s:'Scratch · hole · paint · damage',c8:'Something else',c8s:'Take a photo',
 analyzerKicker:'YOUR PROBLEM',analyzerTitle:'Let Fixdit take a look.',analyzerText:'Take a clear photo and briefly describe what you notice. Fixdit automatically chooses the right route: cleaning, repair, checks or stop.',
@@ -597,7 +937,7 @@ cta:'Foto machen und Hilfe bekommen',trust:'Sicher, schnell und unkompliziert. F
 benefit1:'Schnelle Lösungen',benefit2:'Schritt-für-Schritt-Hilfe',benefit3:'Für all deine Sachen',
 pricingTitle:'Wähle, was zu dir passt',pricingSub:'Faire Preise. Maximale Hilfe.',pricingLead:'Starte mit 3 kostenlosen Fixes. Danach wählst du nur etwas, wenn Fixdit für dich einen Mehrwert hat.',
 popular:'Am beliebtesten',annual:'Jahresabo',perYear:'pro Jahr',annualText:'Für Haushalte, die Fixdit öfter nutzen.',a1:'120 Fixes pro Jahr',a2:'Günstigster Preis pro Fix',a3:'Neue Funktionen zuerst',a4:'Fix-Pass für deine Reparaturen',
-homePack:'Home Pack',once:'einmalig',packText:'Für mehrere Probleme ohne Abo.',p1:'20 zusätzliche Fixes',p2:'Kein Abo',p3:'Direktes Paket',p4:'Für Geräte, Möbel und mehr',inactive:'Noch nicht aktiv',freeNote:'Die ersten 3 Fixes sind kostenlos. Zahlungen aktivieren wir später.',
+homePack:'Home Pack',once:'einmalig',packText:'Für mehrere Probleme ohne Abo.',p1:'20 zusätzliche Fixes',p2:'Kein Abo',p3:'Direktes Paket',p4:'Für Geräte, Möbel und mehr',inactive:'Noch nicht aktiv',chooseAnnual:'Abo wählen →',buyPack:'Paket kaufen →',allCats:'Alle Kategorien ansehen →',freeNote:'Die ersten 3 Fixes sind kostenlos. Zahlungen aktivieren wir später.',
 catTitle:'Beliebte Kategorien',catSub:'Wobei können wir dir helfen?',catLead:'Wähle etwas oder mach direkt ein Foto. Fixdit wählt danach automatisch den richtigen Weg.',
 c1:'Waschmaschine',c1s:'Ablauf · Fehler · Leck',c2:'Geschirrspüler',c2s:'Filter · Ablauf · Fehler',c3:'Kaffeemaschine',c3s:'Leck · Verstopfung · Störung',c4:'Möbel',c4s:'Locker · Schaden · Flecken',c5:'Sanitär',c5s:'Hahn · Siphon · Leck',c6:'Elektronik',c6s:'TV · Telefon · Geräte',c7:'Wand & Boden',c7s:'Kratzer · Loch · Farbe · Schaden',c8:'Etwas anderes',c8s:'Foto machen',
 analyzerKicker:'DEIN PROBLEM',analyzerTitle:'Lass Fixdit mitsehen.',analyzerText:'Mach ein klares Foto und beschreibe kurz, was du bemerkst. Fixdit wählt automatisch den richtigen Weg: reinigen, reparieren, prüfen oder stoppen.',
@@ -794,6 +1134,16 @@ q('#analyzeBtn').onclick=async()=>{
     q('#loadTitle').textContent=msg.fail;q('#loadText').textContent=e.message||msg.fail;
   }finally{btn.disabled=false}
 };
+
+
+qa('.paySoon').forEach(btn=>btn.onclick=()=>{
+  const text={
+    nl:'Betalen is nog niet geactiveerd. Je kunt Fixdit nu eerst met je gratis fixes testen.',
+    en:'Payments are not active yet. You can test Fixdit with your free fixes first.',
+    de:'Zahlungen sind noch nicht aktiviert. Du kannst Fixdit zuerst mit deinen kostenlosen Fixes testen.'
+  }[currentLang];
+  alert(text);
+});
 
 applyLanguage(currentLang);
 loadStatus();
