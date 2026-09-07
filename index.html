@@ -961,9 +961,129 @@ h1{
   }
 }
 
+
+/* ===== MOBILE HERO FULL-IMAGE V6 ===== */
+@media(max-width:680px){
+  .heroGrid{
+    display:grid!important;
+    grid-template-columns:minmax(0,62%) minmax(0,34%)!important;
+    column-gap:4%!important;
+    min-height:0!important;
+    height:auto!important;
+    align-items:start!important;
+    overflow:visible!important;
+  }
+
+  .heroCopy{
+    position:relative!important;
+    z-index:2!important;
+    width:auto!important;
+    min-width:0!important;
+    padding:10px 0 0 0!important;
+    margin:0!important;
+    justify-content:flex-start!important;
+  }
+
+  .kicker{
+    margin:0 0 9px 0!important;
+    font-size:7.5px!important;
+    padding:6px 8px!important;
+    white-space:nowrap!important;
+  }
+
+  .hero h1{
+    font-size:40px!important;
+    line-height:.88!important;
+    margin:0 0 11px!important;
+    letter-spacing:-.064em!important;
+  }
+
+  .heroCopy p{
+    width:100%!important;
+    max-width:100%!important;
+    font-size:11.5px!important;
+    line-height:1.4!important;
+    margin:0!important;
+  }
+
+  /* Show the COMPLETE hero asset instead of cropping it. */
+  .heroVisual{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    padding:0!important;
+    margin:8px 0 0 0!important;
+    overflow:visible!important;
+    background:#fff!important;
+    align-self:start!important;
+  }
+
+  .heroVisual img{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    object-fit:contain!important;
+    object-position:center top!important;
+  }
+
+  /* The green CTA now follows the text block immediately. */
+  .ctaRow{
+    margin-top:4px!important;
+    padding-top:0!important;
+    position:relative!important;
+    z-index:6!important;
+  }
+
+  .cta{
+    min-height:56px!important;
+    font-size:15px!important;
+    padding:0 17px!important;
+  }
+
+  .trustline{
+    margin-top:7px!important;
+  }
+
+  .benefits{
+    margin-top:4px!important;
+    padding:9px 0 12px!important;
+  }
+}
+
+@media(max-width:410px){
+  .heroGrid{
+    grid-template-columns:minmax(0,63%) minmax(0,33%)!important;
+    column-gap:4%!important;
+  }
+
+  .heroCopy{padding-top:8px!important}
+
+  .hero h1{
+    font-size:37px!important;
+  }
+
+  .heroCopy p{
+    font-size:10.9px!important;
+    line-height:1.38!important;
+  }
+
+  .heroVisual{
+    margin-top:7px!important;
+  }
+
+  .ctaRow{
+    margin-top:3px!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-FULL-IMAGE-V6 -->
 <!-- FIXDIT-CTA-DIRECT-V5 -->
 <!-- FIXDIT-NO-OVERLAP-V4 -->
 <!-- FIXDIT-MOBILE-HERO-V2 -->
