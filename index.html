@@ -10,7 +10,7 @@
 <style>
 :root{--bg:#f6f8f3;--paper:#fff;--ink:#122218;--muted:#69786f;--green:#1f7a56;--green2:#55c789;--soft:#e9f5ee;--line:#dce7df;--warn:#a66b16;--warnbg:#fff5e8;--shadow:0 22px 60px rgba(23,43,30,.09)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 88% 0%,rgba(202,244,112,.16),transparent 27%),linear-gradient(180deg,#fcfdf9,#f5f8f3 60%,#f1f5ef);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}button,input,textarea{font:inherit}img{display:block;max-width:100%}a{color:inherit}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
-.topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(18,34,24,.07)}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}.brandmark{width:50px;height:50px;flex:0 0 50px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#1d8a61,#54cf91);box-shadow:0 10px 24px rgba(31,122,86,.18)}.brandmark svg{width:28px;height:28px}.wordmark{display:flex;flex-direction:column;line-height:1;min-width:0}.wordmark b{font-size:29px;letter-spacing:-.065em;white-space:nowrap}.wordmark span{font-size:10px;margin-top:6px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.navlinks{display:flex;align-items:center;gap:8px;margin-left:auto}.navlinks a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:750;padding:10px}.navcta{border:0;border-radius:14px;padding:12px 17px;background:var(--ink);color:#fff;font-weight:900;cursor:pointer;white-space:nowrap}.langselect{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 8px;font-weight:850;cursor:pointer;outline:none}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(18,34,24,.07)}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}.brandmark{width:50px;height:50px;flex:0 0 50px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#1d8a61,#54cf91);box-shadow:0 10px 24px rgba(31,122,86,.18)}.brandmark svg{width:28px;height:28px}.wordmark{display:flex;flex-direction:column;line-height:1;min-width:0}.wordmark b{font-size:29px;letter-spacing:-.065em;white-space:nowrap}.wordmark span{font-size:10px;margin-top:6px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.navlinks{display:flex;align-items:center;gap:8px;margin-left:auto}.navlinks a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:750;padding:10px}.navcta{border:0;border-radius:14px;padding:12px 17px;background:var(--ink);color:#fff;font-weight:900;cursor:pointer;white-space:nowrap}.langmenu{position:relative}.langbtn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 12px;font-weight:850;cursor:pointer;outline:none;display:flex;align-items:center;gap:8px;min-width:74px;justify-content:center}.langbtn:after{content:"⌄";font-size:12px;color:var(--muted)}.langpanel{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:7px;box-shadow:0 18px 45px rgba(18,34,24,.14);display:none;z-index:100}.langpanel.open{display:grid}.langoption{border:0;background:transparent;border-radius:11px;padding:10px 12px;text-align:left;font-weight:800;color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:center}.langoption:hover,.langoption.active{background:var(--soft);color:var(--green)}
 .hero{padding:58px 0 46px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}.eyebrow{display:inline-flex;gap:9px;align-items:center;padding:9px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--green);font-size:13px;font-weight:850}.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green2);box-shadow:0 0 0 5px rgba(85,199,137,.11)}h1{margin:18px 0;font-size:clamp(50px,7.3vw,88px);line-height:.94;letter-spacing:-.075em;max-width:700px}h1 em{font-style:normal;color:var(--green)}.hero p{margin:0 0 25px;color:var(--muted);font-size:19px;line-height:1.68;max-width:620px}.actions{display:flex;flex-wrap:wrap;gap:12px}.primary,.secondary{border:0;border-radius:15px;padding:14px 18px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer}.primary{background:var(--ink);color:#fff}.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.trust{display:flex;flex-wrap:wrap;gap:14px;margin-top:21px;font-size:13px;font-weight:750;color:#4d5d53}.trust span:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}
 .product{background:linear-gradient(180deg,#fff,#fbfdfb);border:1px solid var(--line);border-radius:30px;padding:17px;box-shadow:var(--shadow)}.demo{background:#f7faf7;border:1px solid #e1e9e3;border-radius:23px;padding:14px}.demohead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.demohead b{font-size:14px}.live{font-size:11px;background:var(--soft);color:var(--green);font-weight:850;border-radius:999px;padding:6px 9px}.demophoto{height:235px;border-radius:18px;overflow:hidden;position:relative;background:#dae6dc}.demophoto img{width:100%;height:100%;object-fit:cover}.demophoto:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 52%,rgba(8,20,12,.6))}.photolabel{position:absolute;z-index:2;left:15px;right:15px;bottom:13px;color:#fff}.photolabel small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;opacity:.84}.photolabel strong{display:block;font-size:19px;line-height:1.15;margin-top:4px}.result{margin-top:12px;border-radius:18px;padding:16px;background:#fff;border:1px solid var(--line)}.reshead{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}.reshead small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:850;margin-bottom:5px}.reshead h3{margin:0;font-size:20px;line-height:1.18;letter-spacing:-.04em}.score{background:var(--soft);color:var(--green);border-radius:17px;padding:10px 13px;min-width:115px}.score b{display:block;font-size:25px;line-height:1}.score span{display:block;font-size:11px;font-weight:850;margin-top:5px}.tags{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.tag{font-size:11px;font-weight:850;border-radius:999px;padding:8px 10px;background:#f0f4f1;color:#526159}.tag.good{background:var(--soft);color:var(--green)}.tag.warn{background:var(--warnbg);color:var(--warn)}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{background:#f7f9f7;border:1px solid #e6ece7;border-radius:13px;padding:11px}.metric small{display:block;color:#839188;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.metric b{display:block;margin-top:4px;font-size:14px}.metric.wide{grid-column:1/-1}
 .benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0 0}.benefit{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 8px 24px rgba(25,48,34,.035)}.benefit b{display:block;font-size:14px;margin-bottom:4px}.benefit span{color:var(--muted);font-size:12px;line-height:1.5}
@@ -18,13 +18,21 @@
 .section{padding:78px 0;border-top:1px solid rgba(18,34,24,.07)}.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:25px}.sectionhead .lead{max-width:560px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.card{border:1px solid var(--line);border-radius:21px;background:#fff;overflow:hidden;box-shadow:0 8px 24px rgba(25,48,34,.04);cursor:pointer}.card img{width:100%;height:155px;object-fit:cover}.cardbody{padding:16px}.cardbody small{font-size:10px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.08em}.cardbody strong{display:block;margin-top:5px;font-size:16px;line-height:1.2}.cardbody span{display:block;margin-top:5px;color:var(--muted);font-size:12px}.flows{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.flow{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px}.visual{height:110px;background:linear-gradient(180deg,#f6faf7,#eef5f0);border:1px solid #e2ebe4;border-radius:16px;padding:12px;margin-bottom:16px;display:flex;align-items:center}.ui{display:grid;gap:8px;width:100%}.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{font-size:10px;font-weight:850;border:1px solid #dce6df;border-radius:999px;padding:6px 8px;background:#fff}.chip.green{background:var(--soft);color:var(--green)}.uibox{background:#fff;border:1px solid #dce6df;border-radius:12px;padding:9px}.uibox b{display:block;font-size:12px}.uibox span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.flow .num{width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900;margin-bottom:16px}.flow h3{margin:0 0 7px;font-size:19px}.flow p{margin:0;color:var(--muted);font-size:13px;line-height:1.58}
 .compare{display:grid;grid-template-columns:1fr 1fr;gap:17px}.comparebox{background:#fff;border:1px solid var(--line);border-radius:23px;padding:22px}.comparebox h3{margin:0 0 12px;font-size:22px;letter-spacing:-.04em}.comparebox ul{list-style:none;margin:0;padding:0;display:grid;gap:11px}.comparebox li{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start;color:#45554c;font-size:13px}.comparebox li:before{content:"✓";width:23px;height:23px;border-radius:8px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900}.comparebox.generic li:before{content:"·";background:#f3f4f3;color:#77847c}.comparebox.fix{border-color:#9bc1a9;box-shadow:0 18px 44px rgba(31,122,86,.08)}
 .pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:25px}.price{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px;display:flex;flex-direction:column;justify-content:space-between;min-height:305px;position:relative}.price.featured{border-color:#6eb189;box-shadow:0 20px 48px rgba(31,122,86,.12)}.badge{position:absolute;right:13px;top:13px;background:#183f2f;color:#fff;border-radius:999px;padding:6px 9px;font-size:9px;font-weight:900}.price small{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);font-weight:850}.amount{font-size:39px;font-weight:900;letter-spacing:-.06em;margin:9px 0 0}.subprice{font-size:11px;color:var(--muted);font-weight:750}.price p{color:var(--muted);font-size:12px;line-height:1.55}.price ul{list-style:none;margin:17px 0;padding:0;display:grid;gap:9px;font-size:12px}.price li:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}.price button{border:1px solid var(--line);background:#eff4ef;border-radius:12px;padding:11px;font-weight:850;color:var(--ink);cursor:pointer}.price button[data-pay]{opacity:.76}.foot{padding:35px 0 55px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.foot a{color:var(--muted)}
-.overlay{display:none;position:fixed;inset:0;z-index:80;place-items:center;padding:16px}.overlay.open{display:grid}.backdrop{position:absolute;inset:0;background:rgba(11,24,16,.58);backdrop-filter:blur(5px)}.modal{position:relative;z-index:1;width:min(610px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:26px;padding:25px;box-shadow:0 30px 90px rgba(20,40,28,.25)}.close{position:absolute;right:12px;top:12px;border:0;width:37px;height:37px;border-radius:50%;background:#f0f4f1;font-size:20px}.loaderwrap{display:grid;justify-items:center;gap:13px;padding:20px 8px}.spinner{width:48px;height:48px;border:4px solid #e4ebe6;border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loaderwrap h3{margin:0;font-size:27px;letter-spacing:-.04em;text-align:center}.loaderwrap p{margin:0;color:var(--muted);text-align:center}.pill{font-size:11px;border-radius:999px;background:var(--soft);color:var(--green);font-weight:850;padding:7px 10px}.diagnosis{display:none}.diagnosis.show{display:block}.diagnosis h3{margin:0 0 14px;font-size:29px;letter-spacing:-.05em}.conclusion{background:var(--soft);border:1px solid #d4e7dc;border-radius:17px;padding:15px}.conclusion b{display:block;font-size:18px}.conclusion span{display:block;color:#4b5d53;font-size:12px;margin-top:5px}.dmetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.dm{background:#f7f9f7;border:1px solid #e6ece7;border-radius:13px;padding:10px}.dm small{display:block;color:#849188;font-size:9px;text-transform:uppercase}.dm b{display:block;margin-top:4px;font-size:14px}.safe{display:grid;gap:9px}.sstep{display:grid;grid-template-columns:auto 1fr;gap:10px;background:#fafcfa;border:1px solid var(--line);border-radius:14px;padding:11px}.sstep i{font-style:normal;width:27px;height:27px;border-radius:9px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900}.sstep b{font-size:13px}.sstep p{margin:3px 0 0;color:var(--muted);font-size:11px}.emailgate{display:none;margin-top:14px}.emailgate.show{display:block}.emailbox{background:#fafcfb;border:1px solid var(--line);border-radius:16px;padding:15px}.emailbox h4{margin:0 0 6px}.emailbox p{margin:0;color:var(--muted);font-size:12px}.emailrow{display:flex;gap:8px;margin-top:11px}.emailrow input{flex:1;border:1px solid var(--line);border-radius:11px;padding:11px}.emailrow button{border:0;border-radius:11px;background:var(--green);color:#fff;font-weight:850;padding:11px 12px}.mobilebar{display:none}
+.overlay{display:none;position:fixed;inset:0;z-index:80;place-items:center;padding:16px}.overlay.open{display:grid}.backdrop{position:absolute;inset:0;background:rgba(11,24,16,.58);backdrop-filter:blur(5px)}.modal{position:relative;z-index:1;width:min(610px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:26px;padding:25px;box-shadow:0 30px 90px rgba(20,40,28,.25)}.close{position:absolute;right:12px;top:12px;border:0;width:37px;height:37px;border-radius:50%;background:#f0f4f1;font-size:20px}.loaderwrap{display:grid;justify-items:center;gap:13px;padding:20px 8px}.spinner{width:48px;height:48px;border:4px solid #e4ebe6;border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loaderwrap h3{margin:0;font-size:27px;letter-spacing:-.04em;text-align:center}.loaderwrap p{margin:0;color:var(--muted);text-align:center}.pill{font-size:11px;border-radius:999px;background:var(--soft);color:var(--green);font-weight:850;padding:7px 10px}.diagnosis{display:none}.diagnosis.show{display:block}.diagnosis h3{margin:0 0 14px;font-size:29px;letter-spacing:-.05em}.conclusion{background:var(--soft);border:1px solid #d4e7dc;border-radius:17px;padding:15px}.conclusion b{display:block;font-size:18px}.conclusion span{display:block;color:#4b5d53;font-size:12px;margin-top:5px}.dmetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.dm{background:#f7f9f7;border:1px solid #e6ece7;border-radius:13px;padding:10px}.dm small{display:block;color:#849188;font-size:9px;text-transform:uppercase}.dm b{display:block;margin-top:4px;font-size:14px}.actionbox{margin:14px 0;background:linear-gradient(180deg,#173f2f,#20583f);color:#fff;border-radius:18px;padding:16px}.actionbox small{display:block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.11em;opacity:.72}.actionbox b{display:block;font-size:18px;line-height:1.25;margin-top:5px}.actionbox p{margin:7px 0 0;font-size:12px;line-height:1.55;opacity:.92}.typepill{display:inline-flex;margin-top:10px;border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.12);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.safe{display:grid;gap:9px}.sstep{display:grid;grid-template-columns:auto 1fr;gap:10px;background:#fafcfa;border:1px solid var(--line);border-radius:14px;padding:11px}.sstep i{font-style:normal;width:27px;height:27px;border-radius:9px;background:var(--soft);color:var(--green);display:grid;place-items:center;font-weight:900}.sstep b{font-size:13px}.sstep p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.resultsection{margin-top:15px}.resultsection h4{margin:0 0 9px;font-size:13px;letter-spacing:-.02em}.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.detailbox{background:#fafcfa;border:1px solid var(--line);border-radius:14px;padding:12px}.detailbox h4{margin:0 0 8px;font-size:12px}.detailbox ul{margin:0;padding-left:18px;color:#56665d;font-size:11px;line-height:1.55}.detailbox li+li{margin-top:5px}.avoidbox{background:#fffaf3;border-color:#eee1c9}.avoidbox h4{color:#8b5b17}
+.smartgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.smartcard{background:#f7f9f7;border:1px solid #e4ebe6;border-radius:14px;padding:12px}.smartcard small{display:block;color:#849188;font-size:9px;text-transform:uppercase;letter-spacing:.07em;font-weight:850}.smartcard b{display:block;margin-top:5px;font-size:16px;letter-spacing:-.025em}.smartcard span{display:block;margin-top:4px;color:#6a796f;font-size:10px;line-height:1.4}
+.helpbox{display:none;margin-top:14px;background:#f5faf7;border:1px solid #cfe2d6;border-radius:16px;padding:14px}.helpbox.show{display:block}.helphead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.helphead small{display:block;color:var(--green);font-size:9px;text-transform:uppercase;letter-spacing:.09em;font-weight:900}.helphead b{display:block;margin-top:4px;font-size:16px}.helpbox p{margin:7px 0 0;color:#5a6a60;font-size:11px;line-height:1.55}.helpactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.helpactions button,.helpactions a{border:0;border-radius:11px;padding:10px 12px;font-size:11px;font-weight:900;text-decoration:none;cursor:pointer}.helpprimary{background:var(--green);color:#fff}.helpsecondary{background:#fff;color:var(--ink);border:1px solid var(--line)!important}
+.emergency{display:none;margin-top:14px;background:#fff1ef;border:1px solid #f0c9c3;border-radius:16px;padding:14px}.emergency.show{display:block}.emergency small{display:block;color:#a13d31;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em}.emergency b{display:block;margin-top:4px;font-size:16px;color:#772a22}.emergency p{margin:6px 0 0;color:#774a44;font-size:11px;line-height:1.55}.emergency a{display:inline-flex;margin-top:10px;background:#9f3529;color:#fff;border-radius:11px;padding:10px 13px;text-decoration:none;font-size:11px;font-weight:900}
+.resultactions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.resultactions button{border-radius:12px;padding:11px 10px;font-size:11px;font-weight:900;cursor:pointer}.resultactions .solid{border:0;background:var(--ink);color:#fff}.resultactions .ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:22px;z-index:120;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#122218;color:#fff;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:850;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.emailgate{display:none;margin-top:14px}.emailgate.show{display:block}.emailbox{background:#fafcfb;border:1px solid var(--line);border-radius:16px;padding:15px}.emailbox h4{margin:0 0 6px}.emailbox p{margin:0;color:var(--muted);font-size:12px}.emailrow{display:flex;gap:8px;margin-top:11px}.emailrow input{flex:1;border:1px solid var(--line);border-radius:11px;padding:11px}.emailrow button{border:0;border-radius:11px;background:var(--green);color:#fff;font-weight:850;padding:11px 12px}.mobilebar{display:none}
 @media(max-width:950px){.hero,.uploadshell{grid-template-columns:1fr}.benefits{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}.flows,.pricing{grid-template-columns:1fr 1fr}.compare{grid-template-columns:1fr}}
-@media(max-width:680px){.wrap{width:calc(100% - 24px)}.nav{min-height:70px;gap:8px}.brand{gap:9px}.brandmark{width:42px;height:42px;flex-basis:42px;border-radius:13px}.brandmark svg{width:24px;height:24px}.wordmark b{font-size:24px}.wordmark span{font-size:8px;margin-top:5px;letter-spacing:.07em}.navlinks{gap:6px}.navlinks a,.navcta{display:none}.langselect{width:58px;height:44px;padding:0 8px;border-radius:13px;font-size:14px}.hero{padding:32px 0 36px;gap:25px}h1{font-size:clamp(43px,13vw,50px);line-height:.96}.hero p{font-size:17px;line-height:1.62}.actions{display:grid}.primary,.secondary{width:100%;min-height:54px}.trust{gap:10px 14px;margin-top:18px}.benefits{grid-template-columns:1fr}.product{padding:12px}.demophoto{height:185px}.reshead{grid-template-columns:1fr}.score{max-width:150px}.uploadshell{padding:18px;border-radius:24px}.upload{height:215px}.section{padding:61px 0}.sectionhead{display:block}.sectionhead .lead{margin-top:10px}.cards,.flows,.pricing{grid-template-columns:1fr}.dmetrics{grid-template-columns:1fr 1fr}.emailrow{flex-direction:column}.mobilebar{display:none!important}.foot{padding-bottom:55px}}
+@media(max-width:680px){.wrap{width:calc(100% - 24px)}.nav{min-height:70px;gap:8px}.brand{gap:9px}.brandmark{width:42px;height:42px;flex-basis:42px;border-radius:13px}.brandmark svg{width:24px;height:24px}.wordmark b{font-size:24px}.wordmark span{font-size:8px;margin-top:5px;letter-spacing:.07em}.navlinks{gap:6px}.navlinks a,.navcta{display:none}.langbtn{height:44px;padding:0 10px;border-radius:13px;font-size:14px;min-width:62px}.langpanel{min-width:178px;right:0}.hero{padding:32px 0 36px;gap:25px}h1{font-size:clamp(43px,13vw,50px);line-height:.96}.hero p{font-size:17px;line-height:1.62}.actions{display:grid}.primary,.secondary{width:100%;min-height:54px}.trust{gap:10px 14px;margin-top:18px}.benefits{grid-template-columns:1fr}.product{padding:12px}.demophoto{height:185px}.reshead{grid-template-columns:1fr}.score{max-width:150px}.uploadshell{padding:18px;border-radius:24px}.upload{height:215px}.section{padding:61px 0}.sectionhead{display:block}.sectionhead .lead{margin-top:10px}.cards,.flows,.pricing{grid-template-columns:1fr}.dmetrics{grid-template-columns:1fr 1fr}.detailgrid,.smartgrid{grid-template-columns:1fr}.resultactions{grid-template-columns:1fr}.emailrow{flex-direction:column}.mobilebar{display:none!important}.foot{padding-bottom:55px}}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap nav"><a class="brand" href="#" aria-label="Fixdit"><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.2 24.2L22.8 9.6" stroke="white" stroke-width="3.2" stroke-linecap="round"/><path d="M18.7 6.9a5.1 5.1 0 0 0 6.4 6.4l-3.2-3.2 3.4-3.4a5.1 5.1 0 0 0-6.6.2Z" fill="white"/><circle cx="7.1" cy="25.3" r="2.5" stroke="white" stroke-width="2.4"/><path d="M8.2 7.7l16 16" stroke="white" stroke-width="2.7" stroke-linecap="round" opacity=".9"/><path d="M6.5 5.3l4.2 1.2-3 3-1.2-4.2Z" fill="white"/></svg></span><span class="wordmark"><b>Fixdit</b><span>Fix het zelf</span></span></a><nav class="navlinks" aria-label="Hoofdnavigatie"><a href="#hoe">Zo werkt het</a><a href="#waarom">Waarom Fixdit</a><a href="#prijzen">Prijzen</a><select class="langselect" id="languageSelect" aria-label="Taal"><option value="nl">NL</option><option value="en">EN</option><option value="de">DE</option></select><button class="navcta" id="navTry">Probeer gratis</button></nav></div></header>
+<header class="topbar"><div class="wrap nav"><a class="brand" href="#" aria-label="Fixdit"><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.2 24.2L22.8 9.6" stroke="white" stroke-width="3.2" stroke-linecap="round"/><path d="M18.7 6.9a5.1 5.1 0 0 0 6.4 6.4l-3.2-3.2 3.4-3.4a5.1 5.1 0 0 0-6.6.2Z" fill="white"/><circle cx="7.1" cy="25.3" r="2.5" stroke="white" stroke-width="2.4"/><path d="M8.2 7.7l16 16" stroke="white" stroke-width="2.7" stroke-linecap="round" opacity=".9"/><path d="M6.5 5.3l4.2 1.2-3 3-1.2-4.2Z" fill="white"/></svg></span><span class="wordmark"><b>Fixdit</b><span>Fix het zelf</span></span></a><nav class="navlinks" aria-label="Hoofdnavigatie"><a href="#hoe">Zo werkt het</a><a href="#waarom">Waarom Fixdit</a><a href="#prijzen">Prijzen</a><div class="langmenu" id="languageMenu"><button class="langbtn" id="languageButton" type="button" aria-haspopup="true" aria-expanded="false">NL</button><div class="langpanel" id="languagePanel" role="menu"><button class="langoption" type="button" data-lang="nl">🇳🇱 Nederlands</button><button class="langoption" type="button" data-lang="en">🇬🇧 English</button><button class="langoption" type="button" data-lang="de">🇩🇪 Deutsch</button></div></div><button class="navcta" id="navTry">Probeer gratis</button></nav></div></header>
 <main>
 <section class="wrap hero"><div><div class="eyebrow">Slimme reparatiehulp voor thuis</div><h1>Kapot? Maak eerst een <em>foto.</em></h1><p>Fixdit helpt je begrijpen wat er mis kan zijn, wat je veilig zelf kunt proberen en wanneer je beter een reparateur inschakelt.</p><div class="actions"><a class="primary" href="#start">Start gratis analyse →</a><button class="secondary" id="demoBtn">Bekijk voorbeelddiagnose</button></div><div class="trust"><span>3 fixes gratis</span><span>Geen account voor je eerste fix</span><span>Veiligheid eerst</span></div><div class="benefits"><div class="benefit"><b>Snel duidelijkheid</b><span>Van probleem naar eerste plan.</span></div><div class="benefit"><b>Veilige stappen</b><span>Geen risicovol doe-het-zelfadvies.</span></div><div class="benefit"><b>Kosten inzicht</b><span>Zelf doen of monteur vergelijken.</span></div><div class="benefit"><b>Voor thuis</b><span>Mobiel, simpel en praktisch.</span></div></div></div><div class="product"><div class="demo"><div class="demohead"><b>Voorbeeldanalyse</b><span class="live">Productvoorbeeld</span></div><div class="demophoto"><img src="https://images.pexels.com/photos/37174867/pexels-photo-37174867/free-photo-of-technician-repairing-home-appliance-in-workshop.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Reparatie van een huishoudelijk apparaat"><div class="photolabel"><small>Herkend</small><strong>Bosch Serie 4 vaatwasser</strong></div></div><div class="result"><div class="reshead"><div><small>Waarschijnlijk probleem</small><h3>Foutcode E24 · afvoerprobleem</h3></div><div class="score"><b>82%</b><span>waarschijnlijk</span></div></div><div class="tags"><span class="tag good">Zelf te proberen</span><span class="tag warn">Risico: middel</span><span class="tag">± 15–25 min</span></div><div class="metrics"><div class="metric"><small>Zelf oplossen</small><b>€0–€25</b></div><div class="metric"><small>Monteur</small><b>€90–€180</b></div><div class="metric wide"><small>Moeilijkheid</small><b>2 / 5</b></div></div></div></div></div></section>
 <section class="wrap uploadsec" id="start"><div class="uploadshell"><div><div class="label">Start hier</div><h2>Laat zien wat er kapot is</h2><p class="lead">Maak een foto van het apparaat, de foutcode of het onderdeel en vertel kort wat er gebeurt.</p><div class="stepsmini"><div><b>1</b>Maak of upload een foto</div><div><b>2</b>Beschrijf het probleem in één zin</div><div><b>3</b>Krijg een duidelijk stappenplan</div></div><div class="quick"><button data-fill="Mijn vaatwasser geeft foutcode E24 en pompt niet meer af.">Vaatwasser E24</button><button data-fill="Mijn wasmachine pompt niet meer af en er blijft water in staan.">Wasmachine pompt niet af</button><button data-fill="Mijn koffiemachine lekt aan de onderkant.">Koffiemachine lekt</button></div></div><div class="uploadcard"><label class="upload" for="photoInput"><input id="photoInput" type="file" accept="image/*" hidden><img class="preview" id="preview" alt="Geüploade foto" hidden><button class="remove" id="removePhoto" type="button" hidden>×</button><div class="uploadcenter" id="uploadEmpty"><div class="plus">＋</div><strong>Maak een foto of kies er één</strong><small>Foutcode, typeplaatje, lekkage of kapot onderdeel.</small></div></label><div class="field"><label for="problem">Wat gebeurt er precies?</label><textarea id="problem" maxlength="500" placeholder="Bijv. Mijn Bosch vaatwasser pompt niet meer af en geeft foutcode E24."></textarea><div class="meta"><span>Hoe meer context, hoe beter.</span><span id="charCount">0/500</span></div></div><button class="analyze" id="analyzeBtn">Analyseer gratis · <span id="credits">3</span> over</button><p class="micro">Je foto en beschrijving worden alleen voor deze analyse naar de beveiligde Fixdit AI-backend gestuurd. Deel geen persoonlijke of gevoelige informatie.</p></div></div></section>
@@ -35,7 +43,7 @@
 </main>
 <footer class="wrap foot"><span>© 2026 Fixdit · Zelf repareren, slim geholpen.</span><span><a href="privacy.html">Privacy</a> · <a href="voorwaarden.html">Voorwaarden</a></span></footer>
 <div class="mobilebar"><a href="#start">Analyseer gratis</a><button id="mobileDemo">Bekijk demo</button></div>
-<div class="overlay" id="overlay" aria-hidden="true"><div class="backdrop" data-close></div><div class="modal"><button class="close" data-close>×</button><div class="loaderwrap" id="loader"><div class="spinner"></div><h3 id="loadTitle">Apparaat herkennen…</h3><p id="loadCopy">Fixdit analyseert je foto en beschrijving.</p><span class="pill" id="loadStep">Foto bekijken</span></div><div class="diagnosis" id="diagnosis"><h3 id="resultHeading">Analyse klaar</h3><div class="conclusion"><b id="diagTitle">Resultaat</b><span id="diagReason">Fixdit heeft je probleem geanalyseerd.</span></div><div class="dmetrics"><div class="dm"><small>Zekerheid</small><b id="metricConfidence">—</b></div><div class="dm"><small>Risico</small><b id="metricRisk">—</b></div><div class="dm"><small>Tijd</small><b id="metricTime">—</b></div><div class="dm"><small>Kosten zelf</small><b id="metricCost">—</b></div></div><div class="safe" id="safeSteps"></div><div class="emailgate" id="emailGate"><div class="emailbox"><h4>Nog 2 gratis fixes</h4><p>Je eerste analyse is gelukt. Je gratis fixes worden server-side bijgehouden. Verifieer straks je e-mailadres om je toegang beter te beveiligen.</p><div class="emailrow"><input type="email" placeholder="jij@voorbeeld.nl"><button type="button" id="emailBtn">Bewaar fixes</button></div></div></div></div></div></div>
+<div class="overlay" id="overlay" aria-hidden="true"><div class="backdrop" data-close></div><div class="modal"><button class="close" data-close>×</button><div class="loaderwrap" id="loader"><div class="spinner"></div><h3 id="loadTitle">Apparaat herkennen…</h3><p id="loadCopy">Fixdit analyseert je foto en beschrijving.</p><span class="pill" id="loadStep">Foto bekijken</span></div><div class="diagnosis" id="diagnosis"><h3 id="resultHeading">Analyse klaar</h3><div class="conclusion"><b id="diagTitle">Resultaat</b><span id="diagReason">Fixdit heeft je probleem geanalyseerd.</span></div><div class="actionbox"><small id="actionLabel">Dit moet je nu doen</small><b id="actionTitle">Concrete oplossing</b><p id="actionNow">Volg het stappenplan hieronder.</p><span class="typepill" id="problemTypePill">Fix</span></div><div class="dmetrics"><div class="dm"><small id="confidenceLabel">Zekerheid</small><b id="metricConfidence">—</b></div><div class="dm"><small id="riskLabel">Risico</small><b id="metricRisk">—</b></div><div class="dm"><small id="timeLabel">Tijd</small><b id="metricTime">—</b></div><div class="dm"><small id="selfCostLabel">Kosten zelf</small><b id="metricCost">—</b></div><div class="dm"><small id="difficultyLabel">Moeilijkheid</small><b id="metricDifficulty">—</b></div><div class="dm"><small id="proCostLabel">Vakman</small><b id="metricProCost">—</b></div></div><div class="smartgrid"><div class="smartcard"><small id="fixScoreLabel">Fixscore</small><b id="fixScore">—</b><span id="fixScoreCopy">Hoe geschikt dit is om zelf te proberen.</span></div><div class="smartcard"><small id="savingLabel">Bespaarmeter</small><b id="savingValue">—</b><span id="savingCopy">Mogelijke besparing t.o.v. een vakman.</span></div><div class="smartcard"><small id="routeLabel">Slimme route</small><b id="routeValue">—</b><span id="routeCopy">Wat na deze analyse de slimste stap is.</span></div></div><div class="resultsection"><h4 id="stepsHeading">Stappenplan</h4><div class="safe" id="safeSteps"></div></div><div class="detailgrid"><div class="detailbox"><h4 id="causesHeading">Mogelijke oorzaken</h4><ul id="possibleCauses"></ul></div><div class="detailbox avoidbox" id="avoidBox"><h4 id="avoidHeading">Niet doen</h4><ul id="avoidList"></ul></div></div><div class="emergency" id="emergencyBox"><small id="emergencyLabel">Nederland · direct gevaar</small><b id="emergencyTitle">Stop en zorg eerst voor veiligheid</b><p id="emergencyCopy"></p><a id="emergencyCall" href="tel:112">Bel 112</a></div><div class="helpbox" id="helpBox"><div class="helphead"><div><small id="helpLabel">Als dit te groot wordt</small><b id="helpTitle">Wie moet je bellen?</b></div></div><p id="helpCopy"></p><div class="helpactions"><a class="helpprimary" id="nearbyPro" target="_blank" rel="noopener">Vind hulp in de buurt</a><button class="helpsecondary" type="button" id="copyForPro">Maak bericht voor vakman</button></div></div><div class="resultactions"><button class="solid" type="button" id="savePassport">Bewaar in Fixpaspoort</button><button class="ghost" type="button" id="nextPhoto">Maak vervolgfoto</button></div><div class="emailgate" id="emailGate"><div class="emailbox"><h4>Nog 2 gratis fixes</h4><p>Je eerste analyse is gelukt. Je gratis fixes worden server-side bijgehouden. Verifieer straks je e-mailadres om je toegang beter te beveiligen.</p><div class="emailrow"><input type="email" placeholder="jij@voorbeeld.nl"><button type="button" id="emailBtn">Bewaar fixes</button></div></div></div></div></div></div>
 <script>
 const API_URL='https://fixdit-ai.nijlandbjorn.workers.dev';
 const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
@@ -108,7 +116,7 @@ function applyLanguage(lang){
   i18nNodes.forEach(x=>{const val=currentLang==='nl'?x.key:(I18N[currentLang]?.[x.key]||x.key);x.node.nodeValue=x.lead+val+x.trail});
   const meta=I18N_META[currentLang];document.title=meta.title;const md=document.querySelector('meta[name="description"]');if(md)md.content=meta.description;
   const problem=q('#problem');if(problem)problem.placeholder=meta.placeholder;const email=q('#email');if(email)email.placeholder=meta.email;
-  const ls=q('#languageSelect');if(ls)ls.value=currentLang;
+  const lb=q('#languageButton');if(lb)lb.textContent=currentLang.toUpperCase();qa('.langoption').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang));
   const quick=qa('[data-fill]');const fills={nl:['Mijn vaatwasser geeft foutcode E24 en pompt niet meer af.','Mijn wasmachine pompt niet meer af en er blijft water in staan.','Mijn koffiemachine lekt aan de onderkant.'],en:['My dishwasher shows error E24 and will not drain.','My washing machine will not drain and water remains inside.','My coffee machine is leaking from underneath.'],de:['Mein Geschirrspüler zeigt Fehler E24 und pumpt nicht ab.','Meine Waschmaschine pumpt nicht ab und Wasser bleibt in der Trommel.','Meine Kaffeemaschine ist an der Unterseite undicht.']};quick.forEach((b,i)=>{if(fills[currentLang][i])b.dataset.fill=fills[currentLang][i]});
   credits();
 }
@@ -153,21 +161,244 @@ q('#removePhoto').onclick=e=>{e.preventDefault();e.stopPropagation();q('#photoIn
 const ov=q('#overlay');function open(){ov.classList.add('open');ov.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}function resetModal(){q('#loader').style.display='grid';q('#diagnosis').classList.remove('show');q('#emailGate').classList.remove('show');q('#loadCopy').textContent=T('Fixdit analyseert je foto en beschrijving.')}function close(){ov.classList.remove('open');ov.setAttribute('aria-hidden','true');document.body.style.overflow='';resetModal()}qa('[data-close]').forEach(x=>x.onclick=close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+let lastDiagnosis=null;
+
+function moneyMidpoint(value){
+  if(!value)return null;
+  const nums=[...String(value).matchAll(/(?:€\s*)?(\d+(?:[.,]\d+)?)/g)].map(m=>Number(m[1].replace(',','.'))).filter(Number.isFinite);
+  if(!nums.length)return null;
+  return nums.length>=2?(nums[0]+nums[1])/2:nums[0];
+}
+
+function professionalFor(type,lang){
+  const map={
+    nl:{
+      cleaning:['professionele meubel- of textielreiniger','professionele reiniger'],
+      furniture:['meubelmaker of meubelhersteller','meubelhersteller'],
+      appliance:['witgoedmonteur','witgoedmonteur'],
+      plumbing:['loodgieter','loodgieter'],
+      electrical:['erkend elektricien','elektricien'],
+      electronics:['elektronicareparateur','elektronicareparateur'],
+      surface:['schilder of herstelbedrijf','schilder herstelbedrijf'],
+      mechanical:['reparateur of monteur','reparateur'],
+      safety:['geschikte erkende vakman','vakman'],
+      unknown:['geschikte vakman','reparateur']
+    },
+    en:{
+      cleaning:['professional upholstery or textile cleaner','professional cleaner'],
+      furniture:['furniture repair specialist','furniture repair'],
+      appliance:['appliance repair technician','appliance repair'],
+      plumbing:['plumber','plumber'],
+      electrical:['certified electrician','electrician'],
+      electronics:['electronics repair specialist','electronics repair'],
+      surface:['painter or surface repair specialist','surface repair'],
+      mechanical:['repair technician','repair technician'],
+      safety:['appropriate certified professional','repair professional'],
+      unknown:['appropriate professional','repair professional']
+    },
+    de:{
+      cleaning:['professionelle Polster- oder Textilreinigung','Polsterreinigung'],
+      furniture:['Möbelreparatur oder Tischler','Möbelreparatur'],
+      appliance:['Hausgeräte-Techniker','Hausgeräte Reparatur'],
+      plumbing:['Installateur','Installateur'],
+      electrical:['Elektrofachbetrieb','Elektriker'],
+      electronics:['Elektronik-Reparatur','Elektronik Reparatur'],
+      surface:['Maler oder Oberflächenreparatur','Oberflächenreparatur'],
+      mechanical:['Reparaturbetrieb oder Monteur','Reparaturbetrieb'],
+      safety:['passender Fachbetrieb','Fachbetrieb'],
+      unknown:['passender Fachbetrieb','Reparaturbetrieb']
+    }
+  };
+  return (map[lang]||map.nl)[type]||(map[lang]||map.nl).unknown;
+}
+
+function showToast(text){
+  const t=q('#toast');if(!t)return;
+  t.textContent=text;t.classList.add('show');
+  clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function buildProMessage(d,tradeName,copy){
+  const steps=Array.isArray(d.safeSteps)?d.safeSteps:[];
+  const lines=[
+    copy.msgIntro,
+    '',
+    `${copy.object}: ${[d.device,d.brand,d.model].filter(Boolean).join(' · ')||'—'}`,
+    `${copy.problem}: ${d.summary||d.solutionTitle||'—'}`,
+    `${copy.risk}: ${displayLevel(d.risk)}`,
+    `${copy.tried}: ${steps.length?steps.join(' | '):copy.none}`,
+    '',
+    copy.msgEnd
+  ];
+  return lines.join('\n');
+}
+
 function renderDiagnosis(d){
-  const stop=d.risk==='stop'||d.professionalRecommended===true;
-  const headings={nl:{stop:'Stop en schakel een vakman in',high:'Voorzichtig: professionele hulp aanbevolen',ready:'Analyse klaar',none:'Geen duidelijke conclusie',basis:'Op basis van je foto en beschrijving.',dont:'Niet zelf verdergaan',step:'Veilige stap',insufficient:'Onvoldoende informatie',more:'Maak een duidelijkere foto of beschrijf het probleem uitgebreider.',error:'foutcode'},en:{stop:'Stop and call a professional',high:'Caution: professional help recommended',ready:'Analysis ready',none:'No clear conclusion',basis:'Based on your photo and description.',dont:'Do not continue yourself',step:'Safe step',insufficient:'Not enough information',more:'Take a clearer photo or describe the problem in more detail.',error:'error'},de:{stop:'Stopp und Fachkraft einschalten',high:'Vorsicht: professionelle Hilfe empfohlen',ready:'Analyse fertig',none:'Keine eindeutige Schlussfolgerung',basis:'Basierend auf deinem Foto und deiner Beschreibung.',dont:'Nicht selbst weitermachen',step:'Sicherer Schritt',insufficient:'Nicht genügend Informationen',more:'Mach ein deutlicheres Foto oder beschreibe das Problem genauer.',error:'Fehlercode'}}[currentLang];
-  q('#resultHeading').textContent=stop?headings.stop:(d.risk==='hoog'?headings.high:headings.ready);
-  q('#diagTitle').textContent=d.summary||headings.none;
-  const unknowns=['onbekend','unknown','unbekannt'];const noCodes=['geen','none','keine','kein'];
-  const details=[d.device&&!unknowns.includes(String(d.device).toLowerCase())?d.device:null,d.brand&&!unknowns.includes(String(d.brand).toLowerCase())?d.brand:null,d.model&&!unknowns.includes(String(d.model).toLowerCase())?d.model:null,d.errorCode&&!noCodes.includes(String(d.errorCode).toLowerCase())?`${headings.error} ${d.errorCode}`:null].filter(Boolean);
-  q('#diagReason').textContent=details.length?details.join(' · '):headings.basis;
+  lastDiagnosis=d;
+  const stop=d.risk==='stop';
+  const caution=!stop&&d.risk==='hoog';
+
+  const copy={
+    nl:{
+      stop:'Stop en schakel hulp in',high:'Voorzichtig handelen',ready:'Jouw Fixdit-plan',none:'Nog geen duidelijke conclusie',
+      basis:'Op basis van je foto en beschrijving.',stopTitle:'Niet zelf verdergaan',step:'Stap',insufficient:'Meer informatie nodig',
+      more:'Maak een duidelijke close-up van het probleemgebied en beschrijf wat je merkt.',error:'foutcode',
+      action:'Dit moet je nu doen',solution:'Concrete oplossing',steps:'Stappenplan',causes:'Mogelijke oorzaken',avoid:'Niet doen',
+      confidence:'Zekerheid',risk:'Risico',time:'Tijd',selfCost:'Kosten zelf',difficulty:'Moeilijkheid',proCost:'Vakman',
+      fixscore:'Fixscore',fixscoreCopy:'Hoe geschikt dit is om zelf te proberen.',saving:'Bespaarmeter',savingCopy:'Mogelijke besparing t.o.v. een vakman.',
+      route:'Slimme route',routeSelf:'Zelf proberen',routeCare:'Voorzichtig proberen',routePro:'Vakman slimmer',routeStop:'Direct stoppen',
+      routeCopy:'Wat na deze analyse de slimste stap is.',helpLabel:'Als dit te groot wordt',helpTitle:'Wie moet je bellen?',
+      helpCopy:'Als de stappen niet helpen, zoek dan een {trade}. Fixdit zet je probleem alvast in een duidelijk bericht voor de vakman.',
+      nearby:'Vind {trade} in de buurt',copyPro:'Maak bericht voor vakman',saved:'Opgeslagen in je Fixpaspoort',copied:'Bericht gekopieerd',
+      nextPhoto:'Maak vervolgfoto',passport:'Bewaar in Fixpaspoort',emergencyLabel:'Nederland · direct gevaar',emergencyTitle:'Stop en zorg eerst voor veiligheid',
+      emergency112:'Bij acuut levensgevaar, brand of een direct gevaarlijke situatie: bel 112.',gas:'Ruik je gas? Draai indien veilig mogelijk de hoofdkraan dicht, ventileer, maak geen vuur, schakel geen elektrische apparaten en ga naar buiten. Bel 0800-9009. Bij direct levensgevaar: 112.',
+      call112:'Bel 112',callGas:'Bel 0800-9009',object:'Object',problem:'Probleem',tried:'Veilige stappen',none:'Nog niets uitgevoerd',
+      msgIntro:'Hallo, ik wil graag hulp met dit probleem. Fixdit heeft alvast de eerste inspectie gedaan:',msgEnd:'Kunt u aangeven of u dit kunt beoordelen/repareren en wat een bezoek ongeveer kost?',
+      types:{cleaning:'Schoonmaken',furniture:'Meubel',appliance:'Apparaat',plumbing:'Loodgieterswerk',electrical:'Elektrisch',electronics:'Elektronica',surface:'Oppervlak',mechanical:'Mechanisch',safety:'Veiligheid',unknown:'Algemene fix'}
+    },
+    en:{
+      stop:'Stop and get help',high:'Proceed with caution',ready:'Your Fixdit plan',none:'No clear conclusion yet',
+      basis:'Based on your photo and description.',stopTitle:'Do not continue yourself',step:'Step',insufficient:'More information needed',
+      more:'Take a clear close-up of the problem area and describe what you notice.',error:'error',
+      action:'What to do now',solution:'Concrete solution',steps:'Step-by-step plan',causes:'Possible causes',avoid:'Avoid',
+      confidence:'Confidence',risk:'Risk',time:'Time',selfCost:'DIY cost',difficulty:'Difficulty',proCost:'Professional',
+      fixscore:'Fix score',fixscoreCopy:'How suitable this is for a safe DIY attempt.',saving:'Savings meter',savingCopy:'Potential saving compared with a professional.',
+      route:'Smart route',routeSelf:'Try it yourself',routeCare:'Try with caution',routePro:'Professional is smarter',routeStop:'Stop immediately',
+      routeCopy:'The smartest next route after this analysis.',helpLabel:'If this becomes too much',helpTitle:'Who should you call?',
+      helpCopy:'If the steps do not help, look for a {trade}. Fixdit can turn the diagnosis into a clear message for the professional.',
+      nearby:'Find {trade} nearby',copyPro:'Create message for professional',saved:'Saved to your Fix Passport',copied:'Message copied',
+      nextPhoto:'Take follow-up photo',passport:'Save to Fix Passport',emergencyLabel:'Netherlands · immediate danger',emergencyTitle:'Stop and make the situation safe first',
+      emergency112:'For immediate danger to life, fire or a directly dangerous situation in the Netherlands: call 112.',gas:'Smell gas? If safe, close the main gas valve, ventilate, do not use fire or electrical switches, go outside and call 0800-9009. For immediate danger to life: call 112.',
+      call112:'Call 112',callGas:'Call 0800-9009',object:'Object',problem:'Problem',tried:'Safe checks',none:'Nothing tried yet',
+      msgIntro:'Hello, I would like help with this problem. Fixdit has already performed an initial inspection:',msgEnd:'Could you tell me whether you can assess/repair this and roughly what a visit would cost?',
+      types:{cleaning:'Cleaning',furniture:'Furniture',appliance:'Appliance',plumbing:'Plumbing',electrical:'Electrical',electronics:'Electronics',surface:'Surface repair',mechanical:'Mechanical',safety:'Safety',unknown:'General fix'}
+    },
+    de:{
+      stop:'Stopp und Hilfe holen',high:'Vorsichtig vorgehen',ready:'Dein Fixdit-Plan',none:'Noch keine eindeutige Schlussfolgerung',
+      basis:'Basierend auf deinem Foto und deiner Beschreibung.',stopTitle:'Nicht selbst weitermachen',step:'Schritt',insufficient:'Mehr Informationen nötig',
+      more:'Mach eine deutliche Nahaufnahme der Problemstelle und beschreibe, was du bemerkst.',error:'Fehlercode',
+      action:'Das solltest du jetzt tun',solution:'Konkrete Lösung',steps:'Schritt-für-Schritt-Plan',causes:'Mögliche Ursachen',avoid:'Vermeiden',
+      confidence:'Sicherheit',risk:'Risiko',time:'Zeit',selfCost:'Kosten selbst',difficulty:'Schwierigkeit',proCost:'Fachkraft',
+      fixscore:'Fixscore',fixscoreCopy:'Wie gut sich das sicher selbst versuchen lässt.',saving:'Sparanzeige',savingCopy:'Mögliche Ersparnis gegenüber einem Fachbetrieb.',
+      route:'Smarte Route',routeSelf:'Selbst versuchen',routeCare:'Vorsichtig versuchen',routePro:'Fachbetrieb sinnvoller',routeStop:'Sofort stoppen',
+      routeCopy:'Der sinnvollste nächste Weg nach dieser Analyse.',helpLabel:'Wenn es zu groß wird',helpTitle:'Wen solltest du anrufen?',
+      helpCopy:'Wenn die Schritte nicht helfen, suche einen {trade}. Fixdit erstellt dir bereits eine klare Nachricht für den Fachbetrieb.',
+      nearby:'{trade} in der Nähe finden',copyPro:'Nachricht für Fachbetrieb',saved:'Im Fix-Pass gespeichert',copied:'Nachricht kopiert',
+      nextPhoto:'Folgefoto machen',passport:'Im Fix-Pass speichern',emergencyLabel:'Niederlande · unmittelbare Gefahr',emergencyTitle:'Stopp und zuerst die Situation sichern',
+      emergency112:'Bei akuter Lebensgefahr, Brand oder einer unmittelbar gefährlichen Situation in den Niederlanden: 112 anrufen.',gas:'Riechst du Gas? Wenn sicher möglich, Hauptgashahn schließen, lüften, kein Feuer und keine elektrischen Schalter benutzen, nach draußen gehen und 0800-9009 anrufen. Bei akuter Lebensgefahr: 112.',
+      call112:'112 anrufen',callGas:'0800-9009 anrufen',object:'Objekt',problem:'Problem',tried:'Sichere Schritte',none:'Noch nichts durchgeführt',
+      msgIntro:'Hallo, ich benötige Hilfe bei diesem Problem. Fixdit hat bereits eine erste Prüfung durchgeführt:',msgEnd:'Können Sie einschätzen, ob Sie das prüfen/reparieren können und was ein Termin ungefähr kosten würde?',
+      types:{cleaning:'Reinigung',furniture:'Möbel',appliance:'Gerät',plumbing:'Sanitär',electrical:'Elektrik',electronics:'Elektronik',surface:'Oberfläche',mechanical:'Mechanisch',safety:'Sicherheit',unknown:'Allgemeine Reparatur'}
+    }
+  }[currentLang];
+
+  q('#resultHeading').textContent=stop?copy.stop:(caution?copy.high:copy.ready);
+  q('#diagTitle').textContent=d.solutionTitle||d.summary||copy.none;
+
+  const unknowns=['onbekend','unknown','unbekannt'];
+  const noCodes=['geen','none','keine','kein','keiner'];
+  const details=[
+    d.device&&!unknowns.includes(String(d.device).toLowerCase())?d.device:null,
+    d.brand&&!unknowns.includes(String(d.brand).toLowerCase())?d.brand:null,
+    d.model&&!unknowns.includes(String(d.model).toLowerCase())?d.model:null,
+    d.errorCode&&!noCodes.includes(String(d.errorCode).toLowerCase())?`${copy.error} ${d.errorCode}`:null
+  ].filter(Boolean);
+
+  q('#diagReason').textContent=d.summary||(details.length?details.join(' · '):copy.basis);
+  q('#actionLabel').textContent=copy.action;
+  q('#actionTitle').textContent=d.solutionTitle||copy.solution;
+  q('#actionNow').textContent=d.whatToDoNow||d.summary||copy.more;
+  q('#problemTypePill').textContent=copy.types[d.problemType]||copy.types.unknown;
+
+  q('#confidenceLabel').textContent=copy.confidence;q('#riskLabel').textContent=copy.risk;q('#timeLabel').textContent=copy.time;
+  q('#selfCostLabel').textContent=copy.selfCost;q('#difficultyLabel').textContent=copy.difficulty;q('#proCostLabel').textContent=copy.proCost;
   q('#metricConfidence').textContent=displayLevel(d.confidence);q('#metricRisk').textContent=displayLevel(d.risk);
   q('#metricTime').textContent=d.estimatedTime||'—';q('#metricCost').textContent=d.selfRepairCost||'—';
+  q('#metricDifficulty').textContent=Number.isFinite(Number(d.difficulty))?`${d.difficulty} / 5`:'—';q('#metricProCost').textContent=d.professionalCost||'—';
+
+  q('#stepsHeading').textContent=copy.steps;q('#causesHeading').textContent=copy.causes;q('#avoidHeading').textContent=copy.avoid;
+
   const safe=q('#safeSteps');safe.innerHTML='';
-  if(stop&&d.stopReason){const row=document.createElement('div');row.className='sstep';row.innerHTML=`<i>!</i><div><b>${headings.dont}</b><p>${esc(d.stopReason)}</p></div>`;safe.appendChild(row)}
+  if(stop){
+    const row=document.createElement('div');row.className='sstep';
+    row.innerHTML=`<i>!</i><div><b>${copy.stopTitle}</b><p>${esc(d.stopReason||copy.emergency112)}</p></div>`;
+    safe.appendChild(row);
+  }
   const steps=Array.isArray(d.safeSteps)?d.safeSteps:[];
-  steps.slice(0,5).forEach((step,i)=>{const row=document.createElement('div');row.className='sstep';row.innerHTML=`<i>${i+1}</i><div><b>${headings.step} ${i+1}</b><p>${esc(step)}</p></div>`;safe.appendChild(row)});
-  if(!steps.length&&!stop){const row=document.createElement('div');row.className='sstep';row.innerHTML=`<i>!</i><div><b>${headings.insufficient}</b><p>${headings.more}</p></div>`;safe.appendChild(row)}
+  steps.slice(0,7).forEach((step,i)=>{
+    const row=document.createElement('div');row.className='sstep';
+    row.innerHTML=`<i>${i+1}</i><div><b>${copy.step} ${i+1}</b><p>${esc(step)}</p></div>`;
+    safe.appendChild(row);
+  });
+  if(!steps.length&&!stop){
+    const row=document.createElement('div');row.className='sstep';
+    row.innerHTML=`<i>!</i><div><b>${copy.insufficient}</b><p>${copy.more}</p></div>`;safe.appendChild(row);
+  }
+
+  const causes=Array.isArray(d.possibleCauses)?d.possibleCauses.filter(Boolean):[];
+  q('#possibleCauses').innerHTML='';
+  (causes.length?causes:[d.summary||copy.more]).slice(0,5).forEach(item=>{const li=document.createElement('li');li.textContent=item;q('#possibleCauses').appendChild(li)});
+
+  const avoid=Array.isArray(d.avoid)?d.avoid.filter(Boolean):[];
+  q('#avoidList').innerHTML='';q('#avoidBox').style.display=avoid.length?'block':'none';
+  avoid.slice(0,5).forEach(item=>{const li=document.createElement('li');li.textContent=item;q('#avoidList').appendChild(li)});
+
+  // Fixscore: a transparent product heuristic, not an AI certainty score.
+  let score=88;
+  if(d.risk==='middel')score-=12;if(d.risk==='hoog')score-=42;if(d.risk==='stop')score=5;
+  const diff=Number(d.difficulty);if(Number.isFinite(diff))score-=Math.max(0,diff-1)*9;
+  if(d.professionalRecommended===true)score-=18;
+  score=Math.max(5,Math.min(95,Math.round(score)));
+  q('#fixScoreLabel').textContent=copy.fixscore;q('#fixScore').textContent=`${score}/100`;q('#fixScoreCopy').textContent=copy.fixscoreCopy;
+
+  const diy=moneyMidpoint(d.selfRepairCost), pro=moneyMidpoint(d.professionalCost);
+  const saving=(diy!=null&&pro!=null&&pro>diy)?Math.max(0,Math.round(pro-diy)):null;
+  q('#savingLabel').textContent=copy.saving;q('#savingValue').textContent=saving!=null?`± €${saving}`:'—';q('#savingCopy').textContent=copy.savingCopy;
+
+  let route=copy.routeSelf;
+  if(stop)route=copy.routeStop;else if(d.risk==='hoog'||d.professionalRecommended===true)route=copy.routePro;else if(d.risk==='middel'||Number(d.difficulty)>=4)route=copy.routeCare;
+  q('#routeLabel').textContent=copy.route;q('#routeValue').textContent=route;q('#routeCopy').textContent=copy.routeCopy;
+
+  // Netherlands-specific escalation and professional hand-off.
+  const [tradeName,tradeQuery]=professionalFor(d.problemType||'unknown',currentLang);
+  const helpNeeded=stop||d.risk==='hoog'||d.professionalRecommended===true||Number(d.difficulty)>=4;
+  q('#helpLabel').textContent=copy.helpLabel;q('#helpTitle').textContent=copy.helpTitle;
+  q('#helpCopy').textContent=copy.helpCopy.replace('{trade}',tradeName);
+  q('#nearbyPro').textContent=copy.nearby.replace('{trade}',tradeName);
+  q('#nearbyPro').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tradeQuery)}`;
+  q('#copyForPro').textContent=copy.copyPro;
+  q('#helpBox').classList.toggle('show',helpNeeded);
+
+  const allText=[d.summary,d.solutionTitle,d.whatToDoNow,d.stopReason,d.device,...(Array.isArray(d.possibleCauses)?d.possibleCauses:[])].filter(Boolean).join(' ').toLowerCase();
+  const gas=/gaslucht|gaslek|gas leak|smell gas|gasgeruch|gasleck/.test(allText);
+  const emergency=stop;
+  q('#emergencyBox').classList.toggle('show',emergency);
+  if(emergency){
+    q('#emergencyLabel').textContent=copy.emergencyLabel;q('#emergencyTitle').textContent=copy.emergencyTitle;
+    q('#emergencyCopy').textContent=gas?copy.gas:copy.emergency112;
+    q('#emergencyCall').textContent=gas?copy.callGas:copy.call112;
+    q('#emergencyCall').href=gas?'tel:08009009':'tel:112';
+  }
+
+  q('#savePassport').textContent=copy.passport;q('#nextPhoto').textContent=copy.nextPhoto;
+
+  q('#copyForPro').onclick=async()=>{
+    const msg=buildProMessage(d,tradeName,copy);
+    try{await navigator.clipboard.writeText(msg);showToast(copy.copied)}
+    catch{prompt(copy.copyPro,msg)}
+  };
+
+  q('#savePassport').onclick=()=>{
+    let saved=[];try{saved=JSON.parse(localStorage.getItem('fixdit_passport_v1')||'[]')}catch{}
+    saved.unshift({date:new Date().toISOString(),language:currentLang,diagnosis:d});
+    localStorage.setItem('fixdit_passport_v1',JSON.stringify(saved.slice(0,20)));
+    showToast(copy.saved);
+  };
+
+  q('#nextPhoto').onclick=()=>{
+    close();
+    setTimeout(()=>q('#photoInput').click(),180);
+  };
 }
 
 async function realAnalyze(){
@@ -196,9 +427,9 @@ async function realAnalyze(){
 function demoAnalyze(){
   const demo={nl:{load:'Voorbeelddiagnose laden…',step:'Demo — kost geen fix',device:'vaatwasser',summary:'Afvoer of filter waarschijnlijk verstopt',steps:['Trek de stekker uit het stopcontact.','Reinig filter en afvoerzeef en verwijder zichtbaar vuil.','Controleer of de afvoerslang niet geknikt zit.']},en:{load:'Loading sample diagnosis…',step:'Demo — does not use a fix',device:'dishwasher',summary:'Drain or filter is likely blocked',steps:['Unplug the appliance.','Clean the filter and drain screen and remove visible debris.','Check that the drain hose is not kinked.']},de:{load:'Beispieldiagnose laden…',step:'Demo — kostet keine Reparatur',device:'Geschirrspüler',summary:'Ablauf oder Filter wahrscheinlich verstopft',steps:['Ziehe den Netzstecker.','Reinige Filter und Ablaufsieb und entferne sichtbaren Schmutz.','Prüfe, ob der Ablaufschlauch geknickt ist.']}}[currentLang];
   open();q('#loadTitle').textContent=demo.load;q('#loadStep').textContent=demo.step;
-  setTimeout(()=>{renderDiagnosis({device:demo.device,brand:'Bosch',model:'Serie 4',errorCode:'E24',summary:demo.summary,confidence:'hoog',risk:'middel',difficulty:2,estimatedTime:'15–25 min',selfRepairCost:'€0–€25',professionalCost:'€90–€180',safeSteps:demo.steps,stopReason:'',professionalRecommended:false});q('#loader').style.display='none';q('#diagnosis').classList.add('show')},650)
+  setTimeout(()=>{renderDiagnosis({problemType:'appliance',device:demo.device,brand:'Bosch',model:'Serie 4',errorCode:'E24',solutionTitle:demo.summary,summary:demo.summary,whatToDoNow:demo.steps[0],confidence:'hoog',risk:'middel',difficulty:2,estimatedTime:'15–25 min',selfRepairCost:'€0–€25',professionalCost:'€90–€180',possibleCauses:[demo.summary],safeSteps:demo.steps,avoid:[],stopReason:'',professionalRecommended:false});q('#loader').style.display='none';q('#diagnosis').classList.add('show')},650)
 }
-q('#analyzeBtn').onclick=realAnalyze;q('#demoBtn').onclick=demoAnalyze;q('#mobileDemo').onclick=demoAnalyze;qa('.demoCard').forEach(c=>c.onclick=demoAnalyze);q('#emailBtn').onclick=()=>alert({nl:'Je resterende gratis fixes worden nu veilig server-side bijgehouden. E-mailverificatie voegen we hierna toe.',en:'Your remaining free fixes are securely tracked server-side. Email verification will be added next.',de:'Deine verbleibenden kostenlosen Reparaturen werden sicher serverseitig gespeichert. Die E-Mail-Verifizierung folgt als Nächstes.'}[currentLang]);q('#languageSelect').addEventListener('change',e=>applyLanguage(e.target.value));initI18n();applyLanguage(currentLang);
+q('#analyzeBtn').onclick=realAnalyze;q('#demoBtn').onclick=demoAnalyze;q('#mobileDemo').onclick=demoAnalyze;qa('.demoCard').forEach(c=>c.onclick=demoAnalyze);q('#emailBtn').onclick=()=>alert({nl:'Je resterende gratis fixes worden nu veilig server-side bijgehouden. E-mailverificatie voegen we hierna toe.',en:'Your remaining free fixes are securely tracked server-side. Email verification will be added next.',de:'Deine verbleibenden kostenlosen Reparaturen werden sicher serverseitig gespeichert. Die E-Mail-Verifizierung folgt als Nächstes.'}[currentLang]);const languageButton=q('#languageButton'),languagePanel=q('#languagePanel');languageButton.onclick=e=>{e.stopPropagation();const open=languagePanel.classList.toggle('open');languageButton.setAttribute('aria-expanded',String(open))};qa('.langoption').forEach(b=>b.onclick=()=>{applyLanguage(b.dataset.lang);languagePanel.classList.remove('open');languageButton.setAttribute('aria-expanded','false')});document.addEventListener('click',e=>{if(!q('#languageMenu').contains(e.target)){languagePanel.classList.remove('open');languageButton.setAttribute('aria-expanded','false')}});initI18n();applyLanguage(currentLang);
 </script>
-</body>
+<div class="toast" id="toast">Opgeslagen</div></body>
 </html>
