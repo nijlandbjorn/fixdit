@@ -741,9 +741,231 @@ h1{
   }
 }
 
+
+/* ===== MOBILE HERO NO-OVERLAP V4 ===== */
+@media(max-width:680px){
+  .heroGrid{
+    display:grid!important;
+    grid-template-columns:minmax(0,58%) minmax(0,38%)!important;
+    column-gap:4%!important;
+    min-height:355px!important;
+    height:auto!important;
+    align-items:start!important;
+    overflow:visible!important;
+  }
+
+  .heroCopy{
+    position:relative!important;
+    z-index:2!important;
+    width:auto!important;
+    min-width:0!important;
+    padding:12px 0 0 0!important;
+    margin:0!important;
+  }
+
+  .kicker{
+    margin:0 0 10px 0!important;
+    font-size:7.5px!important;
+    padding:6px 8px!important;
+    white-space:nowrap!important;
+  }
+
+  .hero h1{
+    font-size:41px!important;
+    line-height:.88!important;
+    margin:0 0 12px!important;
+    letter-spacing:-.065em!important;
+  }
+
+  .heroCopy p{
+    width:100%!important;
+    max-width:100%!important;
+    font-size:11.5px!important;
+    line-height:1.42!important;
+    margin:0!important;
+  }
+
+  .heroVisual{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    z-index:1!important;
+    width:100%!important;
+    height:315px!important;
+    min-height:315px!important;
+    padding:0!important;
+    margin:6px 0 0 0!important;
+    overflow:hidden!important;
+    background:#fff!important;
+  }
+
+  .heroVisual img{
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    object-fit:cover!important;
+    object-position:center!important;
+  }
+
+  .ctaRow{
+    margin-top:-12px!important;
+    padding-top:0!important;
+    position:relative!important;
+    z-index:6!important;
+  }
+
+  .trustline{
+    margin-top:7px!important;
+  }
+
+  .benefits{
+    margin-top:4px!important;
+    padding:9px 0 12px!important;
+  }
+}
+
+@media(max-width:410px){
+  .heroGrid{
+    grid-template-columns:minmax(0,59%) minmax(0,37%)!important;
+    column-gap:4%!important;
+    min-height:335px!important;
+  }
+
+  .hero h1{
+    font-size:38px!important;
+  }
+
+  .heroCopy p{
+    font-size:11px!important;
+  }
+
+  .heroVisual{
+    height:295px!important;
+    min-height:295px!important;
+  }
+
+  .ctaRow{
+    margin-top:-10px!important;
+  }
+}
+
+
+/* ===== MOBILE HERO CTA-DIRECT V5 ===== */
+@media(max-width:680px){
+  .heroGrid{
+    display:grid!important;
+    grid-template-columns:minmax(0,62%) minmax(0,34%)!important;
+    column-gap:4%!important;
+    min-height:0!important;
+    height:auto!important;
+    align-items:start!important;
+    overflow:visible!important;
+  }
+
+  .heroCopy{
+    width:auto!important;
+    min-width:0!important;
+    padding:10px 0 0 0!important;
+    margin:0!important;
+  }
+
+  .kicker{
+    margin:0 0 9px 0!important;
+    font-size:7.5px!important;
+    padding:6px 8px!important;
+  }
+
+  .hero h1{
+    font-size:40px!important;
+    line-height:.88!important;
+    margin:0 0 11px!important;
+    letter-spacing:-.064em!important;
+  }
+
+  .heroCopy p{
+    width:100%!important;
+    max-width:100%!important;
+    font-size:11.5px!important;
+    line-height:1.4!important;
+    margin:0!important;
+  }
+
+  .heroVisual{
+    width:100%!important;
+    height:270px!important;
+    min-height:270px!important;
+    margin:8px 0 0 0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#fff!important;
+  }
+
+  .heroVisual img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:center!important;
+  }
+
+  /* CTA sits directly below the hero text instead of being pushed down by the image */
+  .ctaRow{
+    margin-top:6px!important;
+    padding-top:0!important;
+    position:relative!important;
+    z-index:6!important;
+  }
+
+  .cta{
+    min-height:56px!important;
+    font-size:15px!important;
+    padding:0 17px!important;
+  }
+
+  .trustline{
+    margin-top:7px!important;
+  }
+
+  .benefits{
+    margin-top:4px!important;
+    padding:9px 0 12px!important;
+  }
+}
+
+@media(max-width:410px){
+  .heroGrid{
+    grid-template-columns:minmax(0,63%) minmax(0,33%)!important;
+    column-gap:4%!important;
+  }
+
+  .heroCopy{
+    padding-top:8px!important;
+  }
+
+  .hero h1{
+    font-size:37px!important;
+  }
+
+  .heroCopy p{
+    font-size:10.9px!important;
+    line-height:1.38!important;
+  }
+
+  .heroVisual{
+    height:245px!important;
+    min-height:245px!important;
+    margin-top:7px!important;
+  }
+
+  .ctaRow{
+    margin-top:5px!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-CTA-DIRECT-V5 -->
+<!-- FIXDIT-NO-OVERLAP-V4 -->
 <!-- FIXDIT-MOBILE-HERO-V2 -->
 <!-- FIXDIT-CTA-UP-V3 -->
 
