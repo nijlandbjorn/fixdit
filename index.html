@@ -1436,9 +1436,44 @@ h1{
   .resultActionBar{grid-template-columns:1fr 1fr}
 }
 
+
+/* ===== FIXDIT UNIVERSAL RESULT V11 ===== */
+.universalNeeds{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px
+}
+.universalNeeds[hidden]{display:none!important}
+.supplyCard{
+  border:1px solid #e3ebe5;border-radius:15px;padding:11px;background:#fff!important;
+  background-image:linear-gradient(#fff,#fff)!important
+}
+.supplyCard[hidden]{display:none!important}
+.supplyCard h4{margin:0 0 7px;font-size:11px}
+.supplyCard ul{margin:0;padding-left:16px;font-size:10px;line-height:1.48;color:#66736b}
+.supplyCard li+li{margin-top:3px}
+.moreInfoCard{
+  margin-top:11px;border:1px solid #cfe5d6;border-radius:16px;padding:13px;
+  background:#f4faf6!important;background-image:linear-gradient(#f4faf6,#f4faf6)!important
+}
+.moreInfoCard[hidden]{display:none!important}
+.moreInfoCard small{display:block;font-size:8px;font-weight:950;letter-spacing:.09em;text-transform:uppercase;color:#17804c!important;-webkit-text-fill-color:#17804c!important}
+.moreInfoCard h4{margin:4px 0 4px;font-size:13px}
+.moreInfoCard p{margin:0;font-size:10.5px;line-height:1.5}
+.moreInfoCard p+p{margin-top:5px}
+.completionCard{
+  margin-top:11px;border:1px solid #dce9df;border-radius:16px;padding:13px;background:#fbfdfb!important;
+  background-image:linear-gradient(#fbfdfb,#fbfdfb)!important
+}
+.completionCard[hidden]{display:none!important}
+.completionCard h4{margin:0 0 7px;font-size:12px}
+.completionCard ul{margin:0;padding-left:17px;font-size:10.5px;line-height:1.5;color:#66736b}
+.resultType.intentTag{display:inline-flex;align-items:center;gap:5px}
+.intentDot{opacity:.7}
+@media(max-width:680px){.universalNeeds{grid-template-columns:1fr}.supplyCard{padding:12px}}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-UNIVERSAL-V11 -->
 <!-- FIXDIT-POLISH-V9 -->
 <!-- FIXDIT-IMAGE-LARGER-V8 -->
 <!-- FIXDIT-FINAL-TWEAK-V7 -->
@@ -1710,12 +1745,39 @@ h1{
         <div class="metric"><small id="proCostLabel">Vakman</small><b id="proCost">—</b></div>
       </div>
 
+      <div class="universalNeeds" id="universalNeeds" hidden>
+        <div class="supplyCard" id="materialsCard" hidden>
+          <h4 id="materialsTitle">Benodigd materiaal</h4>
+          <ul id="materialsList"></ul>
+        </div>
+        <div class="supplyCard" id="toolsCard" hidden>
+          <h4 id="toolsTitle">Gereedschap</h4>
+          <ul id="toolsList"></ul>
+        </div>
+        <div class="supplyCard" id="measurementsCard" hidden>
+          <h4 id="measurementsTitle">Maten / controles</h4>
+          <ul id="measurementsList"></ul>
+        </div>
+      </div>
+
+      <div class="moreInfoCard" id="moreInfoBox" hidden>
+        <small id="moreInfoLabel">MEER INFORMATIE NODIG</small>
+        <h4 id="moreInfoTitle">Eén detail maakt het plan nauwkeuriger</h4>
+        <p id="followUpQuestion"></p>
+        <p id="followUpPhotoText"></p>
+      </div>
+
       <div class="resultSection v10">
         <div class="sectionTitleRow">
           <h4 id="stepsTitle">Stappenplan</h4>
           <span class="sectionHint" id="stepsHint">Begin met stap 1</span>
         </div>
         <div class="stepList v10" id="steps"></div>
+      </div>
+
+      <div class="completionCard" id="completionBox" hidden>
+        <h4 id="completionTitle">Zo controleer je of het gelukt is</h4>
+        <ul id="completionList"></ul>
       </div>
 
       <div class="infoGrid">
@@ -1782,7 +1844,7 @@ popular:'Meest gekozen',annual:'Jaarabonnement',perYear:'per jaar',annualText:'V
 homePack:'Thuis Pack',once:'eenmalig',packText:'Voor meerdere problemen zonder abonnement.',p1:'20 extra fixes',p2:'Geen abonnement',p3:'Directe bundel',p4:'12 maanden geldig',inactive:'Nog niet actief',chooseAnnual:'Kies abonnement →',buyPack:'Koop bundel →',allCats:'Bekijk alle categorieën →',freeNote:'Je eerste 3 fixes zijn gratis. Betalen activeren we pas later.',
 catTitle:'Populaire categorieën',catSub:'Waar kunnen we je mee helpen?',catLead:'Kies iets of maak meteen een foto. Fixdit bepaalt daarna zelf de juiste route.',
 c1:'Wasmachine',c1s:'Afvoer · foutcode · lekkage',c2:'Vaatwasser',c2s:'Filter · afvoer · foutcode',c3:'Koffiemachine',c3s:'Lek · verstopping · storing',c4:'Meubels',c4s:'Los · schade · vlekken',c5:'Loodgieterij',c5s:'Kraan · sifon · lekkage',c6:'Elektronica',c6s:'TV · telefoon · apparaten',c7:'Muur & vloer',c7s:'Kras · gat · verf · schade',c8:'Iets anders',c8s:'Maak een foto',
-analyzerKicker:'JOUW PROBLEEM',analyzerTitle:'Laat Fixdit meekijken.',analyzerText:'Maak een duidelijke foto en vertel kort wat je merkt. Fixdit kiest automatisch de juiste route: schoonmaken, repareren, controleren of stoppen.',
+analyzerKicker:'JOUW PROBLEEM',analyzerTitle:'Laat Fixdit meekijken.',analyzerText:'Maak een duidelijke foto en vertel wat je wilt oplossen of maken. Fixdit kiest automatisch de juiste route: repareren, schoonmaken, onderhouden, monteren, bouwen of veilig stoppen.',
 s1:'Maak een duidelijke foto',s2:'Beschrijf kort wat er mis is',s3:'Krijg een concreet plan + veiligheidscheck',
 uploadTitle:'Maak of kies een foto',uploadSub:'Tik hier om je camera of galerij te openen',problemLabel:'Wat merk je?',analyze:'Analyseer gratis',
 howTitle:'Zo werkt Fixdit',howSub:'Van foto naar eerste veilige actie.',how1:'Fixdit herkent het probleemtype',how1p:'Apparaat, meubel, vlek, lekkage, elektronica of iets anders.',how2:'Je krijgt concrete stappen',how2p:'Geen algemene chat, maar precies wat je nu veilig kunt controleren of doen.',how3:'Fixdit weet wanneer je moet stoppen',how3p:'Bij risico krijg je een stopadvies en het juiste type Nederlandse vakman.',
@@ -1799,7 +1861,7 @@ popular:'Most chosen',annual:'Annual plan',perYear:'per year',annualText:'For ho
 homePack:'Home Pack',once:'one-time',packText:'For several problems without a subscription.',p1:'20 extra fixes',p2:'No subscription',p3:'Instant bundle',p4:'For appliances, furniture and more',inactive:'Not active yet',chooseAnnual:'Choose plan →',buyPack:'Buy bundle →',allCats:'View all categories →',freeNote:'Your first 3 fixes are free. Payments will be enabled later.',
 catTitle:'Popular categories',catSub:'What can we help you with?',catLead:'Choose something or take a photo right away. Fixdit then selects the right route automatically.',
 c1:'Washing machine',c1s:'Drain · error · leak',c2:'Dishwasher',c2s:'Filter · drain · error',c3:'Coffee machine',c3s:'Leak · blockage · fault',c4:'Furniture',c4s:'Loose · damage · stains',c5:'Plumbing',c5s:'Tap · trap · leak',c6:'Electronics',c6s:'TV · phone · devices',c7:'Wall & floor',c7s:'Scratch · hole · paint · damage',c8:'Something else',c8s:'Take a photo',
-analyzerKicker:'YOUR PROBLEM',analyzerTitle:'Let Fixdit take a look.',analyzerText:'Take a clear photo and briefly describe what you notice. Fixdit automatically chooses the right route: cleaning, repair, checks or stop.',
+analyzerKicker:'YOUR PROBLEM',analyzerTitle:'Let Fixdit take a look.',analyzerText:'Take a clear photo and tell Fixdit what you want to fix or make. It automatically chooses the right route: repair, cleaning, maintenance, assembly, building or a safe stop.',
 s1:'Take a clear photo',s2:'Briefly describe the problem',s3:'Get a concrete plan + safety check',
 uploadTitle:'Take or choose a photo',uploadSub:'Tap here to open your camera or gallery',problemLabel:'What do you notice?',analyze:'Analyze free',
 howTitle:'How Fixdit works',howSub:'From photo to first safe action.',how1:'Fixdit identifies the problem type',how1p:'Appliance, furniture, stain, leak, electronics or something else.',how2:'You get concrete steps',how2p:'Not a generic chat, but exactly what you can safely check or do now.',how3:'Fixdit knows when you should stop',how3p:'If there is risk, you get a stop recommendation and the right type of Dutch professional.',
@@ -1933,11 +1995,11 @@ function levelText(v){
 }
 function tradeFor(type){
   const m={
-    nl:{cleaning:['professionele reiniger','professionele reiniger'],furniture:['meubelhersteller','meubelhersteller'],appliance:['witgoedmonteur','witgoedmonteur'],plumbing:['loodgieter','loodgieter'],electrical:['erkend elektricien','elektricien'],electronics:['elektronicareparateur','elektronicareparateur'],surface:['schilder of herstelbedrijf','schilder herstelbedrijf'],mechanical:['reparateur','reparateur'],safety:['erkende vakman','vakman'],unknown:['geschikte vakman','reparateur']},
-    en:{cleaning:['professional cleaner','professional cleaner'],furniture:['furniture repair specialist','furniture repair'],appliance:['appliance repair technician','appliance repair'],plumbing:['plumber','plumber'],electrical:['certified electrician','electrician'],electronics:['electronics repair specialist','electronics repair'],surface:['surface repair specialist','surface repair'],mechanical:['repair technician','repair technician'],safety:['certified professional','repair professional'],unknown:['appropriate professional','repair professional']},
-    de:{cleaning:['professionelle Reinigung','Polsterreinigung'],furniture:['Möbelreparatur','Möbelreparatur'],appliance:['Hausgeräte-Techniker','Hausgeräte Reparatur'],plumbing:['Installateur','Installateur'],electrical:['Elektrofachbetrieb','Elektriker'],electronics:['Elektronik-Reparatur','Elektronik Reparatur'],surface:['Oberflächenreparatur','Oberflächenreparatur'],mechanical:['Reparaturbetrieb','Reparaturbetrieb'],safety:['Fachbetrieb','Fachbetrieb'],unknown:['passender Fachbetrieb','Reparaturbetrieb']}
+    nl:{footwear_textile:['schoenmaker','schoenmaker'],cleaning:['professionele reiniger','professionele reiniger'],furniture:['meubelhersteller','meubelhersteller'],appliance:['witgoedmonteur','witgoedmonteur'],plumbing:['loodgieter','loodgieter'],electrical:['erkend elektricien','elektricien'],electronics:['elektronicareparateur','elektronicareparateur'],surface:['schilder of herstelbedrijf','schilder herstelbedrijf'],mechanical:['reparateur','reparateur'],aquarium_pet:['aquariumspecialist','aquariumwinkel'],garden_outdoor:['tuin- of klusbedrijf','klusbedrijf tuin'],vehicle_bicycle:['fietsenmaker','fietsenmaker'],kitchen_household:['reparateur','huishoudelijke reparatie'],hobby_diy:['klusbedrijf','klusbedrijf'],safety:['erkende vakman','vakman'],other:['geschikte vakman','reparateur']},
+    en:{footwear_textile:['shoe repair specialist','shoe repair'],cleaning:['professional cleaner','professional cleaner'],furniture:['furniture repair specialist','furniture repair'],appliance:['appliance repair technician','appliance repair'],plumbing:['plumber','plumber'],electrical:['certified electrician','electrician'],electronics:['electronics repair specialist','electronics repair'],surface:['surface repair specialist','surface repair'],mechanical:['repair technician','repair technician'],aquarium_pet:['aquarium specialist','aquarium shop'],garden_outdoor:['garden or handyman service','handyman garden'],vehicle_bicycle:['bicycle repair shop','bicycle repair'],kitchen_household:['repair technician','household repair'],hobby_diy:['handyman','handyman'],safety:['certified professional','repair professional'],other:['appropriate professional','repair professional']},
+    de:{footwear_textile:['Schuhmacher','Schuhmacher'],cleaning:['professionelle Reinigung','professionelle Reinigung'],furniture:['Möbelreparatur','Möbelreparatur'],appliance:['Hausgeräte-Techniker','Hausgeräte Reparatur'],plumbing:['Installateur','Installateur'],electrical:['Elektrofachbetrieb','Elektriker'],electronics:['Elektronik-Reparatur','Elektronik Reparatur'],surface:['Oberflächenreparatur','Oberflächenreparatur'],mechanical:['Reparaturbetrieb','Reparaturbetrieb'],aquarium_pet:['Aquaristik-Fachbetrieb','Aquaristik'],garden_outdoor:['Garten- oder Handwerksbetrieb','Handwerker Garten'],vehicle_bicycle:['Fahrradwerkstatt','Fahrradwerkstatt'],kitchen_household:['Reparaturbetrieb','Haushaltsreparatur'],hobby_diy:['Handwerksbetrieb','Handwerker'],safety:['Fachbetrieb','Fachbetrieb'],other:['passender Fachbetrieb','Reparaturbetrieb']}
   };
-  return (m[currentLang][type]||m[currentLang].unknown);
+  return (m[currentLang][type]||m[currentLang].other);
 }
 let lastDiagnosis=null;
 
@@ -1959,129 +2021,142 @@ function calcFixScore(d){
   if(diff>1)s-=(diff-1)*8;
   if(d.professionalRecommended===true)s-=16;
   if(d.confidence==='laag')s-=10;
+  if(d.needMoreInfo===true)s-=12;
   return Math.max(10,Math.min(96,Math.round(s)));
+}
+
+function fillList(selector,items,limit=8){
+  const el=q(selector);el.innerHTML='';
+  (Array.isArray(items)?items:[]).filter(Boolean).slice(0,limit).forEach(v=>{
+    const li=document.createElement('li');li.textContent=v;el.appendChild(li);
+  });
 }
 
 function renderDiagnosis(d){
   lastDiagnosis=d;
   const copy={
     nl:{
-      eyebrow:'ANALYSE AFGEROND',heading:'Jouw Fixdit-plan',next:'DIT MOET JE NU DOEN',
+      eyebrow:'ANALYSE AFGEROND',projectEyebrow:'PROJECTPLAN KLAAR',heading:'Jouw Fixdit-plan',projectHeading:'Jouw Fixdit-project',next:'DIT MOET JE NU DOEN',
       confidence:'Zekerheid',risk:'Risico',time:'Tijd',cost:'Kosten zelf',difficulty:'Moeilijkheid',proCost:'Vakman',
       fixscore:'Fixscore',fixHelp:'Hoe geschikt om zelf te doen',route:'Slimme route',routeHelp:'Beste volgende stap',
-      saving:'Bespaarmeter',savingHelp:'Mogelijke besparing',steps:'Stappenplan',stepsHint:'Begin met stap 1',
-      causes:'Mogelijke oorzaken',avoid:'Niet doen',danger:'Stop en zorg eerst voor veiligheid',
+      saving:'Bespaarmeter',savingHelp:'Mogelijke besparing',steps:'Stappenplan',step:'Stap',stepsHint:'Begin met stap 1',
+      causes:'Mogelijke oorzaken',attention:'Aandachtspunten',avoid:'Niet doen',danger:'Stop en zorg eerst voor veiligheid',
       call:'Bel 112',gasCall:'Bel 0800-9009',help:'Wie moet je bellen?',nearby:'Vind hulp in de buurt',
       copy:'Maak bericht voor vakman',copied:'Bericht gekopieerd',saved:'Opgeslagen in Fixpaspoort',
       save:'Bewaar in Fixpaspoort',follow:'Maak vervolgfoto',feedback:'Heeft dit geholpen?',
       yes:'👍 Ja',no:'👎 Nog niet',thanks:'Bedankt voor je feedback',
-      routeSelf:'Zelf proberen',routeCare:'Voorzichtig proberen',routePro:'Vakman slimmer',routeStop:'Direct stoppen',
-      object:'Object',unknown:'onbekend',
-      types:{cleaning:'Schoonmaken',furniture:'Meubel',appliance:'Apparaat',plumbing:'Loodgieterij',electrical:'Elektrisch',electronics:'Elektronica',surface:'Muur & vloer',mechanical:'Mechanisch',safety:'Veiligheid',unknown:'Algemene fix'}
+      routeSelf:'Zelf doen',routeCare:'Voorzichtig uitvoeren',routePro:'Vakman slimmer',routeStop:'Direct stoppen',routeMore:'Meer info nodig',
+      object:'Object',unknown:'onbekend',materials:'Benodigd materiaal',tools:'Gereedschap',measurements:'Maten / controles',
+      moreInfo:'MEER INFORMATIE NODIG',moreInfoTitle:'Eén detail maakt het plan nauwkeuriger',completion:'Zo controleer je of het gelukt is',
+      types:{footwear_textile:'Schoenen & textiel',cleaning:'Schoonmaken',furniture:'Meubel',appliance:'Apparaat',plumbing:'Loodgieterswerk',electrical:'Elektrisch',electronics:'Elektronica',surface:'Muur & vloer',mechanical:'Mechanisch',aquarium_pet:'Aquarium',garden_outdoor:'Tuin & buiten',vehicle_bicycle:'Fiets & vervoer',kitchen_household:'Keuken & huishouden',hobby_diy:'DIY & hobby',safety:'Veiligheid',other:'Overig'},
+      intents:{repair:'Repareren',clean:'Schoonmaken',maintain:'Onderhouden',assemble:'Monteren',install:'Installeren',build:'Bouwen',restore:'Restaureren',troubleshoot:'Onderzoeken',inspect:'Inspecteren'}
     },
     en:{
-      eyebrow:'ANALYSIS COMPLETE',heading:'Your Fixdit plan',next:'WHAT TO DO NOW',
+      eyebrow:'ANALYSIS COMPLETE',projectEyebrow:'PROJECT PLAN READY',heading:'Your Fixdit plan',projectHeading:'Your Fixdit project',next:'WHAT TO DO NOW',
       confidence:'Confidence',risk:'Risk',time:'Time',cost:'DIY cost',difficulty:'Difficulty',proCost:'Professional',
       fixscore:'Fix score',fixHelp:'How suitable for DIY',route:'Smart route',routeHelp:'Best next step',
-      saving:'Savings meter',savingHelp:'Potential saving',steps:'Step-by-step plan',stepsHint:'Start with step 1',
-      causes:'Possible causes',avoid:'Avoid',danger:'Stop and make the situation safe first',
+      saving:'Savings meter',savingHelp:'Potential saving',steps:'Step-by-step plan',step:'Step',stepsHint:'Start with step 1',
+      causes:'Possible causes',attention:'Key considerations',avoid:'Avoid',danger:'Stop and make the situation safe first',
       call:'Call 112',gasCall:'Call 0800-9009',help:'Who should you call?',nearby:'Find help nearby',
       copy:'Create message for professional',copied:'Message copied',saved:'Saved to Fix Passport',
       save:'Save to Fix Passport',follow:'Take follow-up photo',feedback:'Did this help?',
       yes:'👍 Yes',no:'👎 Not yet',thanks:'Thanks for your feedback',
-      routeSelf:'Try it yourself',routeCare:'Try with caution',routePro:'Professional is smarter',routeStop:'Stop now',
-      object:'Object',unknown:'unknown',
-      types:{cleaning:'Cleaning',furniture:'Furniture',appliance:'Appliance',plumbing:'Plumbing',electrical:'Electrical',electronics:'Electronics',surface:'Wall & floor',mechanical:'Mechanical',safety:'Safety',unknown:'General fix'}
+      routeSelf:'Do it yourself',routeCare:'Proceed carefully',routePro:'Professional is smarter',routeStop:'Stop now',routeMore:'Need more info',
+      object:'Object',unknown:'unknown',materials:'Materials',tools:'Tools',measurements:'Measurements / checks',
+      moreInfo:'MORE INFORMATION NEEDED',moreInfoTitle:'One detail will make the plan more precise',completion:'How to check the result',
+      types:{footwear_textile:'Shoes & textiles',cleaning:'Cleaning',furniture:'Furniture',appliance:'Appliance',plumbing:'Plumbing',electrical:'Electrical',electronics:'Electronics',surface:'Wall & floor',mechanical:'Mechanical',aquarium_pet:'Aquarium',garden_outdoor:'Garden & outdoor',vehicle_bicycle:'Bike & transport',kitchen_household:'Kitchen & household',hobby_diy:'DIY & hobby',safety:'Safety',other:'Other'},
+      intents:{repair:'Repair',clean:'Clean',maintain:'Maintain',assemble:'Assemble',install:'Install',build:'Build',restore:'Restore',troubleshoot:'Troubleshoot',inspect:'Inspect'}
     },
     de:{
-      eyebrow:'ANALYSE ABGESCHLOSSEN',heading:'Dein Fixdit-Plan',next:'DAS SOLLTEST DU JETZT TUN',
+      eyebrow:'ANALYSE ABGESCHLOSSEN',projectEyebrow:'PROJEKTPLAN FERTIG',heading:'Dein Fixdit-Plan',projectHeading:'Dein Fixdit-Projekt',next:'DAS SOLLTEST DU JETZT TUN',
       confidence:'Sicherheit',risk:'Risiko',time:'Zeit',cost:'Kosten selbst',difficulty:'Schwierigkeit',proCost:'Fachkraft',
       fixscore:'Fixscore',fixHelp:'Wie gut selbst machbar',route:'Smarte Route',routeHelp:'Bester nächster Schritt',
-      saving:'Sparanzeige',savingHelp:'Mögliche Ersparnis',steps:'Schritt-für-Schritt-Plan',stepsHint:'Beginne mit Schritt 1',
-      causes:'Mögliche Ursachen',avoid:'Vermeiden',danger:'Stopp und zuerst die Situation sichern',
+      saving:'Sparanzeige',savingHelp:'Mögliche Ersparnis',steps:'Schritt-für-Schritt-Plan',step:'Schritt',stepsHint:'Beginne mit Schritt 1',
+      causes:'Mögliche Ursachen',attention:'Wichtige Punkte',avoid:'Vermeiden',danger:'Stopp und zuerst die Situation sichern',
       call:'112 anrufen',gasCall:'0800-9009 anrufen',help:'Wen solltest du anrufen?',nearby:'Hilfe in der Nähe finden',
       copy:'Nachricht für Fachbetrieb',copied:'Nachricht kopiert',saved:'Im Fix-Pass gespeichert',
       save:'Im Fix-Pass speichern',follow:'Folgefoto machen',feedback:'Hat das geholfen?',
       yes:'👍 Ja',no:'👎 Noch nicht',thanks:'Danke für dein Feedback',
-      routeSelf:'Selbst versuchen',routeCare:'Vorsichtig versuchen',routePro:'Fachbetrieb sinnvoller',routeStop:'Sofort stoppen',
-      object:'Objekt',unknown:'unbekannt',
-      types:{cleaning:'Reinigung',furniture:'Möbel',appliance:'Gerät',plumbing:'Sanitär',electrical:'Elektrik',electronics:'Elektronik',surface:'Wand & Boden',mechanical:'Mechanisch',safety:'Sicherheit',unknown:'Allgemeine Reparatur'}
+      routeSelf:'Selbst machen',routeCare:'Vorsichtig ausführen',routePro:'Fachbetrieb sinnvoller',routeStop:'Sofort stoppen',routeMore:'Mehr Infos nötig',
+      object:'Objekt',unknown:'unbekannt',materials:'Material',tools:'Werkzeug',measurements:'Maße / Kontrollen',
+      moreInfo:'MEHR INFORMATIONEN NÖTIG',moreInfoTitle:'Ein Detail macht den Plan genauer',completion:'So prüfst du das Ergebnis',
+      types:{footwear_textile:'Schuhe & Textilien',cleaning:'Reinigung',furniture:'Möbel',appliance:'Gerät',plumbing:'Sanitär',electrical:'Elektrik',electronics:'Elektronik',surface:'Wand & Boden',mechanical:'Mechanisch',aquarium_pet:'Aquarium',garden_outdoor:'Garten & Außenbereich',vehicle_bicycle:'Fahrrad & Transport',kitchen_household:'Küche & Haushalt',hobby_diy:'DIY & Hobby',safety:'Sicherheit',other:'Sonstiges'},
+      intents:{repair:'Reparieren',clean:'Reinigen',maintain:'Warten',assemble:'Montieren',install:'Installieren',build:'Bauen',restore:'Restaurieren',troubleshoot:'Untersuchen',inspect:'Prüfen'}
     }
   }[currentLang];
 
   const stop=d.risk==='stop';
   const high=d.risk==='hoog';
+  const project=['build','assemble','install'].includes(d.intent);
 
-  q('#resultEyebrow').textContent=copy.eyebrow;
-  q('#resultHeading').textContent=copy.heading;
+  q('#resultEyebrow').textContent=project?copy.projectEyebrow:copy.eyebrow;
+  q('#resultHeading').textContent=project?copy.projectHeading:copy.heading;
   q('#nextActionLabel').textContent=copy.next;
 
-  const bits=[d.device,d.brand,d.model].filter(v=>v&&![copy.unknown,'onbekend','unknown','unbekannt'].includes(String(v).toLowerCase()));
-  if(d.errorCode && !['geen','none','keine','kein'].includes(String(d.errorCode).toLowerCase())) bits.push(d.errorCode);
-  q('#resultObject').textContent=bits.length?bits.join(' · '):copy.object;
+  const bits=[d.device,d.objectSubtype,d.brand,d.model].filter(v=>v&&![copy.unknown,'onbekend','unknown','unbekannt','geen','none','keine'].includes(String(v).toLowerCase()));
+  const unique=[...new Set(bits)];
+  if(d.errorCode && !['geen','none','keine','kein','n.v.t.','n/a'].includes(String(d.errorCode).toLowerCase())) unique.push(d.errorCode);
+  q('#resultObject').textContent=unique.length?unique.join(' · '):copy.object;
 
   q('#solutionTitle').textContent=d.solutionTitle||d.summary||copy.heading;
   q('#whatNow').textContent=d.whatToDoNow||d.summary||'—';
-  q('#problemType').textContent=copy.types[d.problemType]||copy.types.unknown;
+  const intentText=copy.intents[d.intent]||copy.intents.repair;
+  const typeText=copy.types[d.problemType]||copy.types.other;
+  q('#problemType').classList.add('intentTag');
+  q('#problemType').innerHTML=`${escapeHtml(intentText)} <span class="intentDot">·</span> ${escapeHtml(typeText)}`;
 
-  q('#confidenceLabel').textContent=copy.confidence;
-  q('#riskLabel').textContent=copy.risk;
-  q('#timeLabel').textContent=copy.time;
-  q('#costLabel').textContent=copy.cost;
-  q('#difficultyLabel').textContent=copy.difficulty;
-  q('#proCostLabel').textContent=copy.proCost;
-  q('#confidence').textContent=levelText(d.confidence);
-  q('#risk').textContent=levelText(d.risk);
-  q('#time').textContent=d.estimatedTime||'—';
-  q('#cost').textContent=d.selfRepairCost||'—';
-  q('#difficulty').textContent=Number.isFinite(Number(d.difficulty))?`${d.difficulty}/5`:'—';
-  q('#proCost').textContent=d.professionalCost||'—';
+  q('#confidenceLabel').textContent=copy.confidence;q('#riskLabel').textContent=copy.risk;q('#timeLabel').textContent=copy.time;
+  q('#costLabel').textContent=copy.cost;q('#difficultyLabel').textContent=copy.difficulty;q('#proCostLabel').textContent=copy.proCost;
+  q('#confidence').textContent=levelText(d.confidence);q('#risk').textContent=levelText(d.risk);q('#time').textContent=d.estimatedTime||'—';
+  q('#cost').textContent=d.selfRepairCost||'—';q('#difficulty').textContent=Number.isFinite(Number(d.difficulty))?`${d.difficulty}/5`:'—';q('#proCost').textContent=d.professionalCost||'—';
 
   const score=calcFixScore(d);
-  q('#fixScoreLabel').textContent=copy.fixscore;
-  q('#fixScore').textContent=`${score}/100`;
-  q('#fixScoreHelp').textContent=copy.fixHelp;
+  q('#fixScoreLabel').textContent=copy.fixscore;q('#fixScore').textContent=`${score}/100`;q('#fixScoreHelp').textContent=copy.fixHelp;
 
   let route=copy.routeSelf;
   if(stop)route=copy.routeStop;
+  else if(d.needMoreInfo===true)route=copy.routeMore;
   else if(high||d.professionalRecommended===true)route=copy.routePro;
   else if(d.risk==='middel'||Number(d.difficulty)>=4)route=copy.routeCare;
-  q('#routeLabel').textContent=copy.route;
-  q('#smartRoute').textContent=route;
-  q('#routeHelp').textContent=copy.routeHelp;
+  q('#routeLabel').textContent=copy.route;q('#smartRoute').textContent=route;q('#routeHelp').textContent=copy.routeHelp;
 
-  const diy=parseMoneyMid(d.selfRepairCost), pro=parseMoneyMid(d.professionalCost);
+  const diy=parseMoneyMid(d.selfRepairCost),pro=parseMoneyMid(d.professionalCost);
   const saving=(diy!=null&&pro!=null&&pro>diy)?Math.round(pro-diy):null;
-  q('#savingLabel').textContent=copy.saving;
-  q('#saving').textContent=saving!=null?`± €${saving}`:'—';
-  q('#savingHelp').textContent=copy.savingHelp;
+  q('#savingLabel').textContent=copy.saving;q('#saving').textContent=saving!=null?`± €${saving}`:'—';q('#savingHelp').textContent=copy.savingHelp;
 
-  q('#stepsTitle').textContent=copy.steps;
-  q('#stepsHint').textContent=copy.stepsHint;
-  q('#causesTitle').textContent=copy.causes;
-  q('#avoidTitle').textContent=copy.avoid;
+  // Materialen, gereedschap en kritieke maten
+  const materials=Array.isArray(d.materials)?d.materials.filter(Boolean):[];
+  const tools=Array.isArray(d.tools)?d.tools.filter(Boolean):[];
+  const measurements=Array.isArray(d.measurements)?d.measurements.filter(Boolean):[];
+  q('#materialsTitle').textContent=copy.materials;q('#toolsTitle').textContent=copy.tools;q('#measurementsTitle').textContent=copy.measurements;
+  q('#materialsCard').hidden=!materials.length;q('#toolsCard').hidden=!tools.length;q('#measurementsCard').hidden=!measurements.length;
+  q('#universalNeeds').hidden=!(materials.length||tools.length||measurements.length);
+  fillList('#materialsList',materials);fillList('#toolsList',tools);fillList('#measurementsList',measurements);
 
+  // Gerichte vervolgvraag/foto als kritieke info ontbreekt
+  q('#moreInfoLabel').textContent=copy.moreInfo;q('#moreInfoTitle').textContent=copy.moreInfoTitle;
+  q('#moreInfoBox').hidden=!d.needMoreInfo;
+  q('#followUpQuestion').textContent=d.followUpQuestion||'';
+  q('#followUpPhotoText').textContent=d.followUpPhoto||'';
+  q('#followUpPhotoText').style.display=d.followUpPhoto?'block':'none';
+
+  q('#stepsTitle').textContent=copy.steps;q('#stepsHint').textContent=copy.stepsHint;
   q('#steps').innerHTML='';
   const steps=Array.isArray(d.safeSteps)?d.safeSteps.filter(Boolean):[];
-  steps.slice(0,7).forEach((s,i)=>{
-    const el=document.createElement('div');
-    el.className='step v10';
-    el.innerHTML=`<i>${i+1}</i><div><b>${copy.steps} ${i+1}</b><p>${escapeHtml(s)}</p></div>`;
+  steps.slice(0,8).forEach((s,i)=>{
+    const el=document.createElement('div');el.className='step v10';
+    el.innerHTML=`<i>${i+1}</i><div><b>${copy.step} ${i+1}</b><p>${escapeHtml(s)}</p></div>`;
     q('#steps').appendChild(el);
   });
 
-  q('#causes').innerHTML='';
-  const causes=Array.isArray(d.possibleCauses)?d.possibleCauses.filter(Boolean):[];
-  (causes.length?causes:[d.summary||'—']).slice(0,5).forEach(s=>{
-    const li=document.createElement('li');li.textContent=s;q('#causes').appendChild(li);
-  });
+  const checks=Array.isArray(d.completionChecks)?d.completionChecks.filter(Boolean):[];
+  q('#completionTitle').textContent=copy.completion;q('#completionBox').hidden=!checks.length;fillList('#completionList',checks,6);
 
+  q('#causesTitle').textContent=project?copy.attention:copy.causes;q('#avoidTitle').textContent=copy.avoid;
+  const causes=Array.isArray(d.possibleCauses)?d.possibleCauses.filter(Boolean):[];
+  fillList('#causes',causes.length?causes:[d.summary||'—'],5);
   const avoid=Array.isArray(d.avoid)?d.avoid.filter(Boolean):[];
-  q('#avoid').innerHTML='';
-  q('#avoidBox').style.display=avoid.length?'block':'none';
-  avoid.slice(0,5).forEach(s=>{
-    const li=document.createElement('li');li.textContent=s;q('#avoid').appendChild(li);
-  });
+  q('#avoidBox').style.display=avoid.length?'block':'none';fillList('#avoid',avoid,5);
 
   const all=[d.summary,d.solutionTitle,d.whatToDoNow,d.stopReason].filter(Boolean).join(' ').toLowerCase();
   const gas=/gaslucht|gaslek|gas leak|smell gas|gasgeruch|gasleck/.test(all);
@@ -2093,74 +2168,38 @@ function renderDiagnosis(d){
   if(stop){
     q('#dangerTitle').textContent=copy.danger;
     q('#dangerText').textContent=gas
-      ? (currentLang==='nl'?'Ruik je gas? Ventileer, maak geen vuur, bedien geen elektrische schakelaars en ga naar buiten. Bel 0800-9009. Bij direct levensgevaar: 112.':
-         currentLang==='de'?'Gasgeruch? Lüften, kein Feuer, keine elektrischen Schalter benutzen und nach draußen gehen. 0800-9009 anrufen. Bei akuter Lebensgefahr: 112.':
-         'Smell gas? Ventilate, do not use fire or electrical switches, go outside and call 0800-9009. For immediate danger to life: 112.')
-      : (d.stopReason||copy.danger);
-    q('#dangerCall').textContent=gas?copy.gasCall:copy.call;
-    q('#dangerCall').href=gas?'tel:08009009':'tel:112';
+      ?(currentLang==='nl'?'Ruik je gas? Ventileer, maak geen vuur, bedien geen elektrische schakelaars en ga naar buiten. Bel 0800-9009. Bij direct levensgevaar: 112.':currentLang==='de'?'Gasgeruch? Lüften, kein Feuer, keine elektrischen Schalter benutzen und nach draußen gehen. 0800-9009 anrufen. Bei akuter Lebensgefahr: 112.':'Smell gas? Ventilate, do not use fire or electrical switches, go outside and call 0800-9009. For immediate danger to life: 112.')
+      :(d.stopReason||copy.danger);
+    q('#dangerCall').textContent=gas?copy.gasCall:copy.call;q('#dangerCall').href=gas?'tel:08009009':'tel:112';
   }
 
-  const [trade,query]=tradeFor(d.problemType||'unknown');
+  const fallback=tradeFor(d.problemType||'other');
+  const trade=(d.professionalType&&![copy.unknown,'onbekend','unknown','unbekannt','n.v.t.','n/a'].includes(String(d.professionalType).toLowerCase()))?d.professionalType:fallback[0];
+  const query=`${fallback[1]} Nederland`;
   const helpNeeded=stop||high||d.professionalRecommended===true||Number(d.difficulty)>=4;
   q('#helpBox').hidden=!helpNeeded;
   if(helpNeeded){
     q('#helpTitle').textContent=copy.help;
-    q('#helpText').textContent=currentLang==='nl'
-      ?`Als de veilige stappen niet helpen, zoek dan een ${trade}. Fixdit kan je probleem alvast duidelijk overdragen.`
-      :currentLang==='de'
-      ?`Wenn die sicheren Schritte nicht helfen, suche einen ${trade}. Fixdit kann das Problem bereits klar für den Fachbetrieb zusammenfassen.`
-      :`If the safe steps do not help, look for a ${trade}. Fixdit can summarize the problem clearly for them.`;
-    q('#nearbyPro').textContent=copy.nearby;
-    q('#nearbyPro').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    q('#helpText').textContent=currentLang==='nl'?`Als de veilige stappen niet helpen, zoek dan een ${trade}. Fixdit kan je probleem of project alvast duidelijk overdragen.`:currentLang==='de'?`Wenn die sicheren Schritte nicht helfen, suche ${trade}. Fixdit kann Problem oder Projekt klar zusammenfassen.`:`If the safe steps do not help, look for ${trade}. Fixdit can summarize the problem or project clearly.`;
+    q('#nearbyPro').textContent=copy.nearby;q('#nearbyPro').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     q('#copyPro').textContent=copy.copy;
     q('#copyPro').onclick=async()=>{
-      const msg=[
-        d.device||'',
-        d.brand||'',
-        d.model||'',
-        d.errorCode?`Code: ${d.errorCode}`:'',
-        '',
-        d.summary||'',
-        '',
-        d.whatToDoNow||'',
-        '',
-        `${copy.risk}: ${levelText(d.risk)}`
-      ].filter(Boolean).join('\n');
-      try{await navigator.clipboard.writeText(msg);showToast(copy.copied)}
-      catch{prompt(copy.copy,msg)}
+      const msg=[d.device||'',d.objectSubtype||'',d.brand||'',d.model||'',d.errorCode?`Code: ${d.errorCode}`:'','',d.summary||'','',d.whatToDoNow||'','',`${copy.risk}: ${levelText(d.risk)}`].filter(Boolean).join('\n');
+      try{await navigator.clipboard.writeText(msg);showToast(copy.copied)}catch{prompt(copy.copy,msg)}
     };
   }
 
-  q('#saveFix').textContent=copy.save;
-  q('#followupPhoto').textContent=copy.follow;
-  q('#feedbackTitle').textContent=copy.feedback;
-  q('#feedbackYes').textContent=copy.yes;
-  q('#feedbackNo').textContent=copy.no;
-  q('#feedbackYes').classList.remove('selected');
-  q('#feedbackNo').classList.remove('selected');
+  q('#saveFix').textContent=copy.save;q('#followupPhoto').textContent=copy.follow;q('#feedbackTitle').textContent=copy.feedback;
+  q('#feedbackYes').textContent=copy.yes;q('#feedbackNo').textContent=copy.no;q('#feedbackYes').classList.remove('selected');q('#feedbackNo').classList.remove('selected');
 
   q('#saveFix').onclick=()=>{
-    let saved=[];
-    try{saved=JSON.parse(localStorage.getItem('fixdit_passport_v1')||'[]')}catch{}
+    let saved=[];try{saved=JSON.parse(localStorage.getItem('fixdit_passport_v1')||'[]')}catch{}
     saved.unshift({date:new Date().toISOString(),language:currentLang,problem:q('#problem').value.trim(),diagnosis:d});
-    localStorage.setItem('fixdit_passport_v1',JSON.stringify(saved.slice(0,20)));
-    showToast(copy.saved);
+    localStorage.setItem('fixdit_passport_v1',JSON.stringify(saved.slice(0,20)));showToast(copy.saved);
   };
-
-  q('#followupPhoto').onclick=()=>{
-    closeModal();
-    setTimeout(()=>q('#photoInput').click(),180);
-  };
-
-  q('#feedbackYes').onclick=()=>{
-    q('#feedbackYes').classList.add('selected');q('#feedbackNo').classList.remove('selected');
-    localStorage.setItem('fixdit_last_feedback','yes');showToast(copy.thanks);
-  };
-  q('#feedbackNo').onclick=()=>{
-    q('#feedbackNo').classList.add('selected');q('#feedbackYes').classList.remove('selected');
-    localStorage.setItem('fixdit_last_feedback','no');showToast(copy.thanks);
-  };
+  q('#followupPhoto').onclick=()=>{closeModal();setTimeout(()=>q('#photoInput').click(),180)};
+  q('#feedbackYes').onclick=()=>{q('#feedbackYes').classList.add('selected');q('#feedbackNo').classList.remove('selected');localStorage.setItem('fixdit_last_feedback','yes');showToast(copy.thanks)};
+  q('#feedbackNo').onclick=()=>{q('#feedbackNo').classList.add('selected');q('#feedbackYes').classList.remove('selected');localStorage.setItem('fixdit_last_feedback','no');showToast(copy.thanks)};
 }
 function showToast(text){const t=q('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 
