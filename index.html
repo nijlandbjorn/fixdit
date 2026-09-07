@@ -1470,9 +1470,50 @@ h1{
 .intentDot{opacity:.7}
 @media(max-width:680px){.universalNeeds{grid-template-columns:1fr}.supplyCard{padding:12px}}
 
+
+/* ===== HERO CONNECTED FINAL V12 ===== */
+@media(max-width:680px){
+  /*
+    Keep the CTA about 5 mm lower, but extend the hero image into that
+    space so the image visually meets the green bar.
+  */
+  .ctaRow{
+    margin-top:22px!important;
+  }
+
+  .heroVisual{
+    overflow:visible!important;
+    align-self:end!important;
+  }
+
+  .heroVisual img{
+    width:122%!important;
+    max-width:none!important;
+    height:auto!important;
+    flex:0 0 auto!important;
+    object-fit:contain!important;
+    object-position:right bottom!important;
+    transform:translateY(22px) scale(1.08)!important;
+    transform-origin:right bottom!important;
+  }
+}
+
+@media(max-width:410px){
+  .ctaRow{
+    margin-top:21px!important;
+  }
+
+  .heroVisual img{
+    width:120%!important;
+    transform:translateY(21px) scale(1.08)!important;
+    transform-origin:right bottom!important;
+  }
+}
+
 </style>
 </head>
 <body>
+<!-- FIXDIT-HERO-CONNECTED-V12 -->
 <!-- FIXDIT-UNIVERSAL-V11 -->
 <!-- FIXDIT-POLISH-V9 -->
 <!-- FIXDIT-IMAGE-LARGER-V8 -->
