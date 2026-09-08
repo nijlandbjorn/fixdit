@@ -1646,7 +1646,7 @@ body.modalOpen{overflow:hidden}
 </style>
 <link rel="stylesheet" href="fixdit-ui-v18.css">
 <link rel="stylesheet" href="fixdit-how-icons.css">
-<link rel="stylesheet" href="fixdit-result-v19.css">
+<link rel="stylesheet" href="fixdit-result-v19.css?v=19.1">
 </head>
 <body>
 <!-- FIXDIT RELEASE 6.0 | four-axis architecture | approved hero preserved -->
@@ -2292,7 +2292,7 @@ function renderDiagnosis(raw){
  const score=calcFixScore(d);q('#fixScoreLabel').textContent=c.fixscore;q('#fixScore').textContent=score==null?'—':`${score}/100`;q('#fixScoreHelp').textContent=score==null?{nl:'Geen onderbouwde score',en:'No supported score',de:'Keine belegte Bewertung'}[currentLang]:c.fixHelp;
  const routeMap={stop:c.routeStop,more_info:c.routeMore,professional:c.routePro,caution:c.routeCare,self:c.routeSelf};q('#routeLabel').textContent=c.route;q('#smartRoute').textContent=routeMap[d.route]||c.routeMore;q('#routeHelp').textContent=c.routeHelp;
  const diy=parseMoneyMid(d.selfRepairCost),pro=parseMoneyMid(d.professionalCost);const saving=d.route!=='more_info'&&diy!=null&&pro!=null&&pro>diy?Math.round(pro-diy):null;q('#savingLabel').textContent=c.saving;q('#saving').textContent=saving!=null?`± €${saving}`:'—';q('#savingHelp').textContent=c.savingHelp;
- const cleanItems=arr=>[...new Set((Array.isArray(arr)?arr:[]).map(cleanResultValue).filter(Boolean))];const materials=cleanItems(d.materials),tools=cleanItems(d.tools),measurements=cleanItems(d.measurements);
+ const cleanItems=arr=>[...new Set((Array.isArray(arr)?arr:[]).map(cleanResultValue).filter(Boolean))];const tools=cleanItems(d.tools),toolNames=new Set(tools.map(v=>v.toLocaleLowerCase()));const materials=cleanItems(d.materials).filter(v=>!toolNames.has(v.toLocaleLowerCase())),measurements=cleanItems(d.measurements);
  q('#materialsTitle').textContent=c.materials;q('#toolsTitle').textContent=c.tools;q('#measurementsTitle').textContent=c.measurements;q('#materialsCard').hidden=!materials.length;q('#toolsCard').hidden=!tools.length;q('#measurementsCard').hidden=!measurements.length;q('#universalNeeds').hidden=!(materials.length||tools.length||measurements.length);fillList('#materialsList',materials);fillList('#toolsList',tools);fillList('#measurementsList',measurements);
  q('#moreInfoLabel').textContent=c.moreInfo;q('#moreInfoTitle').textContent=c.moreInfoTitle;q('#moreInfoBox').hidden=d.route!=='more_info'&&!d.needMoreInfo;q('#followUpQuestion').textContent=cleanResultValue(d.followUpQuestion);q('#followUpPhotoText').textContent=cleanResultValue(d.followUpPhoto);q('#followUpPhotoText').style.display=cleanResultValue(d.followUpPhoto)?'block':'none';
  q('#stepsTitle').textContent=c.steps;q('#stepsHint').textContent=c.stepsHint;q('#steps').innerHTML='';const steps=Array.isArray(d.safeSteps)?d.safeSteps.filter((s,i)=>s&&(d.route!=='more_info'||d.stepKinds?.[i]==='inspection')):[];steps.slice(0,8).forEach((s,i)=>{const el=document.createElement('div');el.className='step v10';el.innerHTML=`<i>${i+1}</i><div><b>${c.step} ${i+1}</b><p>${escapeHtml(s)}</p></div>`;q('#steps').appendChild(el)});
@@ -2406,7 +2406,7 @@ applyLanguage(currentLang);renderCarChoices();updateCarPanel();loadStatus();trac
 </script>
 
 <script src="v8-compat.js"></script>
-<script src="fixdit-result-v19.js"></script>
+<script src="fixdit-result-v19.js?v=19.1"></script>
 </body>
 </html>
   

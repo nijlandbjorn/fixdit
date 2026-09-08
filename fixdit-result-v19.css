@@ -447,14 +447,16 @@
 @media(max-width:680px){
   #overlay .sheet{
     width:min(100%,680px)!important;
-    max-height:94vh!important;
+    max-height:calc(100vh - 28px)!important;
+    max-height:calc(100dvh - 28px)!important;
     padding:16px!important;
-    border-radius:22px 22px 0 0!important;
+    border-radius:22px!important;
   }
 
   #overlay{
-    align-items:end!important;
-    padding:0!important;
+    align-items:center!important;
+    justify-items:center!important;
+    padding:14px!important;
   }
 
   #result .resultTopCopy h3{
@@ -521,4 +523,10 @@
   .resultDetailsV19 .detailsChevron{
     transition:none;
   }
+}
+
+/* Keep the analysis dialog centered on mobile, including short screens. */
+@media(max-width:680px){
+  #overlay{align-items:center!important;justify-items:center!important;padding:14px!important;box-sizing:border-box;}
+  #overlay .sheet{min-height:0!important;margin:0!important;overflow-y:auto!important;box-sizing:border-box;}
 }

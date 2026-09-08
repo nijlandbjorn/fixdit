@@ -85,6 +85,7 @@
     [
       top,
       next,
+      details,
       more,
       needStage,
       needs,
@@ -94,8 +95,7 @@
       completion,
       pro,
       feedback,
-      actions,
-      details
+      actions
     ].filter(Boolean).forEach(el=>result.appendChild(el));
 
     function sync(){
