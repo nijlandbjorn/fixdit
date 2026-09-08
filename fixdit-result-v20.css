@@ -1,0 +1,50 @@
+/* Fixdit Result V20 additions */
+.youtubeGuideV20{
+  margin:16px 0 0;
+  padding:16px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  border:1px solid #dbe7df;
+  border-radius:16px;
+  background:#f8fbf9;
+}
+.youtubeGuideV20[hidden]{display:none!important;}
+.youtubeGuideIconV20{
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#fff;
+  border:1px solid #e4ebe6;
+  font-size:15px;
+}
+.youtubeGuideBodyV20{min-width:0;}
+.youtubeGuideTitleV20{
+  display:block;
+  margin:1px 0 5px;
+  font-size:14px;
+}
+.youtubeGuideSubV20{
+  margin:0 0 11px;
+  color:#607067;
+  font-size:12px;
+  line-height:1.5;
+}
+.youtubeGuideLinkV20{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:0 14px;
+  border-radius:11px;
+  background:#0b1219;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:900;
+}
+.youtubeGuideLinkV20:hover{opacity:.92;}
