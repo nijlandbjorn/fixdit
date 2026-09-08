@@ -1,0 +1,46 @@
+.youtubeGuideCard{
+  margin:16px 0 0;
+  padding:15px 16px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  border:1px solid #e2e8e4;
+  border-radius:16px;
+  background:#fff;
+}
+.youtubeGuideCard[hidden]{display:none!important;}
+.youtubeGuideIcon{
+  flex:0 0 38px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#f3f6f4;
+  font-size:15px;
+}
+.youtubeGuideCopy{min-width:0;}
+.youtubeGuideCopy b{
+  display:block;
+  margin:1px 0 4px;
+  font-size:14px;
+}
+.youtubeGuideCopy p{
+  margin:0 0 10px;
+  font-size:11.5px;
+  line-height:1.5;
+  color:#607067;
+}
+.youtubeGuideCopy a{
+  display:inline-flex;
+  align-items:center;
+  min-height:40px;
+  padding:0 13px;
+  border-radius:11px;
+  background:#0b1219;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-decoration:none;
+  font-size:11px;
+  font-weight:900;
+}
