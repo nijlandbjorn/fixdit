@@ -516,3 +516,9 @@
     transition:none;
   }
 }
+/* Fix leesbaarheid hoofdactie */
+.resultActionTitle,
+.fixditActionTitle,
+.actionTitle {
+  color: #0f1a24 !important;
+}
