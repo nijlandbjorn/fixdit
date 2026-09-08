@@ -58,6 +58,12 @@
   letter-spacing:-.025em!important;
 }
 
+/* Fix leesbaarheid titel in hoofdactie */
+#result .nextAction h4#solutionTitle{
+  color:#0f1a24!important;
+  -webkit-text-fill-color:#0f1a24!important;
+}
+
 #result .nextAction p{
   margin:0!important;
   font-size:14px!important;
@@ -515,10 +521,4 @@
   .resultDetailsV19 .detailsChevron{
     transition:none;
   }
-}
-/* Fix leesbaarheid hoofdactie */
-.resultActionTitle,
-.fixditActionTitle,
-.actionTitle {
-  color: #0f1a24 !important;
 }
