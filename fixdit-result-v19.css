@@ -1,7 +1,7 @@
 /* Fixdit Result V19 — solution-first repair experience */
 
 #result.resultShell{
-  gap:0!important;
+  gap:16px!important;
 }
 
 #result .resultTop{
@@ -529,4 +529,35 @@
 @media(max-width:680px){
   #overlay{align-items:center!important;justify-items:center!important;padding:14px!important;box-sizing:border-box;}
   #overlay .sheet{min-height:0!important;margin:0!important;overflow-y:auto!important;box-sizing:border-box;}
+}
+
+/* V19.2: one spacing system for visible result sections. */
+#result.resultShell.show{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:16px!important;
+}
+#result.resultShell > *{
+  margin-top:0!important;
+  margin-bottom:0!important;
+  min-width:0;
+  flex-shrink:0;
+}
+#result.resultShell > [hidden]{
+  display:none!important;
+}
+/* Keep a section heading close to the content it introduces. */
+#result.resultShell > .repairStageV19{
+  margin-top:8px!important;
+  margin-bottom:-8px!important;
+}
+#result.resultShell > .resultDetailsV19{
+  border-radius:16px;
+}
+@media(max-width:680px){
+  #result.resultShell.show{gap:14px!important;}
+  #result.resultShell > .repairStageV19{
+    margin-top:6px!important;
+    margin-bottom:-6px!important;
+  }
 }
