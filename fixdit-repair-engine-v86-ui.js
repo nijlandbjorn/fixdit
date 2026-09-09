@@ -58,7 +58,7 @@
       '#repairMethodV86 b{font-size:15px}'+
       '#repairMethodV86 p{margin:7px 0 0;font-size:12px;line-height:1.5;color:#596b61;-webkit-text-fill-color:#596b61}'+
       '#repairMethodV86 .v86Status{flex:0 0 auto;border:1px solid #dbe8df;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;background:#fff}'+
-      '.v86StepExtra{margin-top:9px;padding-top:9px;border-top:1px dashed #dfe8e2;font-size:12px;line-height:1.45}'+
+      '#steps .step > .v86StepExtra{grid-column:1 / -1;min-width:0;width:100%;box-sizing:border-box;margin-top:9px;padding-top:9px;border-top:1px dashed #dfe8e2;font-size:12px;line-height:1.45}'+
       '.v86StepExtra b{font-size:11px}'+
       '.v86StepExtra p{margin:4px 0 0;color:#596b61;-webkit-text-fill-color:#596b61}'+
       '#repairEvidenceV86{margin-top:14px;padding-top:12px;border-top:1px solid #e5ece7}'+
