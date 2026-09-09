@@ -561,3 +561,43 @@
     margin-bottom:-6px!important;
   }
 }
+
+/* V19.3: centered mobile analysis result; scoped to this dialog only. */
+@media(max-width:680px){
+  #result.resultShell.show{
+    align-items:stretch!important;
+    text-align:center!important;
+  }
+  #result.resultShell > *{width:100%;box-sizing:border-box;}
+  #result .resultTop,
+  #result .repairStageV19,
+  #result .proHandoffTop{
+    justify-content:center!important;
+    text-align:center!important;
+  }
+  #result .resultTopCopy{flex:0 1 auto!important;min-width:0;}
+  #result .nextAction,
+  #result .moreInfoCard,
+  #result .supplyCard,
+  #result .completionCard,
+  #result .proHandoff,
+  #result .infoCard,
+  #result #fixditYoutubeAddon,
+  #result h2,#result h3,#result h4,
+  #result p,#result li{
+    text-align:center!important;
+    overflow-wrap:anywhere;
+  }
+  #result .sectionTitleRow{
+    flex-direction:column!important;
+    align-items:center!important;
+    gap:4px!important;
+  }
+  #result ul{padding-left:0!important;list-style-position:inside;}
+  #result .step > div{min-width:0;flex:1;text-align:center!important;}
+  #result .resultDetailsV19 > summary{justify-content:center!important;position:relative;padding-left:44px;padding-right:44px;}
+  #result .resultDetailsV19 > summary .detailsChevron{position:absolute;right:12px;}
+  #result .proHandoffActions,
+  #result .feedbackBtns,
+  #result .resultActionBar{justify-content:center!important;}
+}
