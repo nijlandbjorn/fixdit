@@ -83,7 +83,7 @@
     const result=document.getElementById('result');
     if(!result)return;
 
-    const t=COPY[lang()];
+    const t=COPY[d.language] || COPY[lang()];
     const method=e?.technique?.name;
     const status=e?.repairability?.status;
 
@@ -155,10 +155,11 @@
 
         sources.slice(0,4).forEach(source=>{
           const a=document.createElement('a');
+          try { if (new URL(source.url).protocol !== 'https:') return; } catch { return; }
           a.href=source.url;
           a.target='_blank';
           a.rel='noopener noreferrer';
-          a.textContent=(source.sourceType?source.sourceType+' · ':'')+(source.title||source.domain||source.url);
+          a.textContent=(source.title||source.domain||source.url);
           box.appendChild(a);
         });
 
@@ -174,7 +175,7 @@
       const wrapped=function(raw){
         const out=original.apply(this,arguments);
         try{
-          const d=(typeof lastDiagnosis!=='undefined'&&lastDiagnosis)?lastDiagnosis:raw;
+          const d=raw?.repairEngine ? raw : ((typeof lastDiagnosis!=='undefined'&&lastDiagnosis)?lastDiagnosis:raw);
           render(d);
         }catch{
           render(raw);

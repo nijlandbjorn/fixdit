@@ -4,7 +4,7 @@
 
   const COPY={
     nl:{
-      troubleshootingTitle:'Bekijk alvast troubleshooting op YouTube',
+      troubleshootingTitle:'Bekijk alvast uitleg op YouTube',
       troubleshootingNote:'Dit is een gerichte zoekopdracht op basis van wat Fixdit nu al weet. Na je antwoord kan de zoekopdracht specifieker worden.',
       repairTitle:'Bekijk passende reparatie-uitleg op YouTube',
       repairNote:'Gerichte zoekopdracht op basis van jouw concrete reparatieroute. Controleer of de video bij jouw exacte uitvoering past.'
@@ -16,7 +16,7 @@
       repairNote:'Targeted search based on your concrete repair route. Verify that the video matches your exact variant.'
     },
     de:{
-      troubleshootingTitle:'Troubleshooting auf YouTube ansehen',
+      troubleshootingTitle:'Anleitung zur Fehlersuche auf YouTube ansehen',
       troubleshootingNote:'Dies ist eine gezielte Suche auf Basis dessen, was Fixdit bereits weiß. Nach deiner Antwort kann die Suche genauer werden.',
       repairTitle:'Passende Reparaturanleitung auf YouTube ansehen',
       repairNote:'Gezielte Suche anhand deines konkreten Reparaturwegs. Prüfe, ob das Video zu deiner genauen Ausführung passt.'
@@ -83,7 +83,9 @@
       d?.professionalRecommended===true ||
       d?.risk==='stop';
 
-    const show=
+    let validUrl=false;
+    try { const u=new URL(y?.url); validUrl=u.protocol==='https:' && u.hostname==='www.youtube.com' && u.pathname==='/results'; } catch {}
+    const show=validUrl &&
       !blocked &&
       !!y?.available &&
       !!y?.url &&
@@ -95,7 +97,7 @@
       return;
     }
 
-    const t=COPY[lang()];
+    const t=COPY[d.language] || COPY[lang()];
     const troubleshooting=y.mode==='troubleshooting';
 
     el.querySelector('b').textContent=

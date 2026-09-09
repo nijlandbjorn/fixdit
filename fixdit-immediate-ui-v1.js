@@ -38,8 +38,18 @@
       help.style.display='';
     }
 
+    const stateCopy={
+      nl:{asking:'MEER INFORMATIE NODIG',complete:'ANALYSE AFGEROND',stop:'STOP: VEILIGHEID EERST',pro:'PROFESSIONELE BEOORDELING NODIG'},
+      en:{asking:'MORE INFORMATION NEEDED',complete:'ANALYSIS COMPLETE',stop:'STOP: SAFETY FIRST',pro:'PROFESSIONAL ASSESSMENT NEEDED'},
+      de:{asking:'WEITERE INFORMATIONEN NÖTIG',complete:'ANALYSE ABGESCHLOSSEN',stop:'STOPP: SICHERHEIT ZUERST',pro:'FACHLICHE BEURTEILUNG NÖTIG'}
+    }[d.language] || {asking:'MEER INFORMATIE NODIG',complete:'ANALYSE AFGEROND',stop:'STOP: VEILIGHEID EERST',pro:'PROFESSIONELE BEOORDELING NODIG'};
+    const eyebrow=document.getElementById('resultEyebrow');
+    if(eyebrow)eyebrow.textContent=stop?stateCopy.stop:pro?stateCopy.pro:asking?stateCopy.asking:stateCopy.complete;
+    const icon=document.getElementById('resultStatusIcon');
+    if(icon && asking && !stop && !pro)icon.textContent='?';
+    if(help && (stop || pro))help.hidden=false;
     if(asking){
-      const t=COPY[lang()];
+      const t=COPY[d.language] || COPY[lang()];
       if(stepsTitle)stepsTitle.textContent=t.steps;
       if(stepsHint)stepsHint.textContent=t.hint;
     }
