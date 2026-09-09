@@ -1,4 +1,4 @@
-/* Fixdit YouTube Add-on V1 — isolated add-on for stable Result V19 */
+/* Fixdit YouTube Add-on V2.1 — isolated add-on for stable Result V19 */
 (function(){
   'use strict';
   const COPY={
@@ -8,8 +8,20 @@
   };
   function lang(){const x=(document.documentElement.lang||'nl').slice(0,2).toLowerCase();return ['nl','en','de'].includes(x)?x:'nl'}
   function clean(v){return String(v||'').trim()}
-  function buildSearch(d){
+  const problemByAnalysis = new Map();
+  let pendingProblem = '';
+  function diagnosisProblem(d){
+    const id=clean(d?.analysisId);
+    if(id && pendingProblem){
+      if(problemByAnalysis.size>=30)problemByAnalysis.clear();
+      problemByAnalysis.set(id,pendingProblem);pendingProblem='';
+    }
+    return (id && problemByAnalysis.get(id)) || clean(d?.originalProblem) || '';
+  }
+  function buildSearch(d,problem=''){
+
     if(!d || typeof d!=='object') return null;
+    if(d.emergencyCode==='emergency_112'||d.route==='stop'||d.risk==='stop')return null;
     const l=lang();
     const unsafe=d.route==='stop'||d.risk==='stop';
     const professional=d.route==='professional'||d.professionalRecommended===true||d.risk==='hoog';
@@ -18,7 +30,12 @@
     const terms={nl:{safety:'veiligheid wat te doen gevaar',professional:'uitleg professionele beoordeling',repair:'reparatie uitleg',diagnosis:'probleem herkennen uitleg'},en:{safety:'safety danger what to do',professional:'professional assessment explained',repair:'repair tutorial',diagnosis:'troubleshooting explained'},de:{safety:'Sicherheit Gefahr richtig handeln',professional:'Fachbetrieb Beurteilung erklärt',repair:'Reparatur Anleitung',diagnosis:'Fehlersuche erklärt'}};
     // Fixed host; never trust an AI-supplied URL or use proposed repair text for a stop.
     const object=clean(d.objectLabel)||clean(d.objectFamily)||'apparaat';
-    const parts=[clean(d.brand),clean(d.model),object,repair?clean(d.solutionTitle):'',terms[l][topic],{nl:'Nederlands',en:'English',de:'Deutsch'}[l]];
+    const symptoms={nl:{loose:'zit los',pressure_loss:'band verliest lucht',puncture:'lekke band',not_working:'werkt niet',no_power:'gaat niet aan',leak:'lekt',noise:'maakt geluid',blockage:'verstopt'},en:{loose:'loose',pressure_loss:'tire losing air',puncture:'flat tire',not_working:'not working',no_power:'will not turn on',leak:'leaking',noise:'noise',blockage:'blocked'},de:{loose:'locker',pressure_loss:'Reifen verliert Luft',puncture:'Reifen platt',not_working:'funktioniert nicht',no_power:'geht nicht an',leak:'undicht',noise:'Geräusch',blockage:'verstopft'}};
+    const symptom=symptoms[l][d.symptom||d.problemKind]||'';
+    const specific=clean(problem).replace(/\s+/g,' ').slice(0,180);
+    const subject=(!unsafe&&!professional&&specific)?specific:[object,clean(d.objectSubtype),symptom].filter(Boolean).join(' ');
+    const purpose=repair?terms[l].repair:unsafe?terms[l].safety:professional?terms[l].professional:{nl:'oorzaak controleren',en:'troubleshooting',de:'Ursache prüfen'}[l];
+    const parts=[clean(d.brand),clean(d.model),subject,purpose];
     return 'https://www.youtube.com/results?search_query='+encodeURIComponent(parts.filter(Boolean).join(' ').slice(0,300));
   }
   function style(){
@@ -39,13 +56,17 @@
   }
   function render(d){
     style();const el=card();if(!el)return;
-    const url=buildSearch(d);
+    const url=buildSearch(d,diagnosisProblem(d));
     if(!url){el.hidden=true;el.querySelector('a').removeAttribute('href');return}
-    const t=COPY[lang()];el.querySelector('b').textContent=t.title;el.querySelector('p').textContent=t.note;
+    const t=COPY[lang()];el.querySelector('b').textContent=t.title;el.querySelector('p').textContent=t.note+' '+({nl:'Zoekopdracht: ',en:'Search: ',de:'Suche: '}[lang()])+new URL(url).searchParams.get('search_query');
     el.querySelector('span').textContent=t.title;el.querySelector('a').href=url;el.hidden=false;
   }
   function install(){
     style();
+    document.getElementById('analyzeBtn')?.addEventListener('click',()=>{
+      const follow=typeof followUpMode!=='undefined' && followUpMode;
+      if(!follow)pendingProblem=clean(document.getElementById('problem')?.value);
+    },true);
     const original=window.renderDiagnosis;
     if(typeof original==='function'&&!original.__fixditYoutubeWrapped){
       const wrapped=function(raw){const out=original.apply(this,arguments);try{render(typeof lastDiagnosis!=='undefined'&&lastDiagnosis?lastDiagnosis:raw)}catch{render(raw)}return out};
