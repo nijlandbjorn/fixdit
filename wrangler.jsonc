@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "fixdit-ai",
+  "main": "index.js",
+  "compatibility_date": "2026-09-25",
+  "previews": {
+    "ai": {
+      "binding": "AI"
+    },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_id": "2518459b-0196-454b-bf5c-c263191d653b"
+      }
+    ],
+    "vars": {
+      "RESEARCH_ENABLED": "false"
+    },
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "logs": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "invocation_logs": true,
+        "persist": true
+      },
+      "traces": {
+        "enabled": false,
+        "head_sampling_rate": 1,
+        "persist": true
+      }
+    }
+  }
+}
