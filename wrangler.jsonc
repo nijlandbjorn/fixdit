@@ -3,6 +3,7 @@
   "name": "fixdit-ai",
   "main": "index.js",
   "compatibility_date": "2026-09-25",
+  "preview_urls": true,
   "previews": {
     "ai": {
       "binding": "AI"
