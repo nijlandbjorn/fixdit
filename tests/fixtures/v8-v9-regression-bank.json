@@ -1,0 +1,65 @@
+[
+  {
+    "id": "explicit-gas-stop",
+    "problem": "Ik ruik gas bij het apparaat.",
+    "classification": { "objectFamily": "appliance", "symptom": "not_working", "intent": "repair" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "swollen-battery-stop",
+    "problem": "Mijn laptop heeft een opgezwollen batterij.",
+    "classification": { "objectFamily": "electronics", "symptom": "breakage", "intent": "repair" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "refrigerant-professional",
+    "problem": "Er lekt koelmiddel uit de airco.",
+    "classification": { "objectFamily": "heating_cooling", "symptom": "leak", "intent": "repair" },
+    "expectedV9Safety": "professional"
+  },
+  {
+    "id": "vehicle-brakes-professional",
+    "problem": "De auto remt niet goed.",
+    "classification": { "objectFamily": "automotive", "symptom": "braking_fault", "intent": "repair" },
+    "expectedV9Safety": "professional"
+  },
+  {
+    "id": "vehicle-tyre-caution",
+    "problem": "Mijn autoband loopt leeg.",
+    "classification": { "objectFamily": "automotive", "symptom": "pressure_loss", "intent": "repair" },
+    "expectedV9Safety": "caution"
+  },
+  {
+    "id": "water-near-socket-stop",
+    "problem": "Er staat water rond het stopcontact.",
+    "classification": { "objectFamily": "electrical", "symptom": "water_damage", "intent": "inspect" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "negated-smoke-correction",
+    "problem": "Mijn schoen heeft geen rook of brandlucht.",
+    "classification": { "objectFamily": "footwear_textile", "symptom": "loose", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedDifference": "v8_false_positive_corrected"
+  },
+  {
+    "id": "loose-handle-needs-evidence",
+    "problem": "De handgreep zit los.",
+    "classification": { "objectFamily": "furniture", "symptom": "loose", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing"
+  },
+  {
+    "id": "no-flow-needs-evidence",
+    "problem": "Het koffieapparaat maakt geluid maar er komt geen koffie.",
+    "classification": { "objectFamily": "appliance", "symptom": "no_flow", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing"
+  },
+  {
+    "id": "asbestos-professional",
+    "problem": "Deze oude plaat bevat mogelijk asbest.",
+    "classification": { "objectFamily": "building", "symptom": "damage", "intent": "inspect" },
+    "expectedV9Safety": "professional"
+  }
+]

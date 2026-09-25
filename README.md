@@ -1,36 +1,52 @@
 # Fixdit
 
-**Fixdit — Fix het zelf.**
+Fixdit is een Nederlandstalige reparatie-assistent met een statische webfrontend en
+een Cloudflare Worker-backend. De Worker gebruikt Cloudflare Workers AI voor beeld-
+en tekstanalyse, kan Brave Search gebruiken voor selectieve brononderbouwing en
+houdt sessies, verbruik, feedback en reparatie-uitkomsten bij in D1.
 
-Nederlandse reparatie-assistent voor huishoudelijke apparaten.
+## Huidige architectuur
 
-## Wat staat live in deze repository
+- `index.html` en de versiegebonden frontendbestanden vormen de GitHub Pages-client.
+- `index.js` bevat de bestaande V8.6.1 Worker en blijft de standaardproductieflow.
+- `src/v9/` bevat Diagnostic Engine V9 als afzonderlijke, standaard uitgeschakelde
+  pipeline: evidence ledger, hypotheses, next-best tests, contradiction detection,
+  deterministische safety kernel, repair gate, critic en shadow comparator.
+- `migrations/` bevat alleen handmatig te beoordelen D1-migraties; niets wordt
+  automatisch of vanuit tests op productie toegepast.
+- `tests/` gebruikt uitsluitend lokale fixtures en mocks. De tests maken geen echte
+  Workers AI-, Brave- of D1-calls.
 
-- premium responsive landingspagina
-- logo concept 1 als SVG
-- foto-uploadpreview
-- interactieve voorbeelddiagnose
-- lokale demo-creditlimiet van 3 fixes
-- prijsstructuur met credits en jaarabonnement
-- privacy- en voorwaardenpagina
-- GitHub Pages deploy-workflow
+V9 vervangt V8.6.1 niet. `V9_MODE` is standaard `off`; shadow en canary veranderen
+de gebruikersresponse niet. Alleen een geregistreerde tester kan in `tester`-modus
+het optionele `diagnosticV9`-veld ontvangen.
 
-## Belangrijk: productie-backend
+## Lokaal testen
 
-De huidige publieke versie is een front-end MVP. Foto's worden in deze versie niet naar een server gestuurd en er is nog geen echte beeld-AI gekoppeld.
+Vereist Node.js 24 of nieuwer:
 
-Voor productie zijn nog nodig:
+```sh
+npm test
+npm run compare:v8-v9
+```
 
-1. AI-backend (bijv. Cloudflare Workers AI)
-2. server-side credits en accountdatabase
-3. e-mailverificatie
-4. Stripe/Mollie checkout + webhooks
-5. productieprivacy/voorwaarden en analytics
+De frontend kan statisch worden geopend voor visuele inspectie. Voor een volledige
+lokale Worker-preview ontbreken in deze repository bewust de echte Wrangler-
+bindings en secrets; zie `docs/production-configuration.md`.
 
-## Lokale test
+## Foto's en privacy
 
-Open `index.html` in een browser.
+Na bevestiging in de frontend wordt een foto in de browser verkleind en als JPEG
+naar de Cloudflare Worker verzonden voor analyse met Workers AI. FixDit slaat de
+foto zelf niet permanent op. Afgeleide diagnose-, sessie- en gebruiksgegevens kunnen
+wel in D1 worden opgeslagen. Upload geen onnodige persoonsgegevens of herkenbare
+personen. Zie `privacy.html` voor de gebruikersgerichte tekst.
 
-## Verwachte Pages-URL
+## Productie
 
-https://nijlandbjorn.github.io/fixdit/
+Deze branch voert geen deployment, echte D1-migratie, push of publicatie uit. De
+ontbrekende bindings, secrets, preflightcontroles en rollbackstappen staan in:
+
+- `docs/production-configuration.md`
+- `docs/v9-rollout.md`
+- `docs/v9-architecture.md`

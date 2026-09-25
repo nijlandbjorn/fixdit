@@ -1,1 +1,1 @@
-{"private":true,"type":"module","engines":{"node":">=24"},"scripts":{"test":"node --test tests/core.test.mjs tests/transport.test.mjs tests/frontend.test.cjs"}}
+{"private":true,"type":"module","engines":{"node":">=24"},"scripts":{"test":"node --test tests/*.test.mjs tests/*.test.cjs tests/v9/*.test.mjs","test:v8":"node --test tests/v8-regression.test.mjs","test:v9":"node --test tests/v9/*.test.mjs","compare:v8-v9":"node scripts/compare-v8-v9.mjs"}}

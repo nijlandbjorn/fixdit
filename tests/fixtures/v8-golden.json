@@ -1,0 +1,38 @@
+[
+  {
+    "id": "gas-stop",
+    "classification": {"objectFamily":"appliance","symptom":"not_working"},
+    "problem": "Ik ruik gas bij het apparaat.",
+    "flags": ["gas"],
+    "route": "stop"
+  },
+  {
+    "id": "battery-stop",
+    "classification": {"objectFamily":"electronics","symptom":"breakage"},
+    "problem": "Mijn laptop heeft een opgezwollen batterij.",
+    "flags": ["battery_damage"],
+    "route": "stop"
+  },
+  {
+    "id": "refrigerant-professional",
+    "classification": {"objectFamily":"heating_cooling","symptom":"leak"},
+    "problem": "Er lekt koelmiddel uit de airco.",
+    "flags": ["refrigerant"],
+    "route": "professional"
+  },
+  {
+    "id": "vehicle-tyre-caution",
+    "classification": {"objectFamily":"automotive","symptom":"pressure_loss"},
+    "problem": "Mijn autoband is leeg.",
+    "flags": ["vehicle_tire"],
+    "route": "caution"
+  },
+  {
+    "id": "negated-smoke-current-v8-behaviour",
+    "classification": {"objectFamily":"footwear_textile","symptom":"loose"},
+    "problem": "Mijn schoen heeft geen rook of brandlucht.",
+    "flags": ["fire_smoke"],
+    "route": "stop",
+    "knownLimitation": true
+  }
+]

@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { evaluateV9Runtime } from './src/v9/runtime.js';
+
 const DEFAULT_ORIGIN = "https://nijlandbjorn.github.io";
 const DEFAULT_MAX_FREE = 3;
 const TEST_REMAINING = 100;
@@ -8861,7 +8863,8 @@ async function handleFollowup(
   env,
   body,
   deviceKey,
-  lang
+  lang,
+  ctx
 ) {
   const requestId =
     cleanString(
@@ -9122,6 +9125,17 @@ async function handleFollowup(
     "followup_success"
   );
 
+  const v9Runtime = await evaluateV9Runtime({
+    env,
+    ctx,
+    tester: String(env?.V9_MODE || "off").toLowerCase() === "tester"
+      ? await isTester(env, deviceKey)
+      : false,
+    v8Diagnosis: diagnosis,
+    problem,
+    language: lang
+  });
+
   return reply(
     request,
     env,
@@ -9129,7 +9143,7 @@ async function handleFollowup(
       ok:true,
       followup:true,
       analysisId,
-      diagnosis,
+      diagnosis: v9Runtime.responseDiagnosis,
       visualInspection:
         output.visualInspection,
       ...await getUsage(
@@ -9145,7 +9159,8 @@ async function handleAnalysis(
   env,
   body,
   deviceKey,
-  lang
+  lang,
+  ctx
 ) {
   const requestId =
     cleanString(
@@ -9409,6 +9424,17 @@ async function handleAnalysis(
     "analysis_success"
   );
 
+  const v9Runtime = await evaluateV9Runtime({
+    env,
+    ctx,
+    tester: String(env?.V9_MODE || "off").toLowerCase() === "tester"
+      ? await isTester(env, deviceKey)
+      : false,
+    v8Diagnosis: diagnosis,
+    problem,
+    language: lang
+  });
+
   return reply(
     request,
     env,
@@ -9417,7 +9443,7 @@ async function handleAnalysis(
       analysisId,
       imageReceived:
         Boolean(image),
-      diagnosis,
+      diagnosis: v9Runtime.responseDiagnosis,
       visualInspection:
         output.visualInspection,
       ...await getUsage(
@@ -9431,7 +9457,8 @@ async function handleAnalysis(
 export default {
   async fetch(
     request,
-    env
+    env,
+    ctx
   ) {
     if (
       !originAllowed(
@@ -9571,6 +9598,12 @@ export default {
 
           privacyMode:
             "no-photo-storage",
+
+          diagnosticV9:{
+            available:true,
+            defaultMode:"off",
+            modes:["shadow","tester","canary"]
+          },
 
           rateLimiting:true,
           testerMode:true,
@@ -9715,7 +9748,8 @@ export default {
           env,
           body,
           deviceKey,
-          lang
+          lang,
+          ctx
         );
       }
 
@@ -9724,7 +9758,8 @@ export default {
         env,
         body,
         deviceKey,
-        lang
+        lang,
+        ctx
       );
 
     } catch (error) {
@@ -9954,3 +9989,17 @@ function safetyResultV861(problem,lang,previous,flags,started){
   d.performance={phaseLatencyMs:{},totalMs:Date.now()-started};
   return {diagnosis:d,usage:{input:0,output:0},languageCorrected:false,qualityReviewed:false,qualityApproved:false,qualityIssues:[],visualInspection:'',research:d.repairEngine.research,technique:d.repairTechnique,latencyMs:Date.now()-started};
 }
+
+// Read-only characterization surface for the local regression bank. This does
+// not participate in the Worker request path and keeps the default export V8.6.1.
+export const __v861Test = Object.freeze({
+  normalizeClassification,
+  hardSafetyFlags,
+  safetyDecision,
+  routeFrom,
+  deterministicPlanValidation,
+  technicalQualityDecision,
+  buildResearchQueriesV86,
+  researchSourceTypeV86,
+  researchTrustScoreV86,
+});
