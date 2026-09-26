@@ -51,6 +51,8 @@ test('modelhypothese kan geen niet-bestaande evidence-ID claimen', () => {
   });
   const proposal = hypotheses.find(item => item.code === 'invented');
   assert.deepEqual(proposal.supportingEvidenceIds, []);
+  assert.equal(ledger.entries.some(entry => entry.source === 'model_hypothesis'), false);
+  assert.equal(ledger.entries.length, 1);
 });
 
 test('Next-Best-Test geeft blocking contradictie voorrang', () => {

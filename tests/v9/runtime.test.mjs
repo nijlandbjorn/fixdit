@@ -38,6 +38,31 @@ test('shadow plant achtergrondwerk maar verandert de V8-response niet', async ()
   await Promise.all(pending);
 });
 
+test('persistencefout in shadow verandert de V8-response niet', async t => {
+  t.mock.method(console, 'error', () => {});
+  const pending = [];
+  const failingDB = {
+    prepare(sql) {
+      return {
+        sql,
+        bind() { return this; },
+        async run() { throw new Error('mock persistence failure'); },
+      };
+    },
+    async batch() { throw new Error('mock persistence failure'); },
+  };
+  const outcome = await evaluateV9Runtime({
+    env: { V9_MODE: 'shadow', V9_SHADOW_SAMPLE_RATE: '100', DB: failingDB },
+    ctx: { waitUntil(promise) { pending.push(promise); } },
+    v8Diagnosis: diagnosis,
+    problem: 'De handgreep zit los.',
+  });
+  assert.equal(outcome.scheduled, true);
+  assert.equal(outcome.responseDiagnosis, diagnosis);
+  await Promise.all(pending);
+  assert.equal(outcome.responseDiagnosis, diagnosis);
+});
+
 test('tester krijgt optionele V9-metadata zonder V8-velden te vervangen', async () => {
   const outcome = await evaluateV9Runtime({
     env: { V9_MODE: 'tester' },
