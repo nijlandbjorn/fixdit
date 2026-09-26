@@ -67,7 +67,7 @@ export async function persistV9Run(env, result, comparison = null) {
         (decision_id, run_id, decision_type, status, reasons_json, input_refs_json, decision_json, created_at)
         VALUES (?, ?, 'safety', ?, ?, ?, ?, ?)`)
         .bind(
-          `dec_${result.runId}_safety`, result.safety?.route || 'clear',
+          `dec_${result.runId}_safety`, result.runId, result.safety?.route || 'clear',
           JSON.stringify(asArray(result.safety?.flags).map(flag => flag.code)),
           JSON.stringify(asArray(result.safety?.flags).flatMap(flag => flag.evidenceIds || [])),
           JSON.stringify(result.safety || {}), now,
@@ -76,7 +76,7 @@ export async function persistV9Run(env, result, comparison = null) {
         (decision_id, run_id, decision_type, status, reasons_json, input_refs_json, decision_json, created_at)
         VALUES (?, ?, 'repair_gate', ?, ?, ?, ?, ?)`)
         .bind(
-          `dec_${result.runId}_gate`, result.repairGate?.status || 'unknown',
+          `dec_${result.runId}_gate`, result.runId, result.repairGate?.status || 'unknown',
           JSON.stringify(result.repairGate?.reasons || []), JSON.stringify(result.repairGate?.evidenceIds || []),
           JSON.stringify(result.repairGate || {}), now,
         ),
@@ -84,7 +84,7 @@ export async function persistV9Run(env, result, comparison = null) {
         (decision_id, run_id, decision_type, status, reasons_json, input_refs_json, decision_json, created_at)
         VALUES (?, ?, 'critic', ?, ?, ?, ?, ?)`)
         .bind(
-          `dec_${result.runId}_critic`, result.critic?.status || 'not_run',
+          `dec_${result.runId}_critic`, result.runId, result.critic?.status || 'not_run',
           JSON.stringify(result.critic?.issues || []), JSON.stringify(result.repairGate?.evidenceIds || []),
           JSON.stringify(result.critic || {}), now,
         ),

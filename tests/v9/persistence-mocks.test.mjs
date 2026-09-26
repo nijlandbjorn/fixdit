@@ -29,6 +29,35 @@ test('V9-persistentie schrijft een volledige lokale audittrail', async () => {
   assert.equal(DB.executed.filter(item => /INSERT INTO v9_decisions/.test(item.sql)).length, 3);
 });
 
+test('V9-besluiten binden alle placeholders met run_id als tweede waarde', async () => {
+  const result = await runPipelineV9({
+    analysisId: 'decision-bind-analysis',
+    runId: 'decision-bind-run',
+    problem: 'De handgreep zit los.',
+    classification: { objectFamily: 'furniture', symptom: 'loose', intent: 'repair' },
+  });
+  const DB = createRecordingD1();
+
+  const persisted = await persistV9Run({ DB }, result);
+  assert.equal(persisted.persisted, true);
+
+  const decisions = DB.executed.filter(item => /INSERT INTO v9_decisions/.test(item.sql));
+  const expected = [
+    { type: 'safety', id: 'dec_decision-bind-run_safety', status: result.safety.route || 'clear' },
+    { type: 'repair_gate', id: 'dec_decision-bind-run_gate', status: result.repairGate.status || 'unknown' },
+    { type: 'critic', id: 'dec_decision-bind-run_critic', status: result.critic.status || 'not_run' },
+  ];
+
+  assert.equal(decisions.length, expected.length);
+  for (const decision of expected) {
+    const statement = decisions.find(item => item.sql.includes(`'${decision.type}'`));
+    assert.ok(statement, `missing ${decision.type} decision statement`);
+    assert.equal(statement.values.length, (statement.sql.match(/\?/g) || []).length);
+    assert.deepEqual(statement.values.slice(0, 3), [decision.id, result.runId, decision.status]);
+    assert.equal(statement.values.includes(undefined), false);
+  }
+});
+
 test('evidence-identiteiten zijn per run gescheiden', async () => {
   const input = { problem: 'De handgreep zit los.', classification: { symptom: 'loose' } };
   const left = await runPipelineV9({ ...input, runId: 'run-left' });
