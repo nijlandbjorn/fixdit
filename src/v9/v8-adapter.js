@@ -74,6 +74,20 @@ export function classificationFromV8(diagnosis = {}, { problem = '' } = {}) {
 export function techniqueFromV8(diagnosis = {}) {
   const engine = diagnosis.repairEngine || {};
   const source = engine.technique || diagnosis.repairTechnique || {};
+  const hardSafetyFallback = isHardSafetyFallback(diagnosis);
+  if (hardSafetyFallback) {
+    return immutable({
+      techniqueId: '',
+      techniqueName: '',
+      techniqueSearchName: '',
+      mechanism: '',
+      repairabilityStatus: 'UNVERIFIED',
+      confidence: 0,
+      evidenceSourceIds: Object.freeze([]),
+      authority: 'untrusted_hard_safety_fallback',
+      provenance: immutable({ derivedFrom: 'v8_hard_safety_fallback', accepted: false }),
+    });
+  }
   return immutable({
     techniqueId: cleanText(source.id, 160),
     techniqueName: cleanText(source.name, 500),
@@ -82,6 +96,8 @@ export function techniqueFromV8(diagnosis = {}) {
     repairabilityStatus: cleanText(engine.repairability?.status || diagnosis.repairabilityStatus, 100) || 'DIY_AFTER_DETAILS',
     confidence: Number(engine.repairability?.confidence ?? source.confidence ?? 0),
     evidenceSourceIds: Object.freeze(asArray(source.evidenceSourceIds)),
+    authority: 'legacy_inference',
+    provenance: immutable({ derivedFrom: 'v8_repair_engine', accepted: true }),
   });
 }
 

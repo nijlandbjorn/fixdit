@@ -25,6 +25,18 @@ test('Repair Gate opent alleen met voldoende evidence en sterke hypothese', () =
   assert.equal(gate.route, 'self');
 });
 
+test('Repair Gate vertrouwt legacy technique zonder evidence niet als reparatie-autorisatie', () => {
+  const ledger = ledgerFromInput({ problem: 'De zichtbare schroef van de ladegreep zit los.' });
+  const gate = evaluateRepairGate({
+    ledger,
+    safety: safe,
+    hypotheses: [hypothesis],
+    technique: { ...technique, authority: 'legacy_inference' },
+  });
+  assert.equal(gate.open, false);
+  assert.ok(gate.reasons.includes('technique_unverified_legacy'));
+});
+
 test('Repair Gate blokkeert safety en contradictions vóór planning', () => {
   const ledger = ledgerFromInput({ problem: 'Ik ruik gas.' });
   const safetyGate = evaluateRepairGate({

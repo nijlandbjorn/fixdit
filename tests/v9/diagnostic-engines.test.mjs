@@ -73,8 +73,46 @@ test('visueel ontbrekend feit produceert gericht en veilig fotoverzoek', () => {
     language: 'en',
   });
   assert.equal(next.kind, 'photo');
-  assert.ok(next.photoSpec.requiredVisible.includes('leak location'));
+  assert.ok(next.photoSpec.requiredVisible.includes('where the moisture first appears'));
+  assert.match(next.prompt, /^Take one sharp photo of /);
   assert.match(next.photoSpec.avoid[0], /Do not open/);
+});
+
+test('Next-Best-Test vertaalt interne evidence-doelen naar natuurlijke NL/EN/DE-vragen', () => {
+  const cases = [
+    ['maintenance_history', 'nl', /Wanneer is het apparaat voor het laatst gereinigd of ontkalkt/],
+    ['observable_behavior', 'en', /What exactly happens when you try to use the device normally/],
+    ['failure_boundary', 'de', /Welche Funktionen arbeiten noch/],
+  ];
+  for (const [fact, language, expected] of cases) {
+    const [next] = rankNextBestTests({
+      hypotheses: [{
+        hypothesisId: `hy-${fact}`,
+        code: 'test',
+        statement: 'Testhypothese.',
+        score: 0.4,
+        missingEvidence: [fact],
+      }],
+      language,
+    });
+    assert.match(next.prompt, expected);
+    assert.doesNotMatch(next.prompt, /maintenance history|observable behavior|failure boundary|_/i);
+  }
+});
+
+test('onbekend intern evidence-label lekt niet naar de gebruiker', () => {
+  const [next] = rankNextBestTests({
+    hypotheses: [{
+      hypothesisId: 'hy-unknown-fact',
+      code: 'test',
+      statement: 'Testhypothese.',
+      score: 0.4,
+      missingEvidence: ['internal_future_label'],
+    }],
+    language: 'nl',
+  });
+  assert.equal(next.prompt, 'Welke concrete waarneming kan dit bevestigen of uitsluiten?');
+  assert.doesNotMatch(next.prompt, /internal|future|label|_/i);
 });
 
 test('interactieve state gebruikt optimistic revision checks', () => {

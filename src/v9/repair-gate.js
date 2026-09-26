@@ -35,7 +35,14 @@ export function evaluateRepairGate({
   if (asArray(topHypothesis?.opposingEvidenceIds).length) reasons.push('hypothesis_challenged');
 
   const repairability = technique?.repairabilityStatus;
-  if (!['DIY_CONFIDENT', 'DIY_WITH_CAUTION'].includes(repairability)) {
+  const techniqueAuthority = technique?.authority;
+  const legacyTechniqueWithoutEvidence = techniqueAuthority === 'legacy_inference' &&
+    !asArray(technique?.evidenceSourceIds).length;
+  if (techniqueAuthority === 'untrusted_hard_safety_fallback') {
+    reasons.push('technique_untrusted_safety_fallback');
+  } else if (legacyTechniqueWithoutEvidence) {
+    reasons.push('technique_unverified_legacy');
+  } else if (!['DIY_CONFIDENT', 'DIY_WITH_CAUTION'].includes(repairability)) {
     reasons.push(repairability === 'PROFESSIONAL_REQUIRED' ? 'technique_requires_professional' : 'technique_not_ready');
   }
 

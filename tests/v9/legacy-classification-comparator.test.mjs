@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { runV9AlongsideV8 } from '../../src/v9/shadow-runner.js';
+import { techniqueFromV8 } from '../../src/v9/v8-adapter.js';
 
 function v8Diagnosis({
   analysisId,
@@ -54,6 +55,19 @@ test('geen rook: raw no-flow wint van V8 hard-safety fallback en comparator vraa
   assert.equal(comparison.status, 'needs_review');
   assert.equal(comparison.safetyDifferenceReason, 'explicit_user_negation');
   assert.deepEqual(comparison.negatedSafetyCodes, ['fire_smoke']);
+  assert.equal(result.repairGate.open, false);
+  assert.ok(result.repairGate.reasons.includes('technique_untrusted_safety_fallback'));
+  assert.equal(result.repairGate.reasons.includes('technique_requires_professional'), false);
+});
+
+test('V8 hard-safety technique en repairability worden als onbetrouwbare fallback geweigerd', () => {
+  const legacy = v8Diagnosis({ analysisId: 'fallback-technique', safetyFlags: ['fire_smoke'] });
+  legacy.repairEngine.repairability = { status: 'PROFESSIONAL_REQUIRED', confidence: 1 };
+  const technique = techniqueFromV8(legacy);
+  assert.equal(technique.authority, 'untrusted_hard_safety_fallback');
+  assert.equal(technique.repairabilityStatus, 'UNVERIFIED');
+  assert.equal(technique.confidence, 0);
+  assert.deepEqual(technique.evidenceSourceIds, []);
 });
 
 test('echte rook: V9 behoudt een deterministische stop', async () => {
