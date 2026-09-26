@@ -64,4 +64,5 @@ test('evidence-identiteiten zijn per run gescheiden', async () => {
   const right = await runPipelineV9({ ...input, runId: 'run-right' });
   assert.notEqual(left.ledger.entries[0].evidenceId, right.ledger.entries[0].evidenceId);
   assert.notEqual(left.hypotheses[0].hypothesisId, right.hypotheses[0].hypothesisId);
+  assert.notEqual(left.nextTest.testId, right.nextTest.testId);
 });

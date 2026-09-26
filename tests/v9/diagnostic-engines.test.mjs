@@ -115,6 +115,20 @@ test('onbekend intern evidence-label lekt niet naar de gebruiker', () => {
   assert.doesNotMatch(next.prompt, /internal|future|label|_/i);
 });
 
+test('Next-Best-Test identiteiten zijn per V9-run uniek', () => {
+  const input = runId => rankNextBestTests({
+    hypotheses: [{
+      hypothesisId: `hy-${runId}`,
+      code: 'scale_or_airlock',
+      statement: 'Kalkaanslag of lucht belemmert de doorstroming.',
+      score: 0.38,
+      missingEvidence: ['maintenance_history'],
+    }],
+    language: 'nl',
+  })[0];
+  assert.notEqual(input('run-one').testId, input('run-two').testId);
+});
+
 test('interactieve state gebruikt optimistic revision checks', () => {
   let state = createDiagnosticState({ analysisId: 'analysis-1', runId: 'run-1' });
   state = transitionDiagnosticState(state, { type: 'select_test', testId: 'test-1', hypothesisId: 'hy-1', expectedRevision: 1 });

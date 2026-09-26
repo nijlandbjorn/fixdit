@@ -142,7 +142,11 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
 
   return Object.freeze(candidates
     .map(candidate => immutable({
-      testId: `test_${stableHash(candidate.code)}`,
+      testId: `test_${stableHash([
+        candidate.code,
+        candidate.hypothesisIds,
+        candidate.resolvesContradictionIds,
+      ])}`,
       ...candidate,
       rankScore: Number((candidate.informationGain - candidate.effort * 0.35).toFixed(4)),
     }))

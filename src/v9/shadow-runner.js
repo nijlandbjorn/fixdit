@@ -34,5 +34,13 @@ export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', la
   });
   const comparison = compareV8V9(v8Diagnosis, result);
   const persistence = await persistV9Run(env, result, comparison);
+  if (!persistence.persisted && persistence.reason !== 'db_unavailable') {
+    console.error('FixDit V9 persistence failed', {
+      runId: result.runId,
+      analysisId: result.analysisId,
+      reason: persistence.reason,
+      error: persistence.error || null,
+    });
+  }
   return { result, comparison, persistence };
 }
