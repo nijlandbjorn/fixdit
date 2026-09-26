@@ -15,7 +15,11 @@
       }
     ],
     "vars": {
-      "RESEARCH_ENABLED": "false"
+      "RESEARCH_ENABLED": "false",
+      "V9_MODE": "shadow",
+      "V9_SHADOW_SAMPLE_RATE": "100",
+      "V9_ALLOW_AI": "true",
+      "V9_ALLOW_RESEARCH": "false"
     },
     "observability": {
       "enabled": true,
