@@ -115,14 +115,18 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
   for (const key of ['objectFamily', 'objectLabel', 'symptom', 'intent', 'brand', 'model', 'errorCode']) {
     const value = cleanText(classification?.[key], 200);
     if (!value) continue;
+    const authority = classification?.evidenceAuthority?.[key];
+    const legacyInference = authority === 'legacy_inference';
     entries.push({
-      source: 'deterministic_normalization',
+      source: legacyInference ? 'legacy_inference' : 'deterministic_normalization',
       subject: 'classification',
       predicate: key,
       value,
       polarity: 'present',
-      confidence: key === 'objectLabel' ? 0.8 : 1,
-      provenance: { derivedFrom: 'v8_normalized_classification' },
+      confidence: legacyInference ? 0.35 : key === 'objectLabel' ? 0.8 : 1,
+      provenance: {
+        derivedFrom: legacyInference ? 'v8_legacy_inference' : 'raw_user_text_normalization',
+      },
     });
   }
 

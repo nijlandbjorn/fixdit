@@ -1,4 +1,5 @@
 import { asArray, immutable } from './contracts.js';
+import { assessSafetyEvidence } from './safety-kernel.js';
 
 function normalizeV8Safety(v8) {
   if (v8?.route === 'stop' || v8?.risk === 'stop') return 'stop';
@@ -16,9 +17,24 @@ export function compareV8V9(v8Diagnosis, v9Result) {
   const v9Safety = v9Result?.safety?.route || null;
   const v8Route = v8Diagnosis?.route || 'more_info';
   const routeV9 = v9Route(v9Result);
-  const criticalRegression = Boolean(v8Safety && !v9Safety) ||
-    (v8Safety === 'stop' && v9Safety !== 'stop') ||
-    (asArray(v9Result?.critic?.issues).includes('unknown_evidence_reference'));
+  const v8SafetyCodes = asArray(v8Diagnosis?.safetyFlags)
+    .map(flag => typeof flag === 'string' ? flag : flag?.code)
+    .filter(Boolean);
+  const safetyEvidence = assessSafetyEvidence(v9Result?.ledger);
+  const explicitlyNegatedV8Safety = Boolean(v8Safety && !v9Safety && v8SafetyCodes.length) &&
+    v8SafetyCodes.every(code =>
+      safetyEvidence[code]?.negatedEvidenceIds?.length &&
+      !safetyEvidence[code]?.presentEvidenceIds?.length);
+  const unknownEvidenceReference = asArray(v9Result?.critic?.issues)
+    .includes('unknown_evidence_reference');
+  const safetyDivergence = Boolean(v8Safety && v8Safety !== v9Safety);
+  const criticalRegression = unknownEvidenceReference ||
+    (safetyDivergence && !explicitlyNegatedV8Safety);
+  const status = criticalRegression
+    ? 'critical_regression'
+    : safetyDivergence
+      ? 'needs_review'
+      : 'aligned';
 
   return immutable({
     schemaVersion: '1.0',
@@ -31,6 +47,11 @@ export function compareV8V9(v8Diagnosis, v9Result) {
     contradictionCount: asArray(v9Result?.contradictions).length,
     criticIssueCount: asArray(v9Result?.critic?.issues).length,
     criticalRegression,
+    status,
+    safetyDifferenceReason: explicitlyNegatedV8Safety ? 'explicit_user_negation' : null,
+    negatedSafetyCodes: Object.freeze(v8SafetyCodes.filter(code =>
+      safetyEvidence[code]?.negatedEvidenceIds?.length &&
+      !safetyEvidence[code]?.presentEvidenceIds?.length)),
     latencyDeltaMs: Number(v9Result?.metrics?.totalMs || 0) - Number(v8Diagnosis?.performance?.totalMs || 0),
   });
 }

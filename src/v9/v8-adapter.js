@@ -1,7 +1,42 @@
 import { asArray, cleanText, immutable } from './contracts.js';
 
-export function classificationFromV8(diagnosis = {}) {
-  return immutable({
+function isHardSafetyFallback(diagnosis) {
+  return diagnosis?.resolutionMode === 'safe_withdrawal' ||
+    diagnosis?.repairEngine?.technique?.id === 'hard_safety_stop' ||
+    diagnosis?.qualityGate?.finalStatus === 'hard_safety' ||
+    diagnosis?.finalReview?.status === 'hard_safety' ||
+    diagnosis?.repairEngine?.hardening?.status === 'hard_safety';
+}
+
+function classificationFromUserText(problem = '') {
+  const text = cleanText(problem).toLocaleLowerCase();
+  const coffeeMachine = /\b(koffiezetapparaat|koffieapparaat|koffiemachine|coffee machine|coffee maker|kaffeemaschine)\b/i.test(text);
+  const noCoffeeFlow = /\b(geen (?:koffie|water)|komt (?:er )?geen (?:koffie|water)|no (?:coffee|water)|does(?:n't| not) (?:dispense|produce)|kein(?:e|en)? (?:kaffee|wasser))\b/i.test(text);
+  if (coffeeMachine && noCoffeeFlow) {
+    return {
+      objectFamily: 'appliance',
+      objectLabel: 'koffiezetapparaat',
+      intent: 'repair',
+      symptom: 'no_flow',
+      problemKind: 'no_flow',
+    };
+  }
+
+  const water = /\b(water|wasser)\b/i.test(text);
+  const mains = /\b(stopcontact|stekker|230\s*v|socket|outlet|steckdose)\b/i.test(text);
+  if (water && mains) {
+    return {
+      objectFamily: 'electrical',
+      intent: 'inspect',
+      symptom: 'water_damage',
+      problemKind: 'water_damage',
+    };
+  }
+  return {};
+}
+
+export function classificationFromV8(diagnosis = {}, { problem = '' } = {}) {
+  const legacy = {
     objectFamily: cleanText(diagnosis.objectFamily, 100) || 'other',
     objectLabel: cleanText(diagnosis.objectLabel, 200),
     objectSubtype: cleanText(diagnosis.objectSubtype, 200),
@@ -11,6 +46,28 @@ export function classificationFromV8(diagnosis = {}) {
     brand: cleanText(diagnosis.brand || diagnosis.guidedRepair?.brand, 200),
     model: cleanText(diagnosis.model || diagnosis.guidedRepair?.model, 200),
     errorCode: cleanText(diagnosis.errorCode, 100),
+  };
+  const raw = classificationFromUserText(problem);
+  const hardSafetyFallback = isHardSafetyFallback(diagnosis);
+  const base = hardSafetyFallback
+    ? {
+        brand: legacy.brand,
+        model: legacy.model,
+        errorCode: legacy.errorCode,
+      }
+    : legacy;
+  const resolved = { ...base, ...raw };
+  const evidenceAuthority = {};
+  for (const key of ['objectFamily', 'objectLabel', 'symptom', 'intent', 'brand', 'model', 'errorCode']) {
+    if (!cleanText(resolved[key], 200)) continue;
+    evidenceAuthority[key] = Object.hasOwn(raw, key)
+      ? 'raw_user_text'
+      : 'legacy_inference';
+  }
+  return immutable({
+    ...resolved,
+    evidenceAuthority,
+    legacyHardSafetyFallback: hardSafetyFallback,
   });
 }
 

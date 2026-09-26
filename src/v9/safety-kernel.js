@@ -22,8 +22,11 @@ const RULES = Object.freeze([
 const NEGATION = /\b(geen|niet|zonder|no|not|without|kein(?:e|en|er)?|nicht|ohne)\b/i;
 
 function matchIsNegated(text, matchIndex) {
-  const before = text.slice(Math.max(0, matchIndex - 35), matchIndex);
-  return NEGATION.test(before);
+  const before = text.slice(Math.max(0, matchIndex - 60), matchIndex);
+  const clause = before.split(
+    /(?:[.;:!?]|\b(?:maar|but|aber|echter|however)\b|\b(?:en|and|und)\s+(?:ik|we|wij|er|het|de|een)\b)/i,
+  ).at(-1) || '';
+  return NEGATION.test(clause);
 }
 
 function evidenceText(entry) {
@@ -40,6 +43,39 @@ function addFlag(flags, code, route, evidenceId) {
   if (!flag.evidenceIds.includes(evidenceId)) flag.evidenceIds.push(evidenceId);
 }
 
+export function assessSafetyEvidence(ledger) {
+  const assessments = {};
+  const trusted = activeEvidence(ledger, entry => TRUSTED_SOURCES.has(entry.source));
+  for (const entry of trusted) {
+    if (entry.polarity === 'absent' || entry.polarity === 'unknown') continue;
+    const text = evidenceText(entry);
+    for (const [code, route, pattern] of RULES) {
+      const matcher = new RegExp(pattern.source, `${pattern.flags.replace('g', '')}g`);
+      for (const match of text.matchAll(matcher)) {
+        const state = assessments[code] || {
+          code,
+          route,
+          presentEvidenceIds: [],
+          negatedEvidenceIds: [],
+        };
+        const target = matchIsNegated(text, match.index)
+          ? state.negatedEvidenceIds
+          : state.presentEvidenceIds;
+        if (!target.includes(entry.evidenceId)) target.push(entry.evidenceId);
+        assessments[code] = state;
+      }
+    }
+  }
+  return Object.freeze(Object.fromEntries(Object.entries(assessments).map(([code, value]) => [
+    code,
+    Object.freeze({
+      ...value,
+      presentEvidenceIds: Object.freeze([...value.presentEvidenceIds]),
+      negatedEvidenceIds: Object.freeze([...value.negatedEvidenceIds]),
+    }),
+  ])));
+}
+
 function normalizedValue(ledger, predicate) {
   return activeEvidence(ledger, entry =>
     entry.source === 'deterministic_normalization' &&
@@ -52,15 +88,10 @@ function normalizedValue(ledger, predicate) {
 export function evaluateSafety(ledger) {
   const flags = [];
   const trusted = activeEvidence(ledger, entry => TRUSTED_SOURCES.has(entry.source));
-
-  for (const entry of trusted) {
-    if (entry.polarity === 'absent' || entry.polarity === 'unknown') continue;
-    const text = evidenceText(entry);
-    for (const [code, route, pattern] of RULES) {
-      const match = pattern.exec(text);
-      pattern.lastIndex = 0;
-      if (!match || matchIsNegated(text, match.index)) continue;
-      addFlag(flags, code, route, entry.evidenceId);
+  const assessments = assessSafetyEvidence(ledger);
+  for (const assessment of Object.values(assessments)) {
+    for (const evidenceId of assessment.presentEvidenceIds) {
+      addFlag(flags, assessment.code, assessment.route, evidenceId);
     }
   }
 

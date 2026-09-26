@@ -68,6 +68,13 @@ test('Safety Kernel behandelt expliciete negatie niet als hazard', () => {
   assert.deepEqual(safetyFlagCodes(decision), []);
 });
 
+test('Safety Kernel laat een ontkende term een echte term niet maskeren', () => {
+  const ledger = ledgerFromInput({ problem: 'Er is geen rook, maar ik ruik wel brandlucht.' });
+  const decision = evaluateSafety(ledger);
+  assert.equal(decision.route, 'stop');
+  assert.deepEqual(safetyFlagCodes(decision), ['fire_smoke']);
+});
+
 test('Safety Kernel negeert onbetrouwbare modelhypotheses', () => {
   const ledger = createEvidenceLedger({ entries: [{
     source: 'model_hypothesis', subject: 'apparaat', predicate: 'raw_text', value: 'gas leak and smoke', polarity: 'present', confidence: 0.99,

@@ -7,6 +7,7 @@ export const EVIDENCE_SOURCES = Object.freeze([
   'previous_user_text',
   'vision_structured',
   'deterministic_normalization',
+  'legacy_inference',
   'research',
   'model_hypothesis',
 ]);

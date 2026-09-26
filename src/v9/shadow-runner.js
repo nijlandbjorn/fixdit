@@ -26,7 +26,7 @@ export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', la
     language,
     problem,
     previousObservations: observationsFromV8(v8Diagnosis),
-    classification: classificationFromV8(v8Diagnosis),
+    classification: classificationFromV8(v8Diagnosis, { problem }),
     technique: techniqueFromV8(v8Diagnosis),
     research: researchFromV8(v8Diagnosis),
     legacyDiagnosis: v8Diagnosis,

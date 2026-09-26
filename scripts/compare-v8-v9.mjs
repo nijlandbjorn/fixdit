@@ -18,6 +18,7 @@ export async function runRegressionBank() {
       analysisId: `fixture-${fixture.id}`,
       route: v8Decision.route,
       risk: v8Decision.risk,
+      safetyFlags: flags,
       performance: { totalMs: 0 },
     };
     const v9 = await runPipelineV9({
