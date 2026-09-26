@@ -9983,6 +9983,7 @@ function safetyResultV861(problem,lang,previous,flags,started){
   const title=water?t('Stop: water bij elektriciteit','Stop: water near electricity','Stopp: Wasser an elektrischen Anschlüssen'):stopTitle(lang,flags);
   const action=water?t('Raak het stopcontact, stekkers en water eromheen niet aan. Blijf op afstand en laat een elektricien de situatie veiligstellen. Bel 112 bij acuut gevaar.','Do not touch the socket, plugs or surrounding water. Keep away and have an electrician make the situation safe. Call 112 if there is immediate danger.','Berühre weder Steckdose noch Stecker oder Wasser in der Nähe. Halte Abstand und lasse eine Elektrofachkraft die Situation sichern. Rufe bei akuter Gefahr 112 an.'):stopAction(lang,flags);
   const d=normalizePlan({solutionTitle:title,summary:action,steps:[],materials:[],tools:[],needMoreInfo:false,risk:'stop'}, {objectFamily:'electrical',objectLabel:water?t('Stopcontact','Electrical socket','Steckdose'):'',intent:'inspect',symptom:'water_damage'},'',problem,flags,lang);
+  d.problemKind=cleanString(d.problemKind)||cleanString(d.symptom)||'unknown';
   Object.assign(d,{solutionTitle:title,whatToDoNow:action,summary:action,stopReason:action,completionChecks:[],possibleCauses:[],measurements:[],avoid:[],followUpQuestion:'',followUpPhoto:'',qualityIssues:[],qualityReviewed:false});
   d.repairEngine={object:{},problem:{userDescription:problem},research:{required:false,status:'skipped',sources:[]},technique:{id:'hard_safety_stop',name:title,searchName:'',mechanism:action,whySelected:[action],alternatives:[],evidenceSourceIds:[]},steps:[],repairability:{status:'PROFESSIONAL_REQUIRED',confidence:1,reason:action,professionalTrigger:action},professional:{recommended:true,reason:action,handoffSummary:action}};
   synchronizeV861(d,lang,factsV861(problem,previous),'hard_safety');
@@ -9996,6 +9997,7 @@ export const __v861Test = Object.freeze({
   normalizeClassification,
   hardSafetyFlags,
   safetyDecision,
+  safetyResultV861,
   routeFrom,
   deterministicPlanValidation,
   technicalQualityDecision,

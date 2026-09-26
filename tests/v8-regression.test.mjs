@@ -40,6 +40,30 @@ test('V8 classificatienormalisatie houdt gebruikerssymptoom leidend', () => {
   assert.equal(result.problemKind, 'no_flow');
 });
 
+test('V8 hard-safety resultaat voldoet aan het D1 persistence-contract', () => {
+  const problem = 'Mijn koffiezetapparaat maakt geluid maar er komt geen koffie uit. Er is geen rook, brandlucht of lekkage.';
+  const flags = v8.hardSafetyFlags({ objectFamily: 'other' }, '', problem);
+
+  assert.equal(v8.safetyDecision(flags).route, 'stop');
+
+  const { diagnosis } = v8.safetyResultV861(problem, 'nl', null, flags, Date.now());
+  const requiredD1Strings = [
+    diagnosis.objectFamily,
+    diagnosis.intent,
+    diagnosis.problemKind,
+    diagnosis.route,
+    diagnosis.confidence,
+    diagnosis.risk,
+  ];
+
+  assert.equal(diagnosis.route, 'stop');
+  assert.equal(diagnosis.problemKind, diagnosis.symptom || 'unknown');
+  for (const value of requiredD1Strings) {
+    assert.equal(typeof value, 'string');
+    assert.notEqual(value, '');
+  }
+});
+
 test('V8 deterministische validator blokkeert reparatie vóór ontbrekende informatie', () => {
   const checked = v8.deterministicPlanValidation(
     {
