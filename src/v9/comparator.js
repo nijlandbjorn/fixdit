@@ -27,9 +27,9 @@ export function compareV8V9(v8Diagnosis, v9Result) {
       !safetyEvidence[code]?.presentEvidenceIds?.length);
   const unknownEvidenceReference = asArray(v9Result?.critic?.issues)
     .includes('unknown_evidence_reference');
-  const safetyDivergence = Boolean(v8Safety && v8Safety !== v9Safety);
+  const safetyDivergence = v8Safety !== v9Safety;
   const criticalRegression = unknownEvidenceReference ||
-    (safetyDivergence && !explicitlyNegatedV8Safety);
+    (Boolean(v8Safety) && safetyDivergence && !explicitlyNegatedV8Safety);
   const status = criticalRegression
     ? 'critical_regression'
     : safetyDivergence
@@ -48,7 +48,9 @@ export function compareV8V9(v8Diagnosis, v9Result) {
     criticIssueCount: asArray(v9Result?.critic?.issues).length,
     criticalRegression,
     status,
-    safetyDifferenceReason: explicitlyNegatedV8Safety ? 'explicit_user_negation' : null,
+    safetyDifferenceReason: explicitlyNegatedV8Safety
+      ? 'explicit_user_negation'
+      : (!v8Safety && v9Safety ? 'v9_detected_additional_hazard' : null),
     negatedSafetyCodes: Object.freeze(v8SafetyCodes.filter(code =>
       safetyEvidence[code]?.negatedEvidenceIds?.length &&
       !safetyEvidence[code]?.presentEvidenceIds?.length)),

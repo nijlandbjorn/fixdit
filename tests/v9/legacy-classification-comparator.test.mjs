@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { runV9AlongsideV8 } from '../../src/v9/shadow-runner.js';
-import { techniqueFromV8 } from '../../src/v9/v8-adapter.js';
+import { classificationFromV8, techniqueFromV8 } from '../../src/v9/v8-adapter.js';
 
 function v8Diagnosis({
   analysisId,
@@ -133,4 +133,34 @@ test('echte water-elektriciteit situatie blijft een V9 safety-stop', async () =>
   assert.ok(result.safety.flags.some(flag => flag.code === 'water_electricity'));
   assert.equal(comparison.safetyMatch, true);
   assert.equal(comparison.status, 'aligned');
+});
+
+test('raw user evidence normaliseert live apparaat- en voertuigscenario’s boven legacy inference', () => {
+  const cases = [
+    ['Mijn vaatwasser pompt het water niet af.', 'appliance', 'no_flow'],
+    ['Mijn wasmachine draait maar pompt het water niet weg.', 'appliance', 'no_flow'],
+    ['Mijn elektronisch apparaat gaat niet aan.', 'electronics', 'no_power'],
+    ['Mijn auto remt slecht en de remweg is langer.', 'automotive', 'braking_fault'],
+    ['Mijn autoband is zacht en loopt langzaam leeg.', 'automotive', 'pressure_loss'],
+    ['De verbinding van mijn houten stoel zit los.', 'furniture', 'loose'],
+    ['Het hout rond de bevestiging van mijn stoel is zichtbaar gescheurd.', 'furniture', 'crack'],
+    ['Het glas van mijn aquarium is gebarsten.', 'aquarium', 'crack'],
+  ];
+  const polluted = v8Diagnosis({ analysisId: 'raw-normalization', safetyFlags: ['fire_smoke'] });
+  for (const [problem, objectFamily, symptom] of cases) {
+    const classification = classificationFromV8(polluted, { problem });
+    assert.equal(classification.objectFamily, objectFamily, problem);
+    assert.equal(classification.symptom, symptom, problem);
+    assert.equal(classification.evidenceAuthority.objectFamily, 'raw_user_text', problem);
+    assert.equal(classification.evidenceAuthority.symptom, 'raw_user_text', problem);
+  }
+});
+
+test('aquarium met gebarsten glas blijft professioneel gerouteerd vanuit raw evidence', async () => {
+  const { result } = await shadow(
+    'Het glas van mijn aquarium is gebarsten.',
+    v8Diagnosis({ analysisId: 'aquarium-crack', route: 'professional', hardSafetyFallback: false }),
+  );
+  assert.equal(result.safety.route, 'professional');
+  assert.ok(result.safety.flags.some(flag => flag.code === 'structural_aquarium'));
 });

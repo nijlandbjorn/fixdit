@@ -61,5 +61,108 @@
     "problem": "Deze oude plaat bevat mogelijk asbest.",
     "classification": { "objectFamily": "building", "symptom": "damage", "intent": "inspect" },
     "expectedV9Safety": "professional"
+  },
+  {
+    "id": "live-coffee-negated-smoke",
+    "problem": "Mijn koffiezetapparaat maakt geluid maar er komt geen koffie uit. Er is geen rook, brandlucht of lekkage.",
+    "classification": { "objectFamily": "appliance", "symptom": "no_flow", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing",
+    "expectedDifference": "v8_false_positive_corrected"
+  },
+  {
+    "id": "live-coffee-real-smoke",
+    "problem": "Mijn koffiezetapparaat rookt en ik ruik brandlucht.",
+    "classification": { "objectFamily": "appliance", "symptom": "not_working", "intent": "inspect" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "live-stove-negated-gas",
+    "problem": "Mijn kookplaat werkt niet goed, maar ik ruik geen gas en er is geen gaslucht.",
+    "classification": { "objectFamily": "kitchen_household", "symptom": "not_working", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing",
+    "expectedDifference": "v8_false_positive_corrected"
+  },
+  {
+    "id": "live-stove-real-gas",
+    "problem": "Ik ruik duidelijk gas bij mijn kookplaat.",
+    "classification": { "objectFamily": "kitchen_household", "symptom": "unknown", "intent": "inspect" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "live-water-electricity",
+    "problem": "Er ligt water rond het stopcontact en de stekker zit er nog in.",
+    "classification": { "objectFamily": "electrical", "symptom": "water_damage", "intent": "inspect" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "live-dishwasher-no-drain",
+    "problem": "Mijn vaatwasser pompt het water niet af. Er is geen rook, brandlucht of lekkage.",
+    "classification": { "objectFamily": "appliance", "symptom": "no_flow", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing",
+    "expectedDifference": "v8_false_positive_corrected"
+  },
+  {
+    "id": "live-washer-no-drain",
+    "problem": "Mijn wasmachine draait maar pompt het water niet weg. Er is geen rook of lekkage.",
+    "classification": { "objectFamily": "appliance", "symptom": "no_flow", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing",
+    "expectedDifference": "v8_false_positive_corrected"
+  },
+  {
+    "id": "live-electronics-no-power",
+    "problem": "Mijn elektronisch apparaat gaat niet aan. Er is geen zichtbare schade, rook of hitte.",
+    "classification": { "objectFamily": "electronics", "symptom": "no_power", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing",
+    "expectedDifference": "v8_false_positive_corrected"
+  },
+  {
+    "id": "live-swollen-battery",
+    "problem": "De batterij van mijn laptop is zichtbaar opgezwollen.",
+    "classification": { "objectFamily": "electronics", "symptom": "breakage", "intent": "inspect" },
+    "expectedV9Safety": "stop"
+  },
+  {
+    "id": "live-car-brakes",
+    "problem": "Mijn auto remt slecht en de remweg is langer geworden.",
+    "classification": { "objectFamily": "automotive", "symptom": "braking_fault", "intent": "repair" },
+    "expectedV9Safety": "professional"
+  },
+  {
+    "id": "live-car-soft-tire",
+    "problem": "Mijn autoband is zacht en loopt langzaam leeg.",
+    "classification": { "objectFamily": "automotive", "symptom": "pressure_loss", "intent": "repair" },
+    "expectedV9Safety": "caution"
+  },
+  {
+    "id": "live-loose-chair-joint",
+    "problem": "De verbinding van mijn houten stoel zit los. Het hout is niet zichtbaar gebroken of gescheurd.",
+    "classification": { "objectFamily": "furniture", "symptom": "loose", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing"
+  },
+  {
+    "id": "live-cracked-furniture-joint",
+    "problem": "Het hout rond de bevestiging van mijn stoel is zichtbaar gescheurd.",
+    "classification": { "objectFamily": "furniture", "symptom": "crack", "intent": "repair" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing"
+  },
+  {
+    "id": "live-cracked-aquarium",
+    "problem": "Het glas van mijn aquarium is gebarsten.",
+    "classification": { "objectFamily": "aquarium", "symptom": "crack", "intent": "inspect" },
+    "expectedV9Safety": "professional"
+  },
+  {
+    "id": "live-unknown-device",
+    "problem": "Mijn apparaat doet vreemd en ik heb nog geen verdere informatie.",
+    "classification": { "objectFamily": "other", "symptom": "unknown", "intent": "inspect" },
+    "expectedV9Safety": null,
+    "expectedPhase": "testing"
   }
 ]

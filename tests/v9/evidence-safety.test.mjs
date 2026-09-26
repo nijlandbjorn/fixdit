@@ -61,6 +61,28 @@ test('Safety Kernel stopt deterministisch bij expliciete gasmelding', () => {
   assert.deepEqual(safetyFlagCodes(one), ['gas']);
 });
 
+test('Safety Kernel herkent echte en onzekere gasmelding met natuurlijke tussenwoorden', () => {
+  for (const problem of [
+    'Ik ruik duidelijk gas bij mijn kookplaat.',
+    'Ik weet niet of ik gas ruik bij de kookplaat.',
+  ]) {
+    const decision = evaluateSafety(ledgerFromInput({ problem }));
+    assert.equal(decision.route, 'stop');
+    assert.deepEqual(safetyFlagCodes(decision), ['gas']);
+  }
+});
+
+test('Safety Kernel herkent opgezwollen batterij in beide woordvolgordes', () => {
+  for (const problem of [
+    'De batterij van mijn laptop is zichtbaar opgezwollen.',
+    'Mijn laptop heeft een opgezwollen batterij.',
+  ]) {
+    const decision = evaluateSafety(ledgerFromInput({ problem }));
+    assert.equal(decision.route, 'stop');
+    assert.deepEqual(safetyFlagCodes(decision), ['battery_damage']);
+  }
+});
+
 test('Safety Kernel behandelt expliciete negatie niet als hazard', () => {
   const ledger = ledgerFromInput({ problem: 'Er is geen rook, geen brandlucht en ik ruik geen gas.' });
   const decision = evaluateSafety(ledger);

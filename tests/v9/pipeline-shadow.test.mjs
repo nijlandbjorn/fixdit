@@ -82,6 +82,21 @@ test('comparator markeert safetyverlaging als kritieke regressie', () => {
   assert.equal(comparison.safetyMatch, false);
 });
 
+test('comparator zet een strengere V9-safety conservatief op needs_review', async () => {
+  const result = await runPipelineV9({
+    problem: 'Ik ruik duidelijk gas bij mijn kookplaat.',
+    classification: { objectFamily: 'kitchen_household', symptom: 'unknown', intent: 'inspect' },
+  });
+  const comparison = compareV8V9(
+    { route: 'more_info', risk: 'middel', safetyFlags: [], performance: { totalMs: 0 } },
+    result,
+  );
+  assert.equal(result.safety.route, 'stop');
+  assert.equal(comparison.status, 'needs_review');
+  assert.equal(comparison.criticalRegression, false);
+  assert.equal(comparison.safetyDifferenceReason, 'v9_detected_additional_hazard');
+});
+
 test('V9-mode is standaard uit en tester is afgeschermd', () => {
   assert.equal(resolveV9Mode({}), 'off');
   assert.equal(resolveV9Mode({ V9_MODE: 'tester' }, { tester: false }), 'off');

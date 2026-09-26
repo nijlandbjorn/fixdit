@@ -9,10 +9,10 @@ const TRUSTED_SOURCES = new Set([
 ]);
 
 const RULES = Object.freeze([
-  ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)? gas|gas smell|gas leak|gasgeruch|gasleck|riecht nach gas)\b/i],
+  ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|gas smell|gas leak|gasgeruch|gasleck|riecht(?:\s+\w+){0,2}\s+gas)\b/i],
   ['fire_smoke', 'stop', /\b(rook|vonken|vlammen|brandlucht|fire|smoke|sparks|flames|burning smell|rauch|funken|flammen|brandgeruch)\b/i],
   ['mains_exposed', 'stop', /\b(blootliggende.{0,20}(?:draden|bedrading)|exposed mains|live wire|freiliegende.{0,20}(?:leitung|drähte)|230\s*v.{0,20}(?:bloot|exposed|freiliegend))\b/i],
-  ['battery_damage', 'stop', /\b(opgezwollen.{0,20}(?:accu|batterij)|swollen battery|battery.{0,20}swollen|aufgeblähte batterie|batterie.{0,20}aufgebläht)\b/i],
+  ['battery_damage', 'stop', /\b(opgezwollen.{0,30}(?:accu|batterij)|(?:accu|batterij).{0,30}opgezwollen|swollen battery|battery.{0,30}swollen|aufgeblähte batterie|batterie.{0,30}aufgebläht)\b/i],
   ['high_voltage', 'stop', /\b(magnetron.{0,30}(?:condensator|hoogspanning)|microwave.{0,30}(?:capacitor|high voltage)|mikrowelle.{0,30}hochspannung)\b/i],
   ['water_electricity', 'stop', /\b(water.{0,30}(?:stopcontact|stekker|230v|socket|outlet)|(?:stopcontact|stekker|230v|socket|outlet).{0,30}water|wasser.{0,30}steckdose|steckdose.{0,30}wasser)\b/i],
   ['refrigerant', 'professional', /\b(koelmiddel|freon|refrigerant|kältemittel)\b/i],
@@ -21,12 +21,14 @@ const RULES = Object.freeze([
 
 const NEGATION = /\b(geen|niet|zonder|no|not|without|kein(?:e|en|er)?|nicht|ohne)\b/i;
 
-function matchIsNegated(text, matchIndex) {
+function matchIsNegated(text, matchIndex, matchedText = '') {
   const before = text.slice(Math.max(0, matchIndex - 60), matchIndex);
   const clause = before.split(
     /(?:[.;:!?]|\b(?:maar|but|aber|echter|however)\b|\b(?:en|and|und)\s+(?:ik|we|wij|er|het|de|een)\b)/i,
   ).at(-1) || '';
-  return NEGATION.test(clause);
+  if (/\b(?:weet|weten|know|weiß|wissen)\s+(?:het\s+)?niet\s+of\b/i.test(clause)) return false;
+  if (/\b(?:niet alleen|not only|nicht nur)\b/i.test(clause)) return false;
+  return NEGATION.test(clause) || NEGATION.test(matchedText);
 }
 
 function evidenceText(entry) {
@@ -58,7 +60,7 @@ export function assessSafetyEvidence(ledger) {
           presentEvidenceIds: [],
           negatedEvidenceIds: [],
         };
-        const target = matchIsNegated(text, match.index)
+        const target = matchIsNegated(text, match.index, match[0])
           ? state.negatedEvidenceIds
           : state.presentEvidenceIds;
         if (!target.includes(entry.evidenceId)) target.push(entry.evidenceId);
@@ -111,7 +113,7 @@ export function evaluateSafety(ledger) {
   if (family === 'aquarium') {
     for (const entry of trusted) {
       const text = evidenceText(entry);
-      if (/\b(gebarsten glas|cracked glass|aquariumruit.{0,20}(?:scheur|barst)|aquariumscheibe.{0,20}riss)\b/i.test(text)) {
+      if (/\b(gebarsten glas|glas.{0,30}aquarium.{0,30}(?:gebarsten|scheur|barst)|cracked glass|glass.{0,30}(?:aquarium|fish tank).{0,30}crack|aquariumruit.{0,20}(?:scheur|barst)|aquariumscheibe.{0,20}riss)\b/i.test(text)) {
         addFlag(flags, 'structural_aquarium', 'professional', entry.evidenceId);
       }
     }

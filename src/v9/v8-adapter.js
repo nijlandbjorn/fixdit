@@ -32,6 +32,73 @@ function classificationFromUserText(problem = '') {
       problemKind: 'water_damage',
     };
   }
+
+  const appliance = /\b(vaatwasser|afwasmachine|wasmachine|dishwasher|washing machine|spülmaschine|waschmaschine)\b/i.test(text);
+  const noDrain = /\b(pompt?.{0,25}(?:niet|geen).{0,15}(?:af|weg)|(?:niet|geen).{0,20}(?:afpompen|wegpompen)|does(?:n't| not) drain|pumpt?.{0,20}nicht ab)\b/i.test(text);
+  if (appliance && noDrain) {
+    return {
+      objectFamily: 'appliance',
+      intent: 'repair',
+      symptom: 'no_flow',
+      problemKind: 'no_flow',
+    };
+  }
+
+  const electronicDevice = /\b(elektronisch apparaat|telefoon|laptop|computer|device|electronic|telefon|rechner)\b/i.test(text);
+  const noPower = /\b(gaat niet aan|start niet|geen stroom|no power|does(?:n't| not) turn on|geht nicht an|kein strom)\b/i.test(text);
+  if (electronicDevice && noPower) {
+    return {
+      objectFamily: 'electronics',
+      intent: 'repair',
+      symptom: 'no_power',
+      problemKind: 'no_power',
+    };
+  }
+
+  const automotive = /\b(auto|voertuig|car|vehicle|wagen|fahrzeug)\b/i.test(text);
+  if (automotive && /\b(remt|remmen|remweg|brake|braking|bremst|bremsweg)\b/i.test(text)) {
+    return {
+      objectFamily: 'automotive',
+      intent: 'repair',
+      symptom: 'braking_fault',
+      problemKind: 'braking_fault',
+    };
+  }
+  if (/\b(autoband|band|tire|tyre|reifen)\b/i.test(text) && /\b(zacht|lek|leeg|pressure|soft|flat|druck|platt)\b/i.test(text)) {
+    return {
+      objectFamily: 'automotive',
+      intent: 'repair',
+      symptom: 'pressure_loss',
+      problemKind: 'pressure_loss',
+    };
+  }
+
+  const furniture = /\b(stoel|tafel|meubel|chair|table|furniture|stuhl|tisch|möbel)\b/i.test(text);
+  if (furniture && /\b(los|loose|locker)\b/i.test(text)) {
+    return {
+      objectFamily: 'furniture',
+      intent: 'repair',
+      symptom: 'loose',
+      problemKind: 'loose',
+    };
+  }
+  if (furniture && /\b(gescheurd|scheur|gebarsten|crack|cracked|riss|gerissen)\b/i.test(text)) {
+    return {
+      objectFamily: 'furniture',
+      intent: 'repair',
+      symptom: 'crack',
+      problemKind: 'crack',
+    };
+  }
+
+  if (/\b(aquarium|fish tank|aquariumbecken)\b/i.test(text) && /\b(glas|glass|scheur|barst|gebarsten|crack|cracked|riss|gesprungen)\b/i.test(text)) {
+    return {
+      objectFamily: 'aquarium',
+      intent: 'inspect',
+      symptom: 'crack',
+      problemKind: 'crack',
+    };
+  }
   return {};
 }
 
