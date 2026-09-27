@@ -2,6 +2,7 @@ import { asArray, cleanText, immutable, stableHash } from './contracts.js';
 import { buildPhotoRequest } from './photo-request.js';
 
 const VISUAL_FACTS = /location|damage|attachment|material|crack|leak|visible|condition/i;
+const BOOLEAN_FACTS = new Set(['water_supply', 'known_good_supply', 'inlet_hose_condition', 'inlet_filter_condition', 'aquastop_state', 'door_lock_state']);
 
 const FACT_COPY = Object.freeze({
   error_details: {
@@ -79,6 +80,10 @@ const FACT_COPY = Object.freeze({
     en: 'Which functions still work, and at which specific action does it first fail?',
     de: 'Welche Funktionen arbeiten noch, und bei welchem konkreten Schritt tritt der Fehler zuerst auf?',
   },
+  inlet_hose_condition: { nl: 'Is de toevoerslang vrij van knikken en zichtbare blokkades?', en: 'Is the inlet hose free of kinks and visible blockages?', de: 'Ist der Zulaufschlauch frei von Knicken und sichtbaren Blockaden?' },
+  inlet_filter_condition: { nl: 'Is het bereikbare inlaatfilter zichtbaar schoon?', en: 'Is the accessible inlet filter visibly clean?', de: 'Ist der zugängliche Zulauffilter sichtbar sauber?' },
+  aquastop_state: { nl: 'Geeft de aquastop of lekbeveiliging een zichtbare blokkade of melding?', en: 'Does the aquastop or leak protection show a visible block or warning?', de: 'Zeigt der Aquastop oder Leckschutz eine sichtbare Sperre oder Meldung?' },
+  door_lock_state: { nl: 'Sluit en vergrendelt de deur normaal?', en: 'Does the door close and lock normally?', de: 'Schließt und verriegelt die Tür normal?' },
 });
 
 function localQuestion(fact, language) {
@@ -135,6 +140,7 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
       candidates.push({
         code: `${hypothesis.code}_${fact}`,
         kind: visual ? 'photo' : 'question',
+        questionType: visual ? 'photo' : BOOLEAN_FACTS.has(fact) ? 'boolean' : 'short_text',
         prompt: photoSpec?.prompt || localQuestion(fact, language),
         photoSpec,
         hypothesisIds: [hypothesis.hypothesisId],
@@ -156,6 +162,7 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
         candidate.hypothesisIds,
         candidate.resolvesContradictionIds,
       ])}`,
+      questionType: candidate.questionType || 'short_text',
       ...candidate,
       rankScore: Number((candidate.informationGain + (candidate.discrimination || 0) * 0.1 - candidate.effort * 0.35 - (candidate.invasiveness || 0)).toFixed(4)),
     }))

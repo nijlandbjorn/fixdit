@@ -2,6 +2,19 @@ import { asArray, clamp01, cleanText, immutable, stableHash } from './contracts.
 import { activeEvidence } from './evidence-ledger.js';
 
 const CATALOG = Object.freeze({
+  pressure_loss: [
+    ['inner_tube_puncture', 'De binnenband kan lek zijn.', ['leak_rate'], ['pressure_holds']],
+    ['valve_leak', 'Het ventiel of de ventielkern kan lucht lekken.', ['valve_condition'], ['valve_holds_pressure']],
+    ['tire_foreign_object', 'Een scherp voorwerp of beschadiging in de buitenband kan het lek veroorzaken.', ['tire_condition'], ['tire_clear']],
+    ['rim_or_tire_damage', 'Schade rond buitenband, velg of spaakgebied kan luchtverlies veroorzaken.', ['rim_condition'], ['rim_intact']],
+  ],
+  dishwasher_no_flow: [
+    ['dishwasher_water_supply', 'De kraan of watertoevoer naar de vaatwasser kan gesloten of onderbroken zijn.', ['water_supply'], ['supply_confirmed']],
+    ['dishwasher_inlet_hose', 'De toevoerslang kan geknikt of verstopt zijn.', ['inlet_hose_condition'], ['hose_clear']],
+    ['dishwasher_inlet_filter', 'Het inlaatfilter kan verstopt zijn.', ['inlet_filter_condition'], ['filter_clear']],
+    ['dishwasher_aquastop', 'De aquastop of lekbeveiliging kan de watertoevoer blokkeren.', ['aquastop_state'], ['aquastop_clear']],
+    ['dishwasher_door_or_valve', 'De deurvergrendeling, het inlaatventiel of de aansturing kan de inlaat verhinderen.', ['door_lock_state'], ['door_locked']],
+  ],
   no_drain: [
     ['drain_obstruction', 'Een verstopping kan de afvoer belemmeren.', ['failure_boundary'], ['drain_clear']],
     ['drain_pump_fault', 'De afvoerpomp of aansturing werkt mogelijk niet.', ['observable_behavior'], ['pump_operates']],
@@ -84,7 +97,8 @@ function normalizeProposal(proposal, index, ledger) {
 
 export function generateHypotheses({ ledger, classification = {}, modelProposals = [] } = {}) {
   const symptom = cleanText(classification.symptom || classification.problemKind, 100) || 'unknown';
-  const catalog = CATALOG[symptom] || CATALOG.unknown;
+  const catalogKey = symptom === 'no_flow' && classification.objectLabel === 'vaatwasser' ? 'dishwasher_no_flow' : symptom;
+  const catalog = CATALOG[catalogKey] || CATALOG.unknown;
   const deterministic = catalog.map(([code, statement, missingEvidence, falsifiers], index) => {
     const observations = activeEvidence(ledger, entry => ['user_text', 'previous_user_text', 'vision_structured'].includes(entry.source));
     const report = observations.filter(entry => entry.predicate === 'raw_text');

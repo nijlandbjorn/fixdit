@@ -2,7 +2,7 @@ import { stableHash } from './contracts.js';
 import { compareV8V9 } from './comparator.js';
 import { runPipelineV9 } from './pipeline.js';
 import { persistV9Run } from './persistence.js';
-import { createWorkersAiCritic } from './workers-ai-adapter.js';
+import { createWorkersAiCritic, createWorkersAiReasoner } from './workers-ai-adapter.js';
 import { classificationFromV8, observationsFromV8, researchFromV8, techniqueFromV8 } from './v8-adapter.js';
 
 export function resolveV9Mode(env, { tester = false } = {}) {
@@ -30,6 +30,7 @@ export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', la
     technique: techniqueFromV8(v8Diagnosis),
     research: researchFromV8(v8Diagnosis),
     legacyDiagnosis: v8Diagnosis,
+    reasoner: createWorkersAiReasoner(env),
     critic: createWorkersAiCritic(env),
   });
   const comparison = compareV8V9(v8Diagnosis, result);

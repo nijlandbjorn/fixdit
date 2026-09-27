@@ -9,6 +9,8 @@ import { evaluateRepairGate } from './repair-gate.js';
 import { buildRepairPlanV9 } from './repair-planner.js';
 import { runIndependentCritic } from './independent-critic.js';
 import { createDiagnosticState, transitionDiagnosticState } from './state-machine.js';
+import { buildDirectHelp, selectDiagnosticRoute } from './decision-layer.js';
+import { detectNoProgress } from './no-progress.js';
 
 function transitionForDecision(state, safety, gate, nextTest) {
   if (safety.route === 'stop') {
@@ -44,6 +46,7 @@ export async function runPipelineV9({
   technique = null,
   research = null,
   legacyDiagnosis = null,
+  reasoner = null,
   critic = null,
 } = {}) {
   const started = Date.now();
@@ -58,8 +61,25 @@ export async function runPipelineV9({
 
   const contradictions = detectContradictions(ledger);
   const safety = evaluateSafety(ledger);
-  const hypotheses = generateHypotheses({ ledger, classification, modelProposals: modelHypotheses });
-  const nextTest = selectNextBestTest({ hypotheses, contradictions, language, safety, classification });
+  let aiCalls = 0;
+  let aiError = null;
+  let assistedHypotheses = asArray(modelHypotheses);
+  if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
+    try {
+      const assisted = await reasoner({ problem, language, classification, evidence: ledger.entries.map(entry => ({ source: entry.source, predicate: entry.predicate, value: entry.value })) });
+      aiCalls += 1;
+      assistedHypotheses = [...assistedHypotheses, ...asArray(assisted?.hypotheses)];
+    } catch (error) {
+      aiCalls += 1;
+      aiError = String(error?.message || error);
+    }
+  }
+  const hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
+  const noProgress = detectNoProgress(previousObservations, problem);
+  const decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
+  const nextTest = decision.route === 'diagnose' && !noProgress.exhausted
+    ? selectNextBestTest({ hypotheses, contradictions, language, safety, classification })
+    : null;
   let repairGate = evaluateRepairGate({
     ledger,
     safety,
@@ -91,6 +111,10 @@ export async function runPipelineV9({
     }
   }
 
+  const directHelp = decision.route === 'direct_help'
+    ? buildDirectHelp({ classification, hypotheses, safety })
+    : null;
+
   return immutable({
     schemaVersion: '9.0',
     engineVersion: V9_ENGINE_VERSION,
@@ -107,12 +131,15 @@ export async function runPipelineV9({
     ledger,
     contradictions,
     safety,
+    decision,
+    noProgress,
     hypotheses,
     nextTest,
+    directHelp,
     repairGate,
     critic: criticResult,
     state,
     plan,
-    metrics: immutable({ totalMs: Date.now() - started, externalAiCalls: criticResult.modelUsed ? 1 : 0, externalResearchCalls: 0 }),
+    metrics: immutable({ totalMs: Date.now() - started, externalAiCalls: aiCalls + (criticResult.modelUsed ? 1 : 0), externalResearchCalls: 0, aiError }),
   });
 }
