@@ -7,6 +7,7 @@ import { rankNextBestTests } from '../../src/v9/next-best-test.js';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
 import { classificationFromUserText } from '../../src/v9/raw-classification.js';
 import { renderV9TesterHtml } from '../../src/v9/tester-ui.js';
+import { attachV9Metadata } from '../../src/v9/v8-adapter.js';
 
 test('duidelijke lekke fietsband kiest veilige directe hulp met specifieke oorzaken', async () => {
   const problem = 'Mijn fietsband is lek';
@@ -23,6 +24,10 @@ test('duidelijke lekke fietsband kiest veilige directe hulp met specifieke oorza
     'inner_tube_puncture', 'valve_leak', 'tire_foreign_object',
   ]);
   assert.doesNotMatch(result.hypotheses.map(item => item.statement).join(' '), /onvoldoende afgebakend/i);
+  const attached = attachV9Metadata({ analysisId: 'a1' }, result).diagnosticV9;
+  assert.equal(attached.decision.route, 'direct_help');
+  assert.equal(attached.directHelp.title, 'Waarschijnlijk probleem');
+  assert.equal(attached.metrics.externalAiCalls, 0);
 });
 
 test('vaatwasser zonder water gebruikt apparaatspecifieke hypotheses', () => {
