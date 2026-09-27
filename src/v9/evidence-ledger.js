@@ -100,15 +100,27 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
     });
   }
 
-  if (cleanText(problem)) {
+  const currentProblem = cleanText(problem);
+  const correction = /\b(?:sorry[, ]+)?(?:ik\s+)?(?:zei|said|sagte).{0,30}\b(ja|yes|nein|nee|no)\b.{0,30}\b(?:bedoel(?:de)?|meant|meinte).{0,15}\b(ja|yes|nein|nee|no)\b/i.exec(currentProblem);
+  if (correction && correction[1].toLowerCase() !== correction[2].toLowerCase()) {
+    for (let index = entries.length - 1; index >= 0; index -= 1) {
+      if (/^(?:ja|yes|nee|no|nein)$/i.test(String(entries[index].value).trim())) {
+        entries[index] = { ...entries[index], status: 'superseded', provenance: { ...entries[index].provenance, supersededByCorrectionTurn: asArray(previousObservations).length } };
+        break;
+      }
+    }
+  }
+
+  if (currentProblem) {
     entries.push({
       source: 'user_text',
       subject: 'user_report',
       predicate: 'raw_text',
-      value: cleanText(problem),
+      value: currentProblem,
       polarity: 'present',
       confidence: 1,
       turnNumber: asArray(previousObservations).length,
+      provenance: correction ? { correction: true, replacesAnswer: correction[1], correctedAnswer: correction[2] } : {},
     });
   }
 

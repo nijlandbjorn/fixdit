@@ -10,7 +10,7 @@ const TRUSTED_SOURCES = new Set([
 
 const RULES = Object.freeze([
   ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|smell(?:s)?(?:\s+\w+){0,2}\s+gas|gas smell|gas leak|gasgeruch|gasleck|riech(?:e|t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}riech(?:e|t)?)\b/i],
-  ['fire_smoke', 'stop', /\b(rook|vonken|vlammen|brandlucht|fire|smoke|sparks|flames|burning smell|rauch|funken|flammen|brandgeruch)\b/i],
+  ['fire_smoke', 'stop', /\b(rook(?:t)?|vonken|vlammen|brandlucht|fire|smok(?:e|es|ing)|sparks|flames|burning smell|rauch(?:t)?|funken|flammen|brandgeruch)\b/i],
   ['mains_exposed', 'stop', /\b(blootliggende.{0,20}(?:draden|bedrading)|exposed mains|live wire|freiliegende.{0,20}(?:leitung|drähte)|230\s*v.{0,20}(?:bloot|exposed|freiliegend))\b/i],
   ['battery_damage', 'stop', /\b(opgezwollen.{0,30}(?:accu|batterij)|(?:\w*batterij|accu).{0,60}opgezwollen|swollen battery|battery.{0,30}swollen|aufgeblähte batterie|batterie.{0,30}aufgebläht)\b/i],
   ['battery_overheat', 'stop', /\b((?:batterij|accu|battery|batterie).{0,12}(?:extreem heet|oververhit|extremely hot|overheating|extrem heiß|überhitzt)|(?:extreem hete?|oververhitte?|extremely hot|overheating|extrem heiße?|überhitzte?).{0,12}(?:batterij|accu|battery|batterie))\b/i],

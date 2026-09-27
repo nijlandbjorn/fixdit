@@ -11,9 +11,9 @@ const FACT_COPY = Object.freeze({
     de: 'Welcher genaue Fehlercode wurde angezeigt, und welche Marke und welches Modell stehen auf dem sichtbaren Etikett?',
   },
   water_supply: {
-    nl: 'Bereikt water het apparaat vanuit de normale toevoer, en staat die toevoer open?',
-    en: 'Is water reaching the appliance from its normal supply, and is that supply open?',
-    de: 'Erreicht Wasser das Gerät über die normale Zufuhr, und ist diese geöffnet?',
+    nl: 'Staat de normale watertoevoer naar het apparaat open?',
+    en: 'Is the appliance\'s normal water supply open?',
+    de: 'Ist die normale Wasserzufuhr zum Gerät geöffnet?',
   },
   accessible_path: {
     nl: 'Zijn het reservoir, filter en de bereikbare uitloop correct geplaatst en vrij van zichtbare blokkades?',

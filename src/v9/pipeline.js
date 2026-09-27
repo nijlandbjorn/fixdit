@@ -11,6 +11,7 @@ import { runIndependentCritic } from './independent-critic.js';
 import { createDiagnosticState, transitionDiagnosticState } from './state-machine.js';
 import { buildDirectHelp, selectDiagnosticRoute } from './decision-layer.js';
 import { detectNoProgress } from './no-progress.js';
+import { buildDeterministicConsumerResponse, validateConsumerResponse } from './consumer-response.js';
 
 function transitionForDecision(state, safety, gate, nextTest) {
   if (safety.route === 'stop') {
@@ -63,18 +64,10 @@ export async function runPipelineV9({
   const safety = evaluateSafety(ledger);
   let aiCalls = 0;
   let aiError = null;
+  let aiLatencyMs = 0;
+  let assistedResponse = null;
   let assistedHypotheses = asArray(modelHypotheses);
-  if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
-    try {
-      const assisted = await reasoner({ problem, language, classification, evidence: ledger.entries.map(entry => ({ source: entry.source, predicate: entry.predicate, value: entry.value })) });
-      aiCalls += 1;
-      assistedHypotheses = [...assistedHypotheses, ...asArray(assisted?.hypotheses)];
-    } catch (error) {
-      aiCalls += 1;
-      aiError = String(error?.message || error);
-    }
-  }
-  const hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
+  let hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
   const noProgress = detectNoProgress(previousObservations, problem);
   const decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
   const nextTest = decision.route === 'diagnose' && !noProgress.exhausted
@@ -115,6 +108,43 @@ export async function runPipelineV9({
     ? buildDirectHelp({ classification, hypotheses, safety })
     : null;
 
+  const deterministicResponse = buildDeterministicConsumerResponse({
+    language, problem, classification, hypotheses, nextTest, noProgress, decision, safety,
+  });
+  let aiFallbackReason = typeof reasoner === 'function' ? null : 'ai_unavailable';
+  if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
+    const aiStarted = Date.now();
+    try {
+      const assisted = await reasoner({
+        language, originalUserInput: problem, classification, safety,
+        evidenceLedger: ledger.entries.map(entry => ({ source: entry.source, subject: entry.subject, predicate: entry.predicate, value: entry.value, polarity: entry.polarity, status: entry.status })),
+        hypotheses, contradictions, previousTurns: asArray(previousObservations), route: decision.route,
+        repairGate, noProgress, nextQuestion: nextTest,
+      });
+      aiCalls = 1;
+      assistedHypotheses = [...assistedHypotheses, ...asArray(assisted?.hypotheses)];
+      assistedResponse = assisted?.consumerResponse;
+    } catch (error) {
+      aiCalls = 1;
+      aiError = String(error?.message || error);
+      aiFallbackReason = 'model_error';
+    } finally {
+      aiLatencyMs = Date.now() - aiStarted;
+    }
+  } else if (['stop', 'professional'].includes(safety.route)) {
+    aiFallbackReason = 'deterministic_safety';
+  }
+
+  if (assistedHypotheses.length > asArray(modelHypotheses).length) {
+    hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
+  }
+
+  const consumerValidation = validateConsumerResponse(assistedResponse, {
+    language, repairGate, safety, classification, fallback: deterministicResponse,
+  });
+  const consumerResponse = consumerValidation.valid ? consumerValidation.response : deterministicResponse;
+  if (!consumerValidation.valid && assistedResponse && !aiFallbackReason) aiFallbackReason = consumerValidation.reason;
+
   return immutable({
     schemaVersion: '9.0',
     engineVersion: V9_ENGINE_VERSION,
@@ -136,10 +166,21 @@ export async function runPipelineV9({
     hypotheses,
     nextTest,
     directHelp,
+    consumerResponse,
     repairGate,
     critic: criticResult,
     state,
     plan,
-    metrics: immutable({ totalMs: Date.now() - started, externalAiCalls: aiCalls + (criticResult.modelUsed ? 1 : 0), externalResearchCalls: 0, aiError }),
+    metrics: immutable({
+      totalMs: Date.now() - started,
+      externalAiCalls: aiCalls + (criticResult.modelUsed ? 1 : 0),
+      primaryAiCalls: aiCalls,
+      aiLatencyMs,
+      aiFallback: consumerValidation.valid !== true,
+      aiFallbackReason: consumerValidation.valid ? null : (aiFallbackReason || consumerValidation.reason),
+      aiCallReason: aiCalls ? 'reasoning_and_consumer_response' : null,
+      externalResearchCalls: 0,
+      aiError,
+    }),
   });
 }

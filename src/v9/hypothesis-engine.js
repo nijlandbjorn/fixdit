@@ -2,6 +2,23 @@ import { asArray, clamp01, cleanText, immutable, stableHash } from './contracts.
 import { activeEvidence } from './evidence-ledger.js';
 
 const CATALOG = Object.freeze({
+  black_screen: [
+    ['display_output', 'De beeldschermuitgang of helderheidsinstelling kan verkeerd staan.', ['external_display'], ['internal_display_confirmed']],
+    ['backlight_or_panel', 'De schermverlichting of het ingebouwde paneel kan uitgevallen zijn.', ['external_display'], ['internal_display_confirmed']],
+    ['display_connection', 'De interne beeldverbinding kan onderbroken zijn.', ['external_display'], ['internal_display_confirmed']],
+  ],
+  no_spin: [
+    ['drain_or_balance', 'Achtergebleven water of onbalans kan centrifugeren blokkeren.', ['water_in_drum'], ['drum_empty']],
+    ['drive_system', 'De aandrijving of toerentalregeling kan niet goed werken.', ['drum_behavior'], ['normal_spin']],
+  ],
+  door_binding: [['hinge_alignment', 'Scharnieren of bevestigingen kunnen verschoven zijn.', ['contact_location'], ['hinges_aligned']], ['frame_movement', 'Het kozijn of deurblad kan door vocht of beweging vervormd zijn.', ['contact_location'], ['frame_stable']]],
+  wifi_dropout: [['internet_or_wifi', 'De wifi-verbinding kan wegvallen terwijl de internetverbinding actief blijft.', ['wired_connection'], ['wired_also_offline']], ['router_radio', 'De routerradio, storing of kanaalkeuze kan instabiel zijn.', ['indicator_state'], ['wifi_stable']]],
+  surface_scratch: [['finish_damage', 'De kras kan alleen in de afwerklaag zitten.', ['scratch_depth'], ['wood_exposed']], ['wood_damage', 'De kras kan tot in het hout doorlopen.', ['scratch_depth'], ['finish_only']]],
+  chain_slip: [['chain_wear', 'De ketting kan te slap, vervuild of versleten zijn.', ['chain_condition'], ['chain_normal']], ['sprocket_wear', 'Tandwielen of afstelling kunnen de ketting laten overslaan.', ['tooth_condition'], ['teeth_normal']]],
+  motion_no_response: [['sensor_setting', 'De sensorinstelling of normale schakelstand kan de reactie blokkeren.', ['manual_light'], ['manual_light_works']], ['sensor_or_supply', 'De bewegingssensor of voeding kan niet goed werken.', ['manual_light'], ['manual_light_works']]],
+  leaning_structure: [['post_shift', 'Een paal of fundering kan door wind of zachte grond verschoven zijn.', ['movement_location'], ['posts_stable']], ['connection_damage', 'Een zichtbare verbinding kan los of beschadigd zijn.', ['movement_location'], ['connections_intact']]],
+  washer_no_flow: [['empty_or_blocked', 'Het reservoir kan leeg zijn of een sproeier kan verstopt zijn.', ['reservoir_level'], ['reservoir_filled']], ['pump_or_hose', 'Pomp, slang of aansturing kan de vloeistof niet naar de sproeiers brengen.', ['pump_sound'], ['normal_spray']]],
+  gas_appliance_no_flow: [['normal_supply', 'De normale gastoevoer of ontstekingsvolgorde kan onderbroken zijn.', ['gas_supply_state'], ['supply_confirmed']], ['ignition_fault', 'De ontsteking kan niet goed vonken of aansturen.', ['ignition_behavior'], ['normal_ignition']]],
   pressure_loss: [
     ['inner_tube_puncture', 'De binnenband kan lek zijn.', ['leak_rate'], ['pressure_holds']],
     ['valve_leak', 'Het ventiel of de ventielkern kan lucht lekken.', ['valve_condition'], ['valve_holds_pressure']],
