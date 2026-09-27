@@ -28,8 +28,10 @@ export function compareV8V9(v8Diagnosis, v9Result) {
   const unknownEvidenceReference = asArray(v9Result?.critic?.issues)
     .includes('unknown_evidence_reference');
   const safetyDivergence = v8Safety !== v9Safety;
+  const severity = { stop: 3, professional: 2, caution: 1 };
+  const safetyDowngrade = (severity[v8Safety] || 0) > (severity[v9Safety] || 0);
   const criticalRegression = unknownEvidenceReference ||
-    (Boolean(v8Safety) && safetyDivergence && !explicitlyNegatedV8Safety);
+    (safetyDowngrade && !explicitlyNegatedV8Safety);
   const status = criticalRegression
     ? 'critical_regression'
     : safetyDivergence

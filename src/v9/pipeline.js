@@ -59,7 +59,7 @@ export async function runPipelineV9({
   const contradictions = detectContradictions(ledger);
   const safety = evaluateSafety(ledger);
   const hypotheses = generateHypotheses({ ledger, classification, modelProposals: modelHypotheses });
-  const nextTest = selectNextBestTest({ hypotheses, contradictions, language });
+  const nextTest = selectNextBestTest({ hypotheses, contradictions, language, safety, classification });
   let repairGate = evaluateRepairGate({
     ledger,
     safety,

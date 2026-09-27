@@ -9,10 +9,11 @@ const TRUSTED_SOURCES = new Set([
 ]);
 
 const RULES = Object.freeze([
-  ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|gas smell|gas leak|gasgeruch|gasleck|riecht(?:\s+\w+){0,2}\s+gas)\b/i],
+  ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|smell(?:s)?(?:\s+\w+){0,2}\s+gas|gas smell|gas leak|gasgeruch|gasleck|riech(?:e|t)?(?:\s+\w+){0,2}\s+gas)\b/i],
   ['fire_smoke', 'stop', /\b(rook|vonken|vlammen|brandlucht|fire|smoke|sparks|flames|burning smell|rauch|funken|flammen|brandgeruch)\b/i],
   ['mains_exposed', 'stop', /\b(blootliggende.{0,20}(?:draden|bedrading)|exposed mains|live wire|freiliegende.{0,20}(?:leitung|drähte)|230\s*v.{0,20}(?:bloot|exposed|freiliegend))\b/i],
-  ['battery_damage', 'stop', /\b(opgezwollen.{0,30}(?:accu|batterij)|(?:accu|batterij).{0,30}opgezwollen|swollen battery|battery.{0,30}swollen|aufgeblähte batterie|batterie.{0,30}aufgebläht)\b/i],
+  ['battery_damage', 'stop', /\b(opgezwollen.{0,30}(?:accu|batterij)|(?:\w*batterij|accu).{0,60}opgezwollen|swollen battery|battery.{0,30}swollen|aufgeblähte batterie|batterie.{0,30}aufgebläht)\b/i],
+  ['battery_overheat', 'stop', /\b((?:batterij|accu|battery|batterie).{0,12}(?:extreem heet|oververhit|extremely hot|overheating|extrem heiß|überhitzt)|(?:extreem hete?|oververhitte?|extremely hot|overheating|extrem heiße?|überhitzte?).{0,12}(?:batterij|accu|battery|batterie))\b/i],
   ['high_voltage', 'stop', /\b(magnetron.{0,30}(?:condensator|hoogspanning)|microwave.{0,30}(?:capacitor|high voltage)|mikrowelle.{0,30}hochspannung)\b/i],
   ['water_electricity', 'stop', /\b(water.{0,30}(?:stopcontact|stekker|230v|socket|outlet)|(?:stopcontact|stekker|230v|socket|outlet).{0,30}water|wasser.{0,30}steckdose|steckdose.{0,30}wasser)\b/i],
   ['refrigerant', 'professional', /\b(koelmiddel|freon|refrigerant|kältemittel)\b/i],
@@ -20,14 +21,31 @@ const RULES = Object.freeze([
 ]);
 
 const NEGATION = /\b(geen|niet|zonder|no|not|without|kein(?:e|en|er)?|nicht|ohne)\b/i;
+const CONTRAST = /\b(?:maar|echter|wel|but|however|aber|doch|jedoch)\b/gi;
+const CLAUSE_START_AFTER_COMMA = /,\s*(?:(?:er|het|de|een|ik|wij|we|mijn|there|it|the|a|an|i|we|my|es|das|der|die|ein(?:e|en)?|ich|wir|mein(?:e|en)?)\s+\w+)/gi;
+const COORDINATE_CLAUSE = /\b(?:en|and|und)\s+(?:ik|wij|we|hij|zij|ze|er|het|de|mijn|i|we|he|she|they|there|it|the|my|ich|wir|er|sie|es|der|die|mein(?:e|en)?)\s+\w+/gi;
+const UNCERTAIN_NEGATION = /\b(?:weet|weten|know|weiß|wissen)\s+(?:het\s+)?niet\s+of\b/i;
+const NON_NEGATING = /\b(?:niet alleen|not only|nicht nur)\b/i;
+
+function lastBoundaryBefore(text, matchIndex) {
+  const before = text.slice(0, matchIndex);
+  let boundary = Math.max(before.lastIndexOf('.'), before.lastIndexOf(';'), before.lastIndexOf(':'), before.lastIndexOf('!'), before.lastIndexOf('?'));
+  for (const pattern of [CONTRAST, CLAUSE_START_AFTER_COMMA, COORDINATE_CLAUSE]) {
+    pattern.lastIndex = 0;
+    for (const match of before.matchAll(pattern)) boundary = Math.max(boundary, match.index + match[0].length - 1);
+  }
+  return boundary + 1;
+}
+
+function laterContrastAffirmsHazard(text, matchEnd) {
+  const remainder = text.slice(matchEnd).split(/[.;:!?]/, 1)[0];
+  return /^\s*,?\s*(?:maar|echter|but|however|aber|doch|jedoch)\b[^.?!;:]*(?:\bwel\b|\bdoes\b|\bdo\b|\bis\b|\bare\b|\bdoch\b)/i.test(remainder);
+}
 
 function matchIsNegated(text, matchIndex, matchedText = '') {
-  const before = text.slice(Math.max(0, matchIndex - 60), matchIndex);
-  const clause = before.split(
-    /(?:[.;:!?]|\b(?:maar|but|aber|echter|however)\b|\b(?:en|and|und)\s+(?:ik|we|wij|er|het|de|een)\b)/i,
-  ).at(-1) || '';
-  if (/\b(?:weet|weten|know|weiß|wissen)\s+(?:het\s+)?niet\s+of\b/i.test(clause)) return false;
-  if (/\b(?:niet alleen|not only|nicht nur)\b/i.test(clause)) return false;
+  const clause = text.slice(lastBoundaryBefore(text, matchIndex), matchIndex);
+  if (UNCERTAIN_NEGATION.test(clause) || NON_NEGATING.test(clause)) return false;
+  if (laterContrastAffirmsHazard(text, matchIndex + matchedText.length)) return false;
   return NEGATION.test(clause) || NEGATION.test(matchedText);
 }
 
@@ -111,6 +129,7 @@ export function evaluateSafety(ledger) {
   }
 
   if (family === 'aquarium') {
+    if (symptom === 'crack') addFlag(flags, 'structural_aquarium', 'professional', normalizedId);
     for (const entry of trusted) {
       const text = evidenceText(entry);
       if (/\b(gebarsten glas|glas.{0,30}aquarium.{0,30}(?:gebarsten|scheur|barst)|cracked glass|glass.{0,30}(?:aquarium|fish tank).{0,30}crack|aquariumruit.{0,20}(?:scheur|barst)|aquariumscheibe.{0,20}riss)\b/i.test(text)) {

@@ -2,6 +2,34 @@ import { asArray, clamp01, cleanText, immutable, stableHash } from './contracts.
 import { activeEvidence } from './evidence-ledger.js';
 
 const CATALOG = Object.freeze({
+  no_drain: [
+    ['drain_obstruction', 'Een verstopping kan de afvoer belemmeren.', ['failure_boundary'], ['drain_clear']],
+    ['drain_pump_fault', 'De afvoerpomp of aansturing werkt mogelijk niet.', ['observable_behavior'], ['pump_operates']],
+  ],
+  no_heat: [
+    ['settings_or_supply', 'Een instelling of gebruiksvoorwaarde kan warmte verhinderen.', ['failure_boundary'], ['settings_confirmed']],
+    ['heating_fault', 'Het verwarmingssysteem werkt mogelijk niet.', ['observable_behavior'], ['normal_heat']],
+  ],
+  poor_cooling: [
+    ['airflow_or_settings', 'Luchtcirculatie, deurafdichting of instellingen kunnen koeling beperken.', ['failure_boundary'], ['conditions_confirmed']],
+    ['cooling_fault', 'Het koelsysteem werkt mogelijk niet goed.', ['observable_behavior'], ['normal_cooling']],
+  ],
+  not_charging: [
+    ['charging_path', 'De externe laadverbinding kan onderbroken zijn.', ['known_good_supply'], ['supply_confirmed']],
+    ['battery_or_controller', 'De batterij of laadregeling werkt mogelijk niet goed.', ['observable_behavior'], ['normal_charging']],
+  ],
+  no_sound: [
+    ['audio_settings', 'De gekozen uitgang of geluidsinstelling kan de oorzaak zijn.', ['failure_boundary'], ['settings_confirmed']],
+    ['audio_output_fault', 'De geluidsuitgang werkt mogelijk niet.', ['observable_behavior'], ['normal_audio']],
+  ],
+  error_code: [
+    ['reported_error', 'De gemelde code moet met modelinformatie worden afgebakend.', ['error_details'], ['code_absent']],
+    ['operating_condition', 'Een gebruiksvoorwaarde kan de foutmelding veroorzaken.', ['failure_boundary'], ['conditions_confirmed']],
+  ],
+  noise: [
+    ['external_vibration', 'Een extern deel kan meetrillen.', ['failure_boundary'], ['external_parts_stable']],
+    ['moving_component', 'Een bewegend onderdeel kan het geluid veroorzaken.', ['observable_behavior'], ['normal_operation']],
+  ],
   no_flow: [
     ['supply_not_seated', 'De normale toevoer bereikt het apparaat niet.', ['water_supply'], ['supply_confirmed']],
     ['accessible_blockage', 'Een normaal bereikbaar uitlaat- of filterpad is geblokkeerd.', ['accessible_path'], ['path_clear']],
@@ -32,13 +60,6 @@ const CATALOG = Object.freeze({
   ],
 });
 
-function textCorpus(ledger) {
-  return activeEvidence(ledger)
-    .map(entry => `${entry.subject} ${entry.predicate} ${typeof entry.value === 'string' ? entry.value : JSON.stringify(entry.value)}`)
-    .join(' ')
-    .toLocaleLowerCase();
-}
-
 function normalizeProposal(proposal, index, ledger) {
   const code = cleanText(proposal?.code, 100) || `hypothesis_${index + 1}`;
   const statement = cleanText(proposal?.statement, 600);
@@ -46,8 +67,8 @@ function normalizeProposal(proposal, index, ledger) {
   const activeIds = new Set(activeEvidence(ledger).map(entry => entry.evidenceId));
   const supportingEvidenceIds = asArray(proposal?.supportingEvidenceIds).filter(id => activeIds.has(id));
   const opposingEvidenceIds = asArray(proposal?.opposingEvidenceIds).filter(id => activeIds.has(id));
-  const base = clamp01(proposal?.score ?? 0.35);
-  const score = clamp01(base + supportingEvidenceIds.length * 0.1 - opposingEvidenceIds.length * 0.2);
+  const base = Math.min(0.5, clamp01(proposal?.score ?? 0.35));
+  const score = clamp01(base + Number(proposal?.confirmedSupportCount || 0) * 0.1 - opposingEvidenceIds.length * 0.2);
   return immutable({
     hypothesisId: cleanText(proposal?.hypothesisId, 160) || `hy_${stableHash([ledger?.runId, code, statement])}`,
     code,
@@ -63,17 +84,19 @@ function normalizeProposal(proposal, index, ledger) {
 
 export function generateHypotheses({ ledger, classification = {}, modelProposals = [] } = {}) {
   const symptom = cleanText(classification.symptom || classification.problemKind, 100) || 'unknown';
-  const corpus = textCorpus(ledger);
   const catalog = CATALOG[symptom] || CATALOG.unknown;
   const deterministic = catalog.map(([code, statement, missingEvidence, falsifiers], index) => {
-    const keyword = code.split('_').find(token => token.length >= 5);
-    const support = activeEvidence(ledger).filter(entry =>
-      keyword && `${entry.predicate} ${entry.value}`.toLocaleLowerCase().includes(keyword));
+    const observations = activeEvidence(ledger, entry => ['user_text', 'previous_user_text', 'vision_structured'].includes(entry.source));
+    const report = observations.filter(entry => entry.predicate === 'raw_text');
+    const confirmed = observations.filter(entry => entry.predicate === `supports:${code}` && entry.polarity === 'present');
+    const opposing = observations.filter(entry => (falsifiers.includes(entry.predicate) || entry.predicate === `opposes:${code}`) && entry.polarity === 'present');
     return normalizeProposal({
       code,
       statement,
-      score: 0.38 + (index === 0 ? 0.08 : 0) + (corpus.includes(symptom.replace('_', ' ')) ? 0.04 : 0),
-      supportingEvidenceIds: support.map(entry => entry.evidenceId),
+      score: 0.38 + (index === 0 ? 0.08 : 0),
+      supportingEvidenceIds: [...report, ...confirmed].map(entry => entry.evidenceId),
+      opposingEvidenceIds: opposing.map(entry => entry.evidenceId),
+      confirmedSupportCount: confirmed.length,
       missingEvidence,
       falsifiers,
     }, index, ledger);
@@ -81,7 +104,7 @@ export function generateHypotheses({ ledger, classification = {}, modelProposals
 
   const proposals = asArray(modelProposals)
     .slice(0, 5)
-    .map((proposal, index) => normalizeProposal(proposal, deterministic.length + index, ledger))
+    .map((proposal, index) => normalizeProposal({ ...proposal, confirmedSupportCount: 0 }, deterministic.length + index, ledger))
     .filter(Boolean);
 
   const byCode = new Map();

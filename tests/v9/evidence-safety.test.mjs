@@ -61,6 +61,34 @@ test('Safety Kernel stopt deterministisch bij expliciete gasmelding', () => {
   assert.deepEqual(safetyFlagCodes(one), ['gas']);
 });
 
+test('Safety Kernel begrenst negatie bij opsommingen, contrast en nieuwe clauses', () => {
+  const cases = [
+    ['geen rook', null],
+    ['rook', 'stop'],
+    ['Er is geen zichtbare schade, rook of hitte.', null],
+    ['Er zijn geen rook, vonken of brandlucht.', null],
+    ['Er is geen rook, maar wel brandlucht.', 'stop'],
+    ['Er is geen rook of vonken, maar er zijn wel vlammen.', 'stop'],
+    ['Er is geen koffie, er komt rook uit.', 'stop'],
+    ['Ik ruik geen gas.', null],
+    ['Ik ruik gas.', 'stop'],
+    ['De cv-ketel start niet en ik ruik gaslucht.', 'stop'],
+    ['Ik weet niet of ik gas ruik.', 'stop'],
+    ['Ik ruik geen gas, maar mijn partner wel.', 'stop'],
+    ['Gisteren was er rook, nu niet.', 'stop'],
+    ['No visible damage, smoke or heat.', null],
+    ['No smoke, but there are flames.', 'stop'],
+    ['Kein sichtbarer Schaden, Rauch oder Brandgeruch.', null],
+    ['Kein Rauch, aber es gibt Flammen.', 'stop'],
+    ['Er is geen lekkage, maar er ligt wel water bij de stekker.', 'stop'],
+    ['Er is geen opgezwollen batterij, maar de batterij wordt extreem heet.', 'stop'],
+  ];
+  for (const [problem, route] of cases) {
+    const decision = evaluateSafety(ledgerFromInput({ problem }));
+    assert.equal(decision.route, route, problem);
+  }
+});
+
 test('Safety Kernel herkent echte en onzekere gasmelding met natuurlijke tussenwoorden', () => {
   for (const problem of [
     'Ik ruik duidelijk gas bij mijn kookplaat.',

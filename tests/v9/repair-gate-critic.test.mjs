@@ -20,7 +20,10 @@ const hypothesis = {
 
 test('Repair Gate opent alleen met voldoende evidence en sterke hypothese', () => {
   const ledger = ledgerFromInput({ problem: 'De zichtbare schroef van de ladegreep zit los.' });
-  const gate = evaluateRepairGate({ ledger, safety: safe, hypotheses: [hypothesis], technique });
+  const evidenceId = ledger.entries[0].evidenceId;
+  const trustedHypothesis = { ...hypothesis, code: 'loose_attachment', supportingEvidenceIds: [evidenceId] };
+  const trustedTechnique = { ...technique, authority: 'deterministic_v9', hypothesisCode: 'loose_attachment', evidenceSourceIds: [evidenceId] };
+  const gate = evaluateRepairGate({ ledger, safety: safe, hypotheses: [trustedHypothesis], technique: trustedTechnique });
   assert.equal(gate.open, true);
   assert.equal(gate.route, 'self');
 });
@@ -82,10 +85,13 @@ test('planner produceert geen reparatiestappen bij gesloten gate', () => {
 
 test('Independent Critic keurt alleen volledig vrijgegeven plan goed', async () => {
   const ledger = ledgerFromInput({ problem: 'De zichtbare schroef van de ladegreep zit los.' });
-  const gate = evaluateRepairGate({ ledger, safety: safe, hypotheses: [hypothesis], technique });
+  const evidenceId = ledger.entries[0].evidenceId;
+  const trustedHypothesis = { ...hypothesis, code: 'loose_attachment', supportingEvidenceIds: [evidenceId] };
+  const trustedTechnique = { ...technique, authority: 'deterministic_v9', hypothesisCode: 'loose_attachment', evidenceSourceIds: [evidenceId] };
+  const gate = evaluateRepairGate({ ledger, safety: safe, hypotheses: [trustedHypothesis], technique: trustedTechnique });
   const plan = buildRepairPlanV9({
     gate,
-    technique,
+    technique: trustedTechnique,
     legacyDiagnosis: { safeSteps: ['Draai de zichtbare bevestigingsschroef voorzichtig vast.'], completionChecks: ['De greep zit vast.'] },
   });
   const result = await runIndependentCritic({
@@ -94,6 +100,21 @@ test('Independent Critic keurt alleen volledig vrijgegeven plan goed', async () 
   });
   assert.equal(result.approved, true);
   assert.equal(result.status, 'approved');
+});
+
+test('Independent Critic behandelt goedkeuring met issues als blokkade', async () => {
+  const ledger = ledgerFromInput({ problem: 'De zichtbare schroef van de ladegreep zit los.' });
+  const evidenceId = ledger.entries[0].evidenceId;
+  const trustedTechnique = { ...technique, authority: 'deterministic_v9', hypothesisCode: 'loose_attachment', evidenceSourceIds: [evidenceId] };
+  const gate = { open: true, route: 'self' };
+  const plan = buildRepairPlanV9({ gate, technique: trustedTechnique, legacyDiagnosis: { safeSteps: ['Zet de zichtbare schroef vast.'] } });
+  const result = await runIndependentCritic({
+    plan, gate, safety: safe, ledger,
+    critic: async () => ({ approved: true, issues: ['evidence_onvoldoende'] }),
+  });
+  assert.equal(result.approved, false);
+  assert.equal(result.status, 'rejected_model');
+  assert.deepEqual(result.issues, ['evidence_onvoldoende']);
 });
 
 test('Independent Critic faalt gesloten bij fout of ontbrekende critic', async () => {

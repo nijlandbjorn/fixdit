@@ -41,7 +41,7 @@ export async function runIndependentCritic({ plan, gate, safety, ledger, critic 
       plan,
       instruction: 'Review independently. Do not add actions. Return approved:boolean and issues:string[].',
     }));
-    if (result?.approved !== true || !Array.isArray(result?.issues)) {
+    if (result?.approved !== true || !Array.isArray(result?.issues) || result.issues.length > 0) {
       return immutable({ approved: false, status: 'rejected_model', issues: asArray(result?.issues).length ? result.issues : ['critic_rejected'], modelUsed: true });
     }
     return immutable({ approved: true, status: 'approved', issues: [], modelUsed: true });

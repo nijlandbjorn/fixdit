@@ -4,6 +4,11 @@ import { buildPhotoRequest } from './photo-request.js';
 const VISUAL_FACTS = /location|damage|attachment|material|crack|leak|visible|condition/i;
 
 const FACT_COPY = Object.freeze({
+  error_details: {
+    nl: 'Welke exacte foutcode stond er, en wat is het merk en model op het zichtbare label?',
+    en: 'What exact error code was shown, and what brand and model are on the visible label?',
+    de: 'Welcher genaue Fehlercode wurde angezeigt, und welche Marke und welches Modell stehen auf dem sichtbaren Etikett?',
+  },
   water_supply: {
     nl: 'Bereikt water het apparaat vanuit de normale toevoer, en staat die toevoer open?',
     en: 'Is water reaching the appliance from its normal supply, and is that supply open?',
@@ -60,14 +65,14 @@ const FACT_COPY = Object.freeze({
     target: { nl: 'de volledige scheur en de omgeving eromheen', en: 'the entire crack and its surroundings', de: 'den gesamten Riss und seine Umgebung' },
   },
   growth_or_movement: {
-    nl: 'Wordt de scheur groter of beweegt het materiaal wanneer het normaal wordt belast?',
-    en: 'Is the crack growing, or does the material move under normal load?',
-    de: 'Wird der Riss größer oder bewegt sich das Material bei normaler Belastung?',
+    nl: 'Heb je eerder gezien dat de scheur groter werd of het materiaal bewoog? Belast het niet om dit te testen.',
+    en: 'Have you previously seen the crack grow or the material move? Do not load it to test this.',
+    de: 'Hast du zuvor gesehen, dass der Riss größer wurde oder sich das Material bewegte? Belaste es nicht zum Testen.',
   },
   observable_behavior: {
-    nl: 'Wat gebeurt er precies wanneer je het apparaat normaal probeert te gebruiken, en wat blijft juist uit?',
-    en: 'What exactly happens when you try to use the device normally, and what expected response is missing?',
-    de: 'Was genau passiert bei normaler Benutzung des Geräts, und welche erwartete Reaktion bleibt aus?',
+    nl: 'Wat heb je bij het laatste gebruik precies waargenomen, en wat bleef juist uit? Probeer het niet opnieuw voor deze vraag.',
+    en: 'What did you observe during the last use, and what expected response was missing? Do not retry it for this question.',
+    de: 'Was hast du bei der letzten Benutzung beobachtet, und welche Reaktion blieb aus? Wiederhole es nicht für diese Frage.',
   },
   failure_boundary: {
     nl: 'Welke functies werken nog wel en bij welke concrete handeling gaat het voor het eerst mis?',
@@ -99,7 +104,8 @@ function localPhotoTarget(fact, language) {
   }[lang];
 }
 
-export function rankNextBestTests({ hypotheses = [], contradictions = [], language = 'nl' } = {}) {
+export function rankNextBestTests({ hypotheses = [], contradictions = [], language = 'nl', safety = null, classification = {} } = {}) {
+  if (['stop', 'professional'].includes(safety?.route)) return Object.freeze([]);
   const candidates = [];
 
   for (const contradiction of asArray(contradictions).filter(item => item.resolved !== true)) {
@@ -121,10 +127,10 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
   }
 
   for (const hypothesis of asArray(hypotheses)) {
-    for (const fact of asArray(hypothesis.missingEvidence).slice(0, 2)) {
+    for (const fact of asArray(hypothesis.missingEvidence)) {
       const visual = VISUAL_FACTS.test(fact);
       const photoSpec = visual
-        ? buildPhotoRequest({ target: localPhotoTarget(fact, language), purpose: hypothesis.statement, language })
+        ? buildPhotoRequest({ target: localPhotoTarget(fact, language), purpose: localQuestion(fact, language), language })
         : null;
       candidates.push({
         code: `${hypothesis.code}_${fact}`,
@@ -133,7 +139,10 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
         photoSpec,
         hypothesisIds: [hypothesis.hypothesisId],
         resolvesContradictionIds: [],
-        informationGain: Math.max(0.2, 0.9 - hypothesis.score * 0.35),
+        informationGain: fact === 'observable_behavior' && classification.symptom === 'unknown' ? 0.95 :
+          ['water_supply', 'known_good_supply', 'failure_boundary', 'attachment_type'].includes(fact) ? 0.85 : 0.7,
+        invasiveness: 0,
+        discrimination: ['water_supply', 'known_good_supply', 'failure_boundary', 'attachment_type'].includes(fact) ? 1 : 0.5,
         effort: visual ? 0.35 : 0.15,
         safetyClass: 'observation_only',
       });
@@ -148,9 +157,9 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
         candidate.resolvesContradictionIds,
       ])}`,
       ...candidate,
-      rankScore: Number((candidate.informationGain - candidate.effort * 0.35).toFixed(4)),
+      rankScore: Number((candidate.informationGain + (candidate.discrimination || 0) * 0.1 - candidate.effort * 0.35 - (candidate.invasiveness || 0)).toFixed(4)),
     }))
-    .sort((a, b) => b.rankScore - a.rankScore || a.testId.localeCompare(b.testId)));
+    .sort((a, b) => b.rankScore - a.rankScore || a.code.localeCompare(b.code)));
 }
 
 export function selectNextBestTest(input) {

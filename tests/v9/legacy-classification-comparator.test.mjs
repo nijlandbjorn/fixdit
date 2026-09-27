@@ -137,8 +137,8 @@ test('echte water-elektriciteit situatie blijft een V9 safety-stop', async () =>
 
 test('raw user evidence normaliseert live apparaat- en voertuigscenario’s boven legacy inference', () => {
   const cases = [
-    ['Mijn vaatwasser pompt het water niet af.', 'appliance', 'no_flow'],
-    ['Mijn wasmachine draait maar pompt het water niet weg.', 'appliance', 'no_flow'],
+    ['Mijn vaatwasser pompt het water niet af.', 'appliance', 'no_drain'],
+    ['Mijn wasmachine draait maar pompt het water niet weg.', 'appliance', 'no_drain'],
     ['Mijn elektronisch apparaat gaat niet aan.', 'electronics', 'no_power'],
     ['Mijn auto remt slecht en de remweg is langer.', 'automotive', 'braking_fault'],
     ['Mijn autoband is zacht en loopt langzaam leeg.', 'automotive', 'pressure_loss'],

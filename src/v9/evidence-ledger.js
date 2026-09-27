@@ -59,7 +59,7 @@ export function createEvidenceLedger({ runId = '', entries = [] } = {}) {
 export function appendEvidence(ledger, inputs) {
   const existing = asArray(ledger?.entries);
   const additions = asArray(inputs).map((entry, index) =>
-    normalizeEvidence(entry, existing.length + index + 1));
+    normalizeEvidence(entry, existing.length + index + 1, ledger?.runId || ''));
   return createEvidenceLedger({
     runId: ledger?.runId || '',
     entries: [...existing, ...additions],
@@ -112,6 +112,8 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
     });
   }
 
+  const rawLedger = createEvidenceLedger({ runId, entries });
+  const rawIds = rawLedger.entries.filter(entry => entry.source === 'user_text').map(entry => entry.evidenceId);
   for (const key of ['objectFamily', 'objectLabel', 'symptom', 'intent', 'brand', 'model', 'errorCode']) {
     const value = cleanText(classification?.[key], 200);
     if (!value) continue;
@@ -126,6 +128,7 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
       confidence: legacyInference ? 0.35 : key === 'objectLabel' ? 0.8 : 1,
       provenance: {
         derivedFrom: legacyInference ? 'v8_legacy_inference' : 'raw_user_text_normalization',
+        evidenceSourceIds: legacyInference ? [] : rawIds,
       },
     });
   }

@@ -36,8 +36,7 @@ export function evaluateRepairGate({
 
   const repairability = technique?.repairabilityStatus;
   const techniqueAuthority = technique?.authority;
-  const legacyTechniqueWithoutEvidence = techniqueAuthority === 'legacy_inference' &&
-    !asArray(technique?.evidenceSourceIds).length;
+  const legacyTechniqueWithoutEvidence = techniqueAuthority === 'legacy_inference';
   if (techniqueAuthority === 'untrusted_hard_safety_fallback') {
     reasons.push('technique_untrusted_safety_fallback');
   } else if (legacyTechniqueWithoutEvidence) {
@@ -45,6 +44,15 @@ export function evaluateRepairGate({
   } else if (!['DIY_CONFIDENT', 'DIY_WITH_CAUTION'].includes(repairability)) {
     reasons.push(repairability === 'PROFESSIONAL_REQUIRED' ? 'technique_requires_professional' : 'technique_not_ready');
   }
+
+  // References alone do not establish relevance or authority. Promotion must be explicit.
+  const trustedTechnique = ['deterministic_v9', 'grounded_model_specific'].includes(techniqueAuthority);
+  if (!trustedTechnique) reasons.push('technique_authority_unverified');
+  const techniqueRefs = asArray(technique?.evidenceSourceIds);
+  const trustedIds = new Set(activeEvidence(ledger, e => !['legacy_inference', 'model_hypothesis'].includes(e.source)).map(e => e.evidenceId));
+  if (!techniqueRefs.length || techniqueRefs.some(id => !trustedIds.has(id))) reasons.push('technique_evidence_missing');
+  if (technique?.hypothesisCode !== topHypothesis?.code || !topHypothesis?.code) reasons.push('technique_relevance_unverified');
+  if (!asArray(topHypothesis?.supportingEvidenceIds).some(id => trustedIds.has(id))) reasons.push('hypothesis_unsupported');
 
   const researchSources = asArray(research?.sources);
   if (modelSpecific && !researchSources.some(source => Number(source.trustScore) >= 0.8)) {
@@ -55,7 +63,7 @@ export function evaluateRepairGate({
   return immutable({
     status: open ? 'open' : 'needs_evidence',
     open,
-    route: open ? (repairability === 'DIY_WITH_CAUTION' ? 'caution' : 'self') : 'more_info',
+    route: open ? (repairability === 'DIY_WITH_CAUTION' || safety?.route === 'caution' ? 'caution' : 'self') : 'more_info',
     reasons,
     evidenceIds,
     hypothesisId: topHypothesis?.hypothesisId || null,

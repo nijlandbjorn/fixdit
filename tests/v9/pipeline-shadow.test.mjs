@@ -35,7 +35,7 @@ const strongLooseHypothesis = [{
   falsifiers: ['attachment_damaged'],
 }];
 
-test('volledige V9-pipeline draait lokaal zonder externe calls', async () => {
+test('volledige V9-pipeline houdt onbetrouwbare techniek vóór de critic tegen', async () => {
   const result = await runPipelineV9({
     analysisId: 'analysis-1',
     mode: 'local',
@@ -48,11 +48,13 @@ test('volledige V9-pipeline draait lokaal zonder externe calls', async () => {
   });
   assert.equal(result.engineVersion, '9.0.0-local');
   assert.equal(result.metrics.externalResearchCalls, 0);
-  assert.equal(result.metrics.externalAiCalls, 1);
-  assert.ok(['testing', 'repair_ready'].includes(result.state.phase));
+  assert.equal(result.metrics.externalAiCalls, 0);
+  assert.equal(result.repairGate.open, false);
+  assert.equal(result.critic.status, 'not_run');
+  assert.equal(result.state.phase, 'testing');
 });
 
-test('V9 zonder critic faalt gesloten en vraagt een test', async () => {
+test('V9 met onbetrouwbare techniek opent de gate niet en vraagt een test', async () => {
   const result = await runPipelineV9({
     problem: 'De zichtbare schroef van de ladegreep zit los.',
     classification: { objectFamily: 'furniture', objectLabel: 'Ladegreep', symptom: 'loose', intent: 'repair' },
@@ -62,7 +64,7 @@ test('V9 zonder critic faalt gesloten en vraagt een test', async () => {
   });
   assert.equal(result.plan.repairAuthorized, false);
   assert.equal(result.repairGate.open, false);
-  assert.equal(result.critic.status, 'unavailable_fail_closed');
+  assert.equal(result.critic.status, 'not_run');
 });
 
 test('V8-adapter voegt alleen optionele metadata toe', async () => {
