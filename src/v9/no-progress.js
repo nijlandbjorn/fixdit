@@ -7,8 +7,10 @@ function normalized(value) {
 }
 
 export function detectNoProgress(previousObservations = [], problem = '') {
-  const values = [...asArray(previousObservations).map(item => item?.text ?? item), problem]
-    .map(normalized).filter(Boolean);
+  const values = asArray(previousObservations).map(item => item?.text ?? item).map(normalized).filter(Boolean);
+  const current = normalized(problem);
+  // V8 includes the current report in reasoningContext; do not count that adapter echo as a second turn.
+  if (current && current !== values.at(-1)) values.push(current);
   let consecutive = 0;
   const seen = new Set();
   for (let index = values.length - 1; index >= 0; index -= 1) {

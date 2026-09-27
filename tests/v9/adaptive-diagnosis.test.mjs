@@ -8,6 +8,7 @@ import { runPipelineV9 } from '../../src/v9/pipeline.js';
 import { classificationFromUserText } from '../../src/v9/raw-classification.js';
 import { renderV9TesterHtml } from '../../src/v9/tester-ui.js';
 import { attachV9Metadata } from '../../src/v9/v8-adapter.js';
+import { detectNoProgress } from '../../src/v9/no-progress.js';
 
 test('duidelijke lekke fietsband kiest veilige directe hulp met specifieke oorzaken', async () => {
   const problem = 'Mijn fietsband is lek';
@@ -85,6 +86,12 @@ test('drie onbekende antwoorden stoppen verdere vragen met gesloten gate', async
   assert.equal(result.nextTest, null);
   assert.equal(result.repairGate.open, false);
   assert.equal(result.decision.route, 'diagnose');
+});
+
+test('de actuele V8-observatie-echo telt niet als extra no-progressbeurt', () => {
+  assert.equal(detectNoProgress(['Mijn televisie doet het niet', 'weet ik niet'], 'weet ik niet').consecutive, 1);
+  assert.equal(detectNoProgress(['Mijn televisie doet het niet', 'weet ik niet', 'weet ik niet'], 'weet ik niet').consecutive, 2);
+  assert.equal(detectNoProgress(['Mijn televisie doet het niet', 'weet ik niet', 'weet ik niet', 'weet ik niet'], 'weet ik niet').exhausted, true);
 });
 
 test('AI-assistentie is begrensd en valt veilig terug bij failure', async () => {
