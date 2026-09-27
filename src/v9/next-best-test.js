@@ -2,9 +2,24 @@ import { asArray, cleanText, immutable, stableHash } from './contracts.js';
 import { buildPhotoRequest } from './photo-request.js';
 
 const VISUAL_FACTS = /location|damage|attachment|material|crack|leak|visible|condition/i;
-const BOOLEAN_FACTS = new Set(['water_supply', 'known_good_supply', 'inlet_hose_condition', 'inlet_filter_condition', 'aquastop_state', 'door_lock_state']);
+const BOOLEAN_FACTS = new Set(['water_supply', 'known_good_supply', 'inlet_hose_condition', 'inlet_filter_condition', 'aquastop_state', 'door_lock_state', 'external_display', 'water_in_drum', 'wired_connection', 'manual_light', 'reservoir_level', 'gas_supply_state']);
 
 const FACT_COPY = Object.freeze({
+  external_display: { nl: 'Geeft een extern scherm wel beeld?', en: 'Does an external display show an image?', de: 'Zeigt ein externer Bildschirm ein Bild?' },
+  water_in_drum: { nl: 'Blijft er na het programma water in de trommel staan?', en: 'Is water left in the drum after the programme?', de: 'Bleibt nach dem Programm Wasser in der Trommel?' },
+  drum_behavior: { nl: 'Wat doet de trommel vlak voordat het centrifugeren uitblijft?', en: 'What does the drum do just before spinning fails?', de: 'Was macht die Trommel, kurz bevor das Schleudern ausbleibt?' },
+  contact_location: { nl: 'Waar raakt de deur het kozijn als eerste?', en: 'Where does the door first touch the frame?', de: 'Wo berührt die Tür zuerst den Rahmen?' },
+  wired_connection: { nl: 'Blijft een bekabeld apparaat online wanneer de wifi wegvalt?', en: 'Does a wired device stay online when Wi-Fi drops?', de: 'Bleibt ein kabelgebundenes Gerät online, wenn das WLAN ausfällt?' },
+  indicator_state: { nl: 'Welke routerlampjes veranderen wanneer de wifi wegvalt?', en: 'Which router lights change when Wi-Fi drops?', de: 'Welche Routerleuchten ändern sich, wenn das WLAN ausfällt?' },
+  scratch_depth: { nl: 'Zie je blank hout in de kras?', en: 'Can you see bare wood in the scratch?', de: 'Ist im Kratzer blankes Holz zu sehen?' },
+  chain_condition: { nl: 'Is de ketting zichtbaar slap, beschadigd of sterk vervuild?', en: 'Is the chain visibly slack, damaged or heavily soiled?', de: 'Ist die Kette sichtbar locker, beschädigt oder stark verschmutzt?' },
+  tooth_condition: { nl: 'Zie je sterk versleten of verbogen tanden?', en: 'Can you see badly worn or bent teeth?', de: 'Sind stark verschlissene oder verbogene Zähne zu sehen?' },
+  manual_light: { nl: 'Gaat de lamp via de normale handmatige schakelaar wel aan?', en: 'Does the light switch on with its normal manual control?', de: 'Lässt sich die Leuchte mit der normalen Handbedienung einschalten?' },
+  movement_location: { nl: 'Welke paal of verbinding is zichtbaar verschoven?', en: 'Which post or connection has visibly shifted?', de: 'Welcher Pfosten oder welche Verbindung hat sich sichtbar verschoben?' },
+  reservoir_level: { nl: 'Is het reservoir gevuld?', en: 'Is the reservoir filled?', de: 'Ist der Behälter gefüllt?' },
+  pump_sound: { nl: 'Hoor je de pomp bij normale bediening?', en: 'Can you hear the pump during normal operation?', de: 'Ist die Pumpe bei normaler Bedienung zu hören?' },
+  gas_supply_state: { nl: 'Staat de gastoevoer volgens de normale bediening open?', en: 'Is the gas supply open according to the normal controls?', de: 'Ist die Gaszufuhr gemäß der normalen Bedienung geöffnet?' },
+  ignition_behavior: { nl: 'Hoor of zie je de normale ontsteking werken?', en: 'Can you hear or see the normal ignition operate?', de: 'Ist die normale Zündung hör- oder sichtbar aktiv?' },
   error_details: {
     nl: 'Welke exacte foutcode stond er, en wat is het merk en model op het zichtbare label?',
     en: 'What exact error code was shown, and what brand and model are on the visible label?',

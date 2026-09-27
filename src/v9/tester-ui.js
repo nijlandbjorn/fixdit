@@ -71,6 +71,29 @@ async function photoData(){const file=el('photo').files[0]; if(!file)return ''; 
 async function send(problem,{followup=false}={}){if(busy)return; const value=problem.trim(); if(!value&&!el('photo').files[0]){el('status').innerHTML='<span class="error">Beschrijf eerst het probleem.</span>';return} setBusy(true,followup?'Antwoord verwerken…':'Diagnose uitvoeren…'); try{const requestId=crypto.randomUUID(); const body={requestId,deviceId,language:'nl',problem:value,image:await photoData()}; if(followup){body.action='followup';body.analysisId=analysisId} const response=await fetch(api,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}); const data=await response.json().catch(()=>({})); if(!response.ok||!data.ok)throw new Error(data.error||'De aanvraag is mislukt.'); data.requestId=requestId; render(data); el('problem').value='';el('freeAnswer').value='';el('photo').value='';el('photoLabel').textContent='Foto toevoegen (optioneel)';el('status').textContent='Analyse bijgewerkt.'}catch(error){el('status').innerHTML='<span class="error">'+text(error.message||error)+'</span>'}finally{setBusy(false,el('status').textContent)}}
 el('start').addEventListener('click',()=>send(el('problem').value)); document.querySelectorAll('[data-answer]').forEach(button=>button.addEventListener('click',()=>send(button.dataset.answer,{followup:true}))); el('answerForm').addEventListener('submit',event=>{event.preventDefault();send(el('freeAnswer').value,{followup:true})}); el('photo').addEventListener('change',()=>{el('photoLabel').textContent=el('photo').files[0]?.name||'Foto toevoegen (optioneel)'}); el('reset').addEventListener('click',()=>{analysisId='';lastPayload=null;turn=0;el('results').classList.add('hidden');el('benefits').classList.remove('hidden');el('timeline').innerHTML='';el('problem').value='';setProgress(0);el('status').textContent='Nieuwe diagnose gestart.'}); el('copyDebug').addEventListener('click',async()=>{await navigator.clipboard.writeText(el('debug').textContent);el('status').textContent='Tester-run gekopieerd.'}); el('downloadDebug').addEventListener('click',()=>{const blob=new Blob([el('debug').textContent],{type:'application/json'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='fixdit-v9-tester-run.json';link.click();URL.revokeObjectURL(link.href)});
 </script>
+<script>
+const renderLegacyV9=render;
+render=function(data){
+  renderLegacyV9(data);
+  const v9=data?.diagnosis?.diagnosticV9;
+  const response=v9?.consumerResponse;
+  if(!response||['stop','professional'].includes(v9?.safety?.route))return;
+  const card=el('directHelpCard');
+  card.classList.remove('hidden');
+  card.innerHTML='<h2>'+text(response.userSummary)+'</h2><p>'+text(response.helpfulIntro)+'</p><h3>Veilige eerste controles</h3><ol>'+(response.safeFirstChecks||[]).map(item=>'<li>'+text(item)+'</li>').join('')+'</ol><p>'+text(response.uncertainty)+'</p>';
+  const causes=response.likelyCauses||[];
+  el('hypotheses').innerHTML=causes.length?causes.map(item=>'<li>'+text(item)+'</li>').join(''):'<li>Nog onvoldoende bewijs voor een bruikbare hypothese.</li>';
+  const hasQuestion=Boolean(response.nextQuestion)&&response.needsMoreInformation===true;
+  el('nextCard').classList.toggle('hidden',!hasQuestion);
+  if(hasQuestion){
+    el('nextQuestion').textContent=response.nextQuestion;
+    el('nextWhy').textContent=response.whyThisQuestion?'Waarom deze vraag? '+response.whyThisQuestion:'';
+    const booleanType=response.questionType==='boolean';
+    el('booleanAnswers').classList.toggle('hidden',!booleanType);
+    el('answerForm').classList.toggle('hidden',booleanType||response.questionType==='photo');
+  }
+};
+</script>
 </body>
 </html>`;
 }

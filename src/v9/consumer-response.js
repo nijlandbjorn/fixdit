@@ -124,6 +124,7 @@ export function validateConsumerResponse(value, { language = 'nl', repairGate = 
   if (repairGate?.open !== true && /(?:vervang|replace|ersetze|open de behuizing|remove the cover)/i.test([...response.safeFirstChecks, ...response.suggestedActions].join(' '))) return fail('repair_gate_bypass');
   if (response.nextQuestion && !['boolean', 'single_choice', 'multiple_choice', 'short_text', 'number', 'photo'].includes(response.questionType)) return fail('invalid_question_type');
   if (response.questionType === 'boolean' && /\b(?:en|and|und)\b.+\?/i.test(response.nextQuestion.replace(/\b(?:bekend|known|bekannt)\b/gi, ''))) return fail('compound_boolean_question');
+  if (/Welke concrete waarneming|Which concrete observation|Welche konkrete Beobachtung/i.test(response.nextQuestion)) return fail('generic_placeholder_question');
   const expected = lang(language);
   if (expected === 'nl' && /\b(the|device|might|could|please check)\b/i.test(allText)) return fail('wrong_language');
   if (expected === 'de' && /\b(the|device|might|please check)\b/i.test(allText)) return fail('wrong_language');

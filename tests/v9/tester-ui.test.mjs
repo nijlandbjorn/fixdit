@@ -50,14 +50,17 @@ test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate
   assert.match(html, /data-answer="Nee"/);
   assert.match(html, /data-answer="Weet ik niet"/);
   assert.match(html, /Technisch tester-paneel/);
+  assert.match(html, /consumerResponse/);
   assert.doesNotMatch(html, /ondersteuningsscore/);
 });
 
 test('inline tester-script is syntactisch geldig', () => {
   const html = renderV9TesterHtml();
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map(match => match[1]);
-  assert.equal(scripts.length, 1);
-  assert.doesNotThrow(() => new vm.Script(scripts[0], { filename: 'v9-tester-inline.js' }));
+  assert.ok(scripts.length >= 1);
+  scripts.forEach((script, index) => {
+    assert.doesNotThrow(() => new vm.Script(script, { filename: `v9-tester-inline-${index + 1}.js` }));
+  });
 });
 
 test('normale GET-health blijft buiten Tester Mode identiek beschikbaar', async () => {
