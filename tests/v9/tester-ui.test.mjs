@@ -35,7 +35,10 @@ test('Tester-route bestaat niet zonder gate en rendert alleen met Preview-gate',
 test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate-grenzen', () => {
   const html = renderV9TesterHtml();
   assert.match(html, /viewport-fit=cover/);
-  assert.match(html, /Iets kapot\? <span>Eerst FixDit\.<\/span>/);
+  assert.match(html, /Wat is er aan de hand met je apparaat\?/);
+  assert.match(html, /Beschrijving/);
+  assert.match(html, /Vervolgvragen/);
+  assert.match(html, /Diagnose/);
   assert.match(html, /Wat we weten/);
   assert.match(html, /Mogelijke oorzaken/);
   assert.match(html, /Beste volgende controle/);
@@ -47,6 +50,7 @@ test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate
   assert.match(html, /data-answer="Nee"/);
   assert.match(html, /data-answer="Weet ik niet"/);
   assert.match(html, /Technisch tester-paneel/);
+  assert.doesNotMatch(html, /ondersteuningsscore/);
 });
 
 test('inline tester-script is syntactisch geldig', () => {
