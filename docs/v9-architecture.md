@@ -1,5 +1,17 @@
 # FixDit Diagnostic Engine V9
 
+## Productpositie
+
+**Iets kapot? Eerst FixDit.** FixDit helpt consumenten eerst vast te stellen wat er
+echt mis is, voordat zij onderdelen kopen, gaan sleutelen of een reparateur
+bellen. De gratis consumentenkern bestaat uit probleembeschrijving en optionele
+foto, safety-check, diagnose, gerichte vervolgvragen en veilig basisadvies.
+
+Mogelijke toekomstige inkomsten zijn onderdelen- en affiliateverwijzingen,
+reparateur-leads, B2B-diensten, een API of white-label aanbod en eventueel een
+premium Repair Assist. Geen van deze verdienmodellen mag de safety- of
+evidencebeslissingen beïnvloeden.
+
 ## Ontwerpgrens
 
 V8.6.1 in `index.js` blijft de primaire pipeline en het rollbackpad. V9 staat in
@@ -40,3 +52,15 @@ veranderen. Tester voegt uitsluitend `diagnosticV9` toe.
 Het bestaande requestcontract (`problem`, optioneel `image`, `language`, acties
 zoals `followup`) blijft gelijk. V8-responses blijven gelijk wanneer V9 uitstaat of
 in shadow/canary draait. `diagnosticV9` is een optioneel, additief veld voor testers.
+
+## Volgende productfase (nog niet geïmplementeerd)
+
+De volgende fase omvat achter expliciete rollout-gates: V9 tester mode, een
+mobile-first interface, typeplaat- en modelherkenning, manual lookup,
+fabrikant- en foutcodegrounding, citation-grounded repair plans, outcome feedback
+en een confirmed-fix dataset. Daarna kunnen onderdelencompatibiliteit,
+repair-vs-replace, reparateurkoppelingen, SEO en B2B/API worden onderzocht.
+
+Iedere stap blijft onder de bestaande evidence-, safety-, repair-gate- en
+critic-contracten vallen. Shadowvalidatie alleen is geen autorisatie om V9 als
+primaire gebruikersoutput of betaalde aanbevelingslaag in te zetten.

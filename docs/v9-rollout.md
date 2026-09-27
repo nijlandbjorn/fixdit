@@ -20,6 +20,18 @@ Geen stap in dit document is lokaal op productie uitgevoerd.
     critic-uitval en kritieke regressies. Een productiepromotie van V9 naar primaire
     output valt buiten deze implementatie.
 
+## Productroadmap na shadow hardening
+
+De eerstvolgende mijlpaal is gecontroleerde tester-mode met een mobile-first
+interface. Daarna volgen typeplaat/model recognition, manual lookup,
+fabrikant/foutcode-grounding en citation-grounded repair plans. Outcome feedback
+en een confirmed-fix dataset zijn vereist voordat onderdelencompatibiliteit en
+repair-vs-replace breder worden ingezet. Reparateur-leads, SEO en B2B/API volgen
+pas na afzonderlijke product-, privacy-, safety- en kwaliteitsbeoordeling.
+
+Deze roadmap is documentatie, geen rolloutbesluit. Canary, productiegebruikers,
+betaalde externe API's en productie-D1 blijven buiten deze fase.
+
 ## Stopcriteria
 
 - Elke V9-safetyroute die zwakker is dan een correcte V8-route.
