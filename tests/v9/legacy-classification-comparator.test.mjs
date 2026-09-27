@@ -164,3 +164,25 @@ test('aquarium met gebarsten glas blijft professioneel gerouteerd vanuit raw evi
   assert.equal(result.safety.route, 'professional');
   assert.ok(result.safety.flags.some(flag => flag.code === 'structural_aquarium'));
 });
+
+test('comparator adjudiceert ontkende water-elektriciteit als needs_review', async () => {
+  const { result, comparison } = await shadow(
+    'Er staat water naast het apparaat maar niet bij de stekker of het stopcontact.',
+    v8Diagnosis({ analysisId: 'water-away', safetyFlags: ['water_electricity'] }),
+  );
+  assert.equal(result.safety.route, null);
+  assert.equal(comparison.status, 'needs_review');
+  assert.equal(comparison.criticalRegression, false);
+  assert.equal(comparison.safetyDifferenceReason, 'explicit_user_negation');
+});
+
+test('comparator behandelt vervuilde voertuig-safety conservatief als review', async () => {
+  const { result, comparison } = await shadow(
+    'Mijn autoband is zacht en loopt langzaam leeg.',
+    v8Diagnosis({ analysisId: 'tire-vs-steering', route: 'professional', safetyFlags: ['vehicle_steering'], hardSafetyFallback: false }),
+  );
+  assert.equal(result.safety.route, 'caution');
+  assert.equal(comparison.status, 'needs_review');
+  assert.equal(comparison.criticalRegression, false);
+  assert.equal(comparison.safetyDifferenceReason, 'authoritative_classification_conflict');
+});

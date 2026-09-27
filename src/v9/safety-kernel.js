@@ -9,13 +9,13 @@ const TRUSTED_SOURCES = new Set([
 ]);
 
 const RULES = Object.freeze([
-  ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|smell(?:s)?(?:\s+\w+){0,2}\s+gas|gas smell|gas leak|gasgeruch|gasleck|riech(?:e|t)?(?:\s+\w+){0,2}\s+gas)\b/i],
+  ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|smell(?:s)?(?:\s+\w+){0,2}\s+gas|gas smell|gas leak|gasgeruch|gasleck|riech(?:e|t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}riech(?:e|t)?)\b/i],
   ['fire_smoke', 'stop', /\b(rook|vonken|vlammen|brandlucht|fire|smoke|sparks|flames|burning smell|rauch|funken|flammen|brandgeruch)\b/i],
   ['mains_exposed', 'stop', /\b(blootliggende.{0,20}(?:draden|bedrading)|exposed mains|live wire|freiliegende.{0,20}(?:leitung|drähte)|230\s*v.{0,20}(?:bloot|exposed|freiliegend))\b/i],
   ['battery_damage', 'stop', /\b(opgezwollen.{0,30}(?:accu|batterij)|(?:\w*batterij|accu).{0,60}opgezwollen|swollen battery|battery.{0,30}swollen|aufgeblähte batterie|batterie.{0,30}aufgebläht)\b/i],
   ['battery_overheat', 'stop', /\b((?:batterij|accu|battery|batterie).{0,12}(?:extreem heet|oververhit|extremely hot|overheating|extrem heiß|überhitzt)|(?:extreem hete?|oververhitte?|extremely hot|overheating|extrem heiße?|überhitzte?).{0,12}(?:batterij|accu|battery|batterie))\b/i],
   ['high_voltage', 'stop', /\b(magnetron.{0,30}(?:condensator|hoogspanning)|microwave.{0,30}(?:capacitor|high voltage)|mikrowelle.{0,30}hochspannung)\b/i],
-  ['water_electricity', 'stop', /\b(water.{0,30}(?:stopcontact|stekker|230v|socket|outlet)|(?:stopcontact|stekker|230v|socket|outlet).{0,30}water|wasser.{0,30}steckdose|steckdose.{0,30}wasser)\b/i],
+  ['water_electricity', 'stop', /\b(water.{0,60}(?:stopcontact|stekker|230v|socket|outlet)|(?:stopcontact|stekker|230v|socket|outlet).{0,60}water|wasser.{0,60}steckdose|steckdose.{0,60}wasser)\b/i],
   ['refrigerant', 'professional', /\b(koelmiddel|freon|refrigerant|kältemittel)\b/i],
   ['asbestos', 'professional', /\b(asbest|asbestos)\b/i],
 ]);
@@ -24,7 +24,7 @@ const NEGATION = /\b(geen|niet|zonder|no|not|without|kein(?:e|en|er)?|nicht|ohne
 const CONTRAST = /\b(?:maar|echter|wel|but|however|aber|doch|jedoch)\b/gi;
 const CLAUSE_START_AFTER_COMMA = /,\s*(?:(?:er|het|de|een|ik|wij|we|mijn|there|it|the|a|an|i|we|my|es|das|der|die|ein(?:e|en)?|ich|wir|mein(?:e|en)?)\s+\w+)/gi;
 const COORDINATE_CLAUSE = /\b(?:en|and|und)\s+(?:ik|wij|we|hij|zij|ze|er|het|de|mijn|i|we|he|she|they|there|it|the|my|ich|wir|er|sie|es|der|die|mein(?:e|en)?)\s+\w+/gi;
-const UNCERTAIN_NEGATION = /\b(?:weet|weten|know|weiß|wissen)\s+(?:het\s+)?niet\s+of\b/i;
+const UNCERTAIN_NEGATION = /\b(?:(?:weet|weten)\s+(?:het\s+)?niet\s+of|(?:do\s+not|don't)\s+know\s+(?:if|whether)|(?:weiß|wissen)\s+nicht\s*,?\s+ob)\b/i;
 const NON_NEGATING = /\b(?:niet alleen|not only|nicht nur)\b/i;
 
 function lastBoundaryBefore(text, matchIndex) {

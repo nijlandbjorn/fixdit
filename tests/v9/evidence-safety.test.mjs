@@ -74,6 +74,8 @@ test('Safety Kernel begrenst negatie bij opsommingen, contrast en nieuwe clauses
     ['Ik ruik gas.', 'stop'],
     ['De cv-ketel start niet en ik ruik gaslucht.', 'stop'],
     ['Ik weet niet of ik gas ruik.', 'stop'],
+    ['I do not know whether I smell gas.', 'stop'],
+    ['Ich weiß nicht, ob ich Gas rieche.', 'stop'],
     ['Ik ruik geen gas, maar mijn partner wel.', 'stop'],
     ['Gisteren was er rook, nu niet.', 'stop'],
     ['No visible damage, smoke or heat.', null],
@@ -81,6 +83,7 @@ test('Safety Kernel begrenst negatie bij opsommingen, contrast en nieuwe clauses
     ['Kein sichtbarer Schaden, Rauch oder Brandgeruch.', null],
     ['Kein Rauch, aber es gibt Flammen.', 'stop'],
     ['Er is geen lekkage, maar er ligt wel water bij de stekker.', 'stop'],
+    ['Er staat water naast het apparaat maar niet bij de stekker of het stopcontact.', null],
     ['Er is geen opgezwollen batterij, maar de batterij wordt extreem heet.', 'stop'],
   ];
   for (const [problem, route] of cases) {

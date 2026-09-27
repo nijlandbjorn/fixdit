@@ -125,6 +125,39 @@ test('Independent Critic faalt gesloten bij fout of ontbrekende critic', async (
   assert.equal((await runIndependentCritic({ plan, gate, safety: safe, ledger, critic: async () => { throw new Error('mock'); } })).status, 'error_fail_closed');
 });
 
+test('Independent Critic blokkeert onbekende evidenceverwijzingen vóór een modelcall', async () => {
+  const ledger = ledgerFromInput({ problem: 'De zichtbare schroef van de ladegreep zit los.' });
+  const gate = { open: true, route: 'self' };
+  const ungroundedTechnique = { ...technique, evidenceSourceIds: ['ev_missing'] };
+  const plan = buildRepairPlanV9({ gate, technique: ungroundedTechnique, legacyDiagnosis: { safeSteps: ['Zet de zichtbare schroef vast.'] } });
+  let called = false;
+  const result = await runIndependentCritic({
+    plan, gate, safety: safe, ledger,
+    critic: async () => { called = true; return { approved: true, issues: [] }; },
+  });
+  assert.equal(result.status, 'rejected_deterministic');
+  assert.ok(result.issues.includes('unknown_evidence_reference'));
+  assert.equal(result.modelUsed, false);
+  assert.equal(called, false);
+});
+
+test('Independent Critic kan een deterministische safetyblokkade nooit overrulen', async () => {
+  const ledger = ledgerFromInput({ problem: 'Ik ruik gas.' });
+  const evidenceId = ledger.entries[0].evidenceId;
+  const groundedTechnique = { ...technique, evidenceSourceIds: [evidenceId] };
+  const gate = { open: true, route: 'self' };
+  const plan = buildRepairPlanV9({ gate, technique: groundedTechnique, legacyDiagnosis: { safeSteps: ['Ga verder.'] } });
+  let called = false;
+  const result = await runIndependentCritic({
+    plan, gate, safety: { route: 'stop', flags: [{ code: 'gas' }] }, ledger,
+    critic: async () => { called = true; return { approved: true, issues: [] }; },
+  });
+  assert.equal(result.status, 'rejected_deterministic');
+  assert.ok(result.issues.includes('safety_route_blocks_repair'));
+  assert.equal(result.approved, false);
+  assert.equal(called, false);
+});
+
 test('researchgronding vertrouwt alleen expliciet toegestane fabrikantdomeinen', () => {
   assert.equal(classifyResearchSource('https://bosch-support-scam.example/guide', { manufacturerDomains: ['bosch.com'] }), 'web');
   assert.equal(classifyResearchSource('https://support.bosch.com/guide', { manufacturerDomains: ['bosch.com'] }), 'manufacturer');

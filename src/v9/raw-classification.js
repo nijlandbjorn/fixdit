@@ -7,7 +7,7 @@ const OBJECTS = [
   ['electronics', /laptop|telefoon|telefon|phone|televis|\btv\b|monitor|computer|elektronisch|electronic|oplader|charger|batterij|battery|batterie/i],
   ['appliance', /koffie|coffee|kaffee|vaatwasser|afwasmachine|dishwasher|spülmaschine|wasmachine|washing machine|waschmaschine|droger|dryer|trockner|koelkast|fridge|refrigerator|kühlschrank|vriezer|freezer|oven|kookplaat|hob|waterkoker|kettle|stofzuiger|vacuum|airfryer|blender|broodrooster|toaster/i],
   ['furniture', /stoel|chair|stuhl|tafel|table|tisch|kast|cabinet|schrank|meubel/i],
-  ['home', /\b(deur|door|tür|kraan|tap|faucet|afvoer|drain)\b/i],
+  ['home', /\b(deur|door|tür|kraan|tap|faucet|wasserhahn|afvoer|drain)\b/i],
 ];
 const SYMPTOMS = [
   ['battery_damage', /(?:batterij|accu|battery|batterie).{0,30}(?:duidelijk opgezwollen|is opgezwollen|swollen|aufgebläht)/i],
