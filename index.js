@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { evaluateV9Runtime } from './src/v9/runtime.js';
+import { isTesterApiPath, isTesterPath, renderV9TesterHtml, testerModeEnabled } from './src/v9/tester-ui.js';
 
 const DEFAULT_ORIGIN = "https://nijlandbjorn.github.io";
 const DEFAULT_MAX_FREE = 3;
@@ -269,8 +270,8 @@ async function isTester(env, deviceKey) {
   return Number(row?.enabled || 0) === 1;
 }
 
-async function getUsage(env, deviceKey) {
-  if (await isTester(env, deviceKey)) {
+async function getUsage(env, deviceKey, testerAccess = false) {
+  if (testerAccess || await isTester(env, deviceKey)) {
     return {
       used: 0,
       remaining: TEST_REMAINING,
@@ -298,8 +299,8 @@ async function getUsage(env, deviceKey) {
   };
 }
 
-async function consumeFix(env, deviceKey) {
-  if (await isTester(env, deviceKey)) {
+async function consumeFix(env, deviceKey, testerAccess = false) {
+  if (testerAccess || await isTester(env, deviceKey)) {
     return {
       ok: true,
       tester: true
@@ -324,8 +325,8 @@ async function consumeFix(env, deviceKey) {
   };
 }
 
-async function refundFix(env, deviceKey) {
-  if (await isTester(env, deviceKey)) return;
+async function refundFix(env, deviceKey, testerAccess = false) {
+  if (testerAccess || await isTester(env, deviceKey)) return;
 
   await env.DB.prepare(`
     UPDATE devices
@@ -343,8 +344,8 @@ async function refundFix(env, deviceKey) {
   .run();
 }
 
-async function enforceRateLimit(request, env, deviceKey) {
-  if (await isTester(env, deviceKey)) {
+async function enforceRateLimit(request, env, deviceKey, testerAccess = false) {
+  if (testerAccess || await isTester(env, deviceKey)) {
     return { ok: true };
   }
 
@@ -8864,7 +8865,8 @@ async function handleFollowup(
   body,
   deviceKey,
   lang,
-  ctx
+  ctx,
+  testerAccess = false
 ) {
   const requestId =
     cleanString(
@@ -8895,10 +8897,7 @@ async function handleFollowup(
         analysisId:
           dup.analysis_id,
         diagnosis,
-        ...await getUsage(
-          env,
-          deviceKey
-        )
+        ...await getUsage(env, deviceKey, testerAccess)
       }
     );
   }
@@ -9128,9 +9127,10 @@ async function handleFollowup(
   const v9Runtime = await evaluateV9Runtime({
     env,
     ctx,
-    tester: String(env?.V9_MODE || "off").toLowerCase() === "tester"
+    tester: testerAccess || (String(env?.V9_MODE || "off").toLowerCase() === "tester"
       ? await isTester(env, deviceKey)
-      : false,
+      : false),
+    requestedMode: testerAccess ? "tester" : "",
     v8Diagnosis: diagnosis,
     problem,
     language: lang
@@ -9146,10 +9146,7 @@ async function handleFollowup(
       diagnosis: v9Runtime.responseDiagnosis,
       visualInspection:
         output.visualInspection,
-      ...await getUsage(
-        env,
-        deviceKey
-      )
+      ...await getUsage(env, deviceKey, testerAccess)
     }
   );
 }
@@ -9160,7 +9157,8 @@ async function handleAnalysis(
   body,
   deviceKey,
   lang,
-  ctx
+  ctx,
+  testerAccess = false
 ) {
   const requestId =
     cleanString(
@@ -9190,19 +9188,12 @@ async function handleAnalysis(
         analysisId:
           dup.analysis_id,
         diagnosis,
-        ...await getUsage(
-          env,
-          deviceKey
-        )
+        ...await getUsage(env, deviceKey, testerAccess)
       }
     );
   }
 
-  const before =
-    await getUsage(
-      env,
-      deviceKey
-    );
+  const before = await getUsage(env, deviceKey, testerAccess);
 
   if (
     before.remaining <= 0
@@ -9323,10 +9314,7 @@ async function handleAnalysis(
   };
 
   const consumed =
-    await consumeFix(
-      env,
-      deviceKey
-    );
+    await consumeFix(env, deviceKey, testerAccess);
 
   if (!consumed.ok) {
     return reply(
@@ -9399,10 +9387,7 @@ async function handleAnalysis(
     )
     .run();
   } catch (e) {
-    await refundFix(
-      env,
-      deviceKey
-    );
+    await refundFix(env, deviceKey, testerAccess);
 
     throw e;
   }
@@ -9427,9 +9412,10 @@ async function handleAnalysis(
   const v9Runtime = await evaluateV9Runtime({
     env,
     ctx,
-    tester: String(env?.V9_MODE || "off").toLowerCase() === "tester"
+    tester: testerAccess || (String(env?.V9_MODE || "off").toLowerCase() === "tester"
       ? await isTester(env, deviceKey)
-      : false,
+      : false),
+    requestedMode: testerAccess ? "tester" : "",
     v8Diagnosis: diagnosis,
     problem,
     language: lang
@@ -9446,10 +9432,7 @@ async function handleAnalysis(
       diagnosis: v9Runtime.responseDiagnosis,
       visualInspection:
         output.visualInspection,
-      ...await getUsage(
-        env,
-        deviceKey
-      )
+      ...await getUsage(env, deviceKey, testerAccess)
     }
   );
 }
@@ -9460,12 +9443,30 @@ export default {
     env,
     ctx
   ) {
-    if (
-      !originAllowed(
-        request,
-        env
-      )
-    ) {
+    const pathname = new URL(request.url).pathname;
+    const testerEnabled = testerModeEnabled(env);
+    const testerUiRequest = isTesterPath(pathname);
+    const testerApiRequest = isTesterApiPath(pathname);
+
+    if ((testerUiRequest || testerApiRequest) && !testerEnabled) {
+      return reply(request, env, { ok:false, error:"Not found" }, 404);
+    }
+
+    if (testerUiRequest) {
+      return request.method === "GET"
+        ? htmlReply(renderV9TesterHtml())
+        : reply(request, env, { ok:false, error:"Method not allowed" }, 405);
+    }
+
+    if (testerApiRequest && request.method !== "POST" && request.method !== "OPTIONS") {
+      return reply(request, env, { ok:false, error:"Method not allowed" }, 405);
+    }
+
+    const testerAccess = testerApiRequest && testerEnabled;
+
+    const requestOrigin = request.headers.get("Origin") || "";
+    const sameOriginTester = testerAccess && (!requestOrigin || requestOrigin === new URL(request.url).origin);
+    if (!originAllowed(request, env) && !sameOriginTester) {
       return reply(
         request,
         env,
@@ -9678,10 +9679,7 @@ export default {
           {
             ok:true,
             language:lang,
-            ...await getUsage(
-              env,
-              deviceKey
-            )
+            ...await getUsage(env, deviceKey, testerAccess)
           }
         );
       }
@@ -9693,11 +9691,7 @@ export default {
         ].includes(body.action)
       ) {
         const rate =
-          await enforceRateLimit(
-            request,
-            env,
-            deviceKey
-          );
+          await enforceRateLimit(request, env, deviceKey, testerAccess);
 
         if (!rate.ok) {
           return reply(
@@ -9749,7 +9743,8 @@ export default {
           body,
           deviceKey,
           lang,
-          ctx
+          ctx,
+          testerAccess
         );
       }
 
@@ -9759,7 +9754,8 @@ export default {
         body,
         deviceKey,
         lang,
-        ctx
+        ctx,
+        testerAccess
       );
 
     } catch (error) {
@@ -9989,6 +9985,18 @@ function safetyResultV861(problem,lang,previous,flags,started){
   synchronizeV861(d,lang,factsV861(problem,previous),'hard_safety');
   d.performance={phaseLatencyMs:{},totalMs:Date.now()-started};
   return {diagnosis:d,usage:{input:0,output:0},languageCorrected:false,qualityReviewed:false,qualityApproved:false,qualityIssues:[],visualInspection:'',research:d.repairEngine.research,technique:d.repairTechnique,latencyMs:Date.now()-started};
+}
+
+function htmlReply(html, status = 200) {
+  return new Response(html, {
+    status,
+    headers: {
+      "Content-Type":"text/html; charset=UTF-8",
+      "Cache-Control":"no-store",
+      "X-Content-Type-Options":"nosniff",
+      "Content-Security-Policy":"default-src 'self'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'"
+    }
+  });
 }
 
 // Read-only characterization surface for the local regression bank. This does

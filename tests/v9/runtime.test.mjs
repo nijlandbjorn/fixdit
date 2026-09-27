@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { evaluateV9Runtime } from '../../src/v9/runtime.js';
+import { createRecordingD1 } from '../helpers/mock-cloudflare.mjs';
 
 const diagnosis = {
   analysisId: 'runtime-1',
@@ -73,4 +74,23 @@ test('tester krijgt optionele V9-metadata zonder V8-velden te vervangen', async 
   assert.equal(outcome.responseDiagnosis.route, diagnosis.route);
   assert.equal(outcome.responseDiagnosis.objectLabel, diagnosis.objectLabel);
   assert.equal(outcome.responseDiagnosis.diagnosticV9.engineVersion, '9.0.0-local');
+});
+
+test('expliciete Preview-testerrequest forceert synchrone V9-output zonder shadowrespons te wijzigen', async () => {
+  const db = createRecordingD1();
+  const v8Diagnosis = { analysisId: 'tester-preview', route: 'more_info', objectFamily: 'appliance', symptom: 'no_flow' };
+  const outcome = await evaluateV9Runtime({
+    env: { V9_MODE: 'shadow', V9_SHADOW_SAMPLE_RATE: '100', DB: db },
+    tester: true,
+    requestedMode: 'tester',
+    v8Diagnosis,
+    problem: 'Mijn koffiezetapparaat geeft geen koffie.',
+  });
+  assert.equal(outcome.mode, 'tester');
+  assert.equal(outcome.scheduled, false);
+  assert.equal(outcome.responseDiagnosis.route, v8Diagnosis.route);
+  assert.equal(outcome.responseDiagnosis.diagnosticV9.mode, 'tester');
+  assert.ok(outcome.responseDiagnosis.diagnosticV9.ledger.entries.length > 0);
+  assert.equal(outcome.responseDiagnosis.diagnosticV9.persistence.persisted, true);
+  assert.ok(outcome.responseDiagnosis.diagnosticV9.comparison);
 });

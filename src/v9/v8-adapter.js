@@ -95,7 +95,7 @@ export function observationsFromV8(diagnosis = {}) {
     .filter(item => item.text);
 }
 
-export function attachV9Metadata(v8Diagnosis, v9Result) {
+export function attachV9Metadata(v8Diagnosis, v9Result, { comparison = null, persistence = null } = {}) {
   return {
     ...v8Diagnosis,
     diagnosticV9: {
@@ -104,12 +104,16 @@ export function attachV9Metadata(v8Diagnosis, v9Result) {
       runId: v9Result.runId,
       mode: v9Result.mode,
       state: v9Result.state,
+      ledger: v9Result.ledger,
       safety: v9Result.safety,
       contradictions: v9Result.contradictions,
       hypotheses: v9Result.hypotheses,
       nextTest: v9Result.nextTest,
       repairGate: v9Result.repairGate,
       critic: v9Result.critic,
+      plan: v9Result.plan,
+      comparison,
+      persistence,
     },
   };
 }

@@ -19,7 +19,8 @@
       "V9_MODE": "shadow",
       "V9_SHADOW_SAMPLE_RATE": "100",
       "V9_ALLOW_AI": "true",
-      "V9_ALLOW_RESEARCH": "false"
+      "V9_ALLOW_RESEARCH": "false",
+      "V9_TESTER_ENABLED": "true"
     },
     "observability": {
       "enabled": true,

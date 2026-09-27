@@ -12,6 +12,7 @@ export async function evaluateV9Runtime({
   env = {},
   ctx = null,
   tester = false,
+  requestedMode = '',
   v8Diagnosis,
   problem = '',
   language = 'nl',
@@ -27,7 +28,9 @@ export async function evaluateV9Runtime({
       error: `configuration_invalid:${configuration.errors.join(',')}`,
     };
   }
-  const mode = resolveV9Mode(env, { tester });
+  const mode = requestedMode === 'tester' && tester
+    ? 'tester'
+    : resolveV9Mode(env, { tester });
   const unchanged = {
     mode,
     scheduled: false,
@@ -55,7 +58,10 @@ export async function evaluateV9Runtime({
       return {
         mode,
         scheduled: false,
-        responseDiagnosis: attachV9Metadata(v8Diagnosis, outcome.result),
+        responseDiagnosis: attachV9Metadata(v8Diagnosis, outcome.result, {
+          comparison: outcome.comparison,
+          persistence: outcome.persistence,
+        }),
         ...outcome,
         error: null,
       };
