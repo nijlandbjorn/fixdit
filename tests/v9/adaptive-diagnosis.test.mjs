@@ -9,6 +9,7 @@ import { classificationFromUserText } from '../../src/v9/raw-classification.js';
 import { renderV9TesterHtml } from '../../src/v9/tester-ui.js';
 import { attachV9Metadata } from '../../src/v9/v8-adapter.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
+import { validateReasoningHypotheses } from '../../src/v9/workers-ai-adapter.js';
 
 test('duidelijke lekke fietsband kiest veilige directe hulp met specifieke oorzaken', async () => {
   const problem = 'Mijn fietsband is lek';
@@ -110,6 +111,15 @@ test('AI-assistentie is begrensd en valt veilig terug bij failure', async () => 
   assert.match(fallback.metrics.aiError, /AI_OFFLINE/);
   assert.ok(fallback.hypotheses.length > 0);
   assert.equal(fallback.repairGate.open, false);
+});
+
+test('AI-hypotheses worden structureel en op sessietaal gevalideerd', () => {
+  const accepted = validateReasoningHypotheses([
+    { code: 'voeding', statement: 'De externe voeding kan onderbroken zijn.', missingEvidence: ['known_good_supply'] },
+    { code: 'english', statement: 'The device might not be receiving power.', missingEvidence: [] },
+    { code: 'bad code!', statement: 'Een ongeldige hypothese.', missingEvidence: [] },
+  ], 'nl');
+  assert.deepEqual(accepted.map(item => item.code), ['voeding']);
 });
 
 test('deterministische safety blijft boven direct help en AI staan', async () => {
