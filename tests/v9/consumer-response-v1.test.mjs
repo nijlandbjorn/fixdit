@@ -5,6 +5,7 @@ import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, QUESTI
 import { ledgerFromInput } from '../../src/v9/evidence-ledger.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
+import { createWorkersAiReasoner, REASONING_MODEL } from '../../src/v9/workers-ai-adapter.js';
 
 test('deterministic safety stopt magnetronvonken en vergelijkbare echte hazards', async () => {
   for (const problem of [
@@ -62,31 +63,45 @@ test('zwakke legacycategorie verslechtert duidelijke raw objectterm niet', async
   }
 });
 
-test('quota-uitval is expliciet degraded zonder technisch jargon voor de gebruiker', async () => {
-  const result = await runPipelineV9({ problem: 'Mijn toilet blijft doorlopen.', reasoner: async () => { throw new Error('4006 daily free allocation of neurons exhausted'); } });
+test('bewezen providerquota is expliciet degraded met providerprovenance', async () => {
+  const providerError = Object.assign(new Error('3036 daily free allocation exhausted'), { status: 429, code: 3036 });
+  const reasoner = createWorkersAiReasoner({ V9_ALLOW_AI: 'true', AI: { run: async () => { throw providerError; } } });
+  const result = await runPipelineV9({ problem: 'Mijn toilet blijft doorlopen.', reasoner });
   assert.equal(result.consumerResponse.degradedMode, true);
-  assert.equal(result.metrics.aiFallbackReason, 'ai_quota_unavailable');
+  assert.equal(result.metrics.aiFallbackReason, 'ai_daily_allocation_exhausted');
   assert.equal(result.metrics.capacityUnavailable, true);
+  assert.equal(result.metrics.aiPlanned, true);
+  assert.equal(result.metrics.aiSuppressedBeforeProvider, false);
+  assert.equal(result.metrics.providerCallStarted, true);
+  assert.equal(result.metrics.providerCallCompleted, false);
+  assert.equal(result.metrics.providerCallFailed, true);
+  assert.equal(result.metrics.providerFailure.status, 429);
+  assert.equal(result.metrics.providerFailure.code, '3036');
+  assert.equal(result.metrics.providerFailure.model, REASONING_MODEL);
   assert.equal(result.metrics.aiCallsThisSession, 1);
   assert.equal(result.metrics.successfulAiCalls, 0);
   assert.equal(result.metrics.rejectedAiCalls, 1);
   assert.doesNotMatch(JSON.stringify(result.consumerResponse), /4006|quota|neurons|model error/i);
 });
 
-test('upstream quota-afwijzing telt één keer en voorkomt een tweede V9-call', async () => {
+test('lokale suppressie zonder providercall wordt niet als bewezen quota gelabeld', async () => {
   const result = await runPipelineV9({ problem: 'Mijn toilet blijft doorlopen.', reasoner: null, aiUnavailableReason: 'ai_quota_unavailable', priorAiAttempt: true });
   assert.equal(result.metrics.aiCallsThisSession, 1);
   assert.equal(result.metrics.successfulAiCalls, 0);
   assert.equal(result.metrics.rejectedAiCalls, 1);
-  assert.equal(result.metrics.capacityUnavailable, true);
+  assert.equal(result.metrics.capacityUnavailable, false);
   assert.equal(result.metrics.primaryAiCalls, 0);
+  assert.equal(result.metrics.aiPlanned, true);
+  assert.equal(result.metrics.aiSuppressedBeforeProvider, true);
+  assert.equal(result.metrics.providerCallStarted, false);
+  assert.equal(result.metrics.providerFailure, null);
 });
 
 test('deterministic safety bewaart bekende upstream capaciteitsprovenance', async () => {
   const result = await runPipelineV9({ problem: 'Mijn stofzuiger ruikt verbrand.', reasoner: null, aiUnavailableReason: 'ai_quota_unavailable', priorAiAttempt: true });
   assert.equal(result.consumerResponse.responseSource, 'safety');
   assert.equal(result.metrics.aiFallbackReason, 'ai_quota_unavailable');
-  assert.equal(result.metrics.capacityUnavailable, true);
+  assert.equal(result.metrics.capacityUnavailable, false);
   assert.equal(result.metrics.aiCallsThisSession, 1);
 });
 

@@ -75,6 +75,11 @@ export async function runPipelineV9({
   const safety = evaluateSafety(ledger);
   let aiCalls = 0;
   let aiError = null;
+  let providerFailure = null;
+  const aiPlanned = !['stop', 'professional'].includes(safety.route);
+  let providerCallStarted = false;
+  let providerCallCompleted = false;
+  let providerCallFailed = false;
   let aiLatencyMs = 0;
   let assistedResponse = null;
   let assistedHypotheses = asArray(modelHypotheses);
@@ -133,6 +138,7 @@ export async function runPipelineV9({
   if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
     const aiStarted = Date.now();
     try {
+      providerCallStarted = true;
       const assisted = await reasoner({
         language, originalUserInput: problem, classification, safety,
         evidenceLedger: ledger.entries.map(entry => ({ evidenceId: entry.evidenceId, source: entry.source, subject: entry.subject, predicate: entry.predicate, value: entry.value, polarity: entry.polarity, status: entry.status })),
@@ -140,13 +146,15 @@ export async function runPipelineV9({
         repairGate, noProgress, nextQuestion: nextTest, capabilities,
       });
       aiCalls = 1;
+      providerCallCompleted = true;
       assistedHypotheses = [...assistedHypotheses, ...asArray(assisted?.hypotheses)];
       assistedResponse = assisted?.consumerResponse;
     } catch (error) {
       aiCalls = 1;
+      providerCallFailed = true;
       aiError = String(error?.message || error);
-      aiFallbackReason = /(?:4006|daily free allocation|neurons|quota)/i.test(aiError) ? 'ai_quota_unavailable'
-        : /timed?\s*out|timeout/i.test(aiError) ? 'ai_timeout' : 'ai_provider_error';
+      providerFailure = error?.providerFailure || null;
+      aiFallbackReason = providerFailure?.reason || (/timed?\s*out|timeout/i.test(aiError) ? 'ai_timeout' : 'ai_provider_error');
     } finally {
       aiLatencyMs = Date.now() - aiStarted;
     }
@@ -200,10 +208,16 @@ export async function runPipelineV9({
       aiCallReason: aiCalls ? 'reasoning_and_consumer_response' : null,
       externalResearchCalls: 0,
       aiError,
+      aiPlanned,
+      aiSuppressedBeforeProvider: aiPlanned && !providerCallStarted,
+      providerCallStarted,
+      providerCallCompleted,
+      providerCallFailed,
+      providerFailure,
       aiCallsThisSession: aiCalls + (priorAiAttempt ? 1 : 0),
       successfulAiCalls: aiCalls && consumerValidation.valid ? 1 : 0,
       rejectedAiCalls: (priorAiAttempt ? 1 : 0) + (aiCalls && !consumerValidation.valid ? 1 : 0),
-      capacityUnavailable: aiFallbackReason === 'ai_quota_unavailable',
+      capacityUnavailable: ['ai_daily_allocation_exhausted', 'ai_temporary_capacity_unavailable'].includes(aiFallbackReason),
     }),
   });
 }

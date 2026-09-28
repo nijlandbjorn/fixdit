@@ -3,6 +3,42 @@ import { asArray } from './contracts.js';
 const CRITIC_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 export const REASONING_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
+function sanitizedProviderError(error, model) {
+  const message = String(error?.message || error || 'Workers AI request failed')
+    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .slice(0, 500);
+  const status = Number(error?.status ?? error?.statusCode ?? error?.response?.status) || null;
+  const match = message.match(/(?:code\s*[:=]?\s*|error\s+)(\d{4})\b/i) || message.match(/\b(3036|3040|5035)\b/);
+  const code = String(error?.code ?? error?.cause?.code ?? match?.[1] ?? '').slice(0, 40) || null;
+  let reason = 'ai_provider_error';
+  if (code === '3036' || (status === 429 && /daily free allocation|quota|neurons/i.test(message))) reason = 'ai_daily_allocation_exhausted';
+  else if (code === '3040' || (status === 429 && /capacity|temporar/i.test(message))) reason = 'ai_temporary_capacity_unavailable';
+  else if (code === '5035' || (status === 403 && /paid|payment|plan/i.test(message))) reason = 'ai_paid_model_required';
+  else if (/timed?\s*out|timeout/i.test(message)) reason = 'ai_timeout';
+  return Object.freeze({
+    reason,
+    status,
+    code,
+    name: String(error?.name || 'Error').slice(0, 80),
+    message,
+    model,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+async function runProvider(env, model, input) {
+  try {
+    return await env.AI.run(model, input);
+  } catch (error) {
+    const providerFailure = sanitizedProviderError(error, model);
+    const wrapped = new Error(providerFailure.message);
+    wrapped.name = 'WorkersAiProviderError';
+    wrapped.providerFailure = providerFailure;
+    throw wrapped;
+  }
+}
+
 export function workersAiEnabled(env) {
   return String(env?.V9_ALLOW_AI || '').toLocaleLowerCase() === 'true' && typeof env?.AI?.run === 'function';
 }
@@ -25,7 +61,7 @@ export function validateReasoningHypotheses(value, language = 'nl') {
 export function createWorkersAiCritic(env) {
   if (!workersAiEnabled(env)) return null;
   return async input => {
-    const result = await env.AI.run(CRITIC_MODEL, {
+    const result = await runProvider(env, CRITIC_MODEL, {
       messages: [
         {
           role: 'system',
@@ -56,7 +92,7 @@ export function createWorkersAiCritic(env) {
 export function createWorkersAiReasoner(env) {
   if (!workersAiEnabled(env)) return null;
   return async input => {
-    const result = await env.AI.run(REASONING_MODEL, {
+    const result = await runProvider(env, REASONING_MODEL, {
       messages: [
         {
           role: 'system',

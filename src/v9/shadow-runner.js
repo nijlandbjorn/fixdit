@@ -20,7 +20,10 @@ export function sampledForV9(key, percentage) {
 
 export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', language = 'nl', mode = 'shadow' } = {}) {
   const analysisId = v8Diagnosis?.analysisId || '';
-  const capacityUnavailable = v8Diagnosis?.aiCapacityUnavailable === true;
+  const priorAiAttempt = Boolean(
+    v8Diagnosis?.aiFallbackReason &&
+    v8Diagnosis.aiFallbackReason !== 'ai_call_suppressed_for_v9_primary'
+  );
   const result = await runPipelineV9({
     analysisId,
     mode,
@@ -31,9 +34,11 @@ export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', la
     technique: techniqueFromV8(v8Diagnosis),
     research: researchFromV8(v8Diagnosis),
     legacyDiagnosis: v8Diagnosis,
-    reasoner: capacityUnavailable ? null : createWorkersAiReasoner(env),
-    aiUnavailableReason: capacityUnavailable ? (v8Diagnosis?.aiFallbackReason || 'ai_quota_unavailable') : '',
-    priorAiAttempt: capacityUnavailable,
+    // A supplementary legacy failure is evidence about that call only. It must
+    // never suppress the primary V9 consumer-response provider call.
+    reasoner: createWorkersAiReasoner(env),
+    aiUnavailableReason: '',
+    priorAiAttempt,
     critic: createWorkersAiCritic(env),
   });
   const comparison = compareV8V9(v8Diagnosis, result);

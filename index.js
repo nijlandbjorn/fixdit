@@ -9037,7 +9037,7 @@ async function handleFollowup(
   );
 
   const output =
-    await runPipelineWithAiFallback(
+    await runPipelineForRequest(
       env,
       {
         problem,
@@ -9045,7 +9045,8 @@ async function handleFollowup(
         lang,
         previous:
           previousDiagnosis
-      }
+      },
+      { preferV9Primary: testerAccess }
     );
 
   const diagnosis = attachInteractionMetadataV9({
@@ -9200,9 +9201,12 @@ function deterministicAiFallbackV861({ problem, lang, previous }, error) {
     needMoreInfo:true,
     risk:"laag"
   }, c, "", problem, flags, lang);
-  const reason = /4006|allocation|neurons|quota/i.test(String(error?.message || error))
-    ? "ai_quota_unavailable"
-    : "ai_temporarily_unavailable";
+  const errorText = String(error?.message || error);
+  const reason = errorText === "ai_call_suppressed_for_v9_primary"
+    ? "ai_call_suppressed_for_v9_primary"
+    : /4006|allocation|neurons|quota/i.test(errorText)
+      ? "ai_quota_unavailable"
+      : "ai_temporarily_unavailable";
   const facts = factsV861(problem, previous);
   diagnosis = fallbackV861(diagnosis, facts, lang, reason);
   diagnosis = synchronizeV861(diagnosis, lang, facts, "fallback");
@@ -9232,6 +9236,13 @@ async function runPipelineWithAiFallback(env, input) {
     console.warn("AI unavailable; deterministic fallback remains active", error);
     return deterministicAiFallbackV861(input, error);
   }
+}
+
+function runPipelineForRequest(env, input, { preferV9Primary = false } = {}) {
+  if (preferV9Primary && String(env?.V9_ALLOW_AI || '').toLowerCase() === 'true') {
+    return Promise.resolve(deterministicAiFallbackV861(input, new Error('ai_call_suppressed_for_v9_primary')));
+  }
+  return runPipelineWithAiFallback(env, input);
 }
 
 async function handleAnalysis(
@@ -9371,14 +9382,15 @@ async function handleAnalysis(
   );
 
   const output =
-    await runPipelineWithAiFallback(
+    await runPipelineForRequest(
       env,
       {
         problem,
         image,
         lang,
         previous:null
-      }
+      },
+      { preferV9Primary: testerAccess }
     );
 
   const analysisId =
