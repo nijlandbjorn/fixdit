@@ -9,6 +9,7 @@ const DANGEROUS = /\b(?:230\s*v|blote?\s+drad|bare\s+wires?|stromführ|overbrug|
 const PRICE_OR_SOURCE = /(?:€|\$|\b\d+[,.]?\d*\s*(?:euro|dollar)\b|https?:\/\/|volgens (?:de )?handleiding|manufacturer manual)/i;
 const RAW_ANSWER = /^(?:ja|nee|yes|no|nein|weet ik niet|i don'?t know|weiß ich nicht|kan ik niet controleren|niet van toepassing|\d+\s*(?:jaar|years?|jahre?))$/i;
 const CHOICE_IDS = Object.freeze(['yes', 'no', 'unknown', 'cannot_check', 'not_applicable', 'other']);
+const GENERIC_OBJECT = /^(?:voorwerp|item|gegenstand|apparaat|device|gerät)$/i;
 
 function languageOf(value) { return ['nl', 'en', 'de'].includes(value) ? value : 'nl'; }
 function localized(language, nl, en, de) { return language === 'de' ? de : language === 'en' ? en : nl; }
@@ -78,8 +79,9 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const evidence = activeUserEvidence(ledger);
   const raw = cleanText(problem || evidence.at(-1)?.value, 240);
   const classifiedName = cleanText(classification?.objectLabel, 80);
-  const objectName = classifiedName && !INTERNAL.test(classifiedName) ? classifiedName : rawObjectName(raw, selected);
-  const understood = !/^(?:voorwerp|item|gegenstand)$/i.test(objectName);
+  const initialReport = cleanText(evidence.find(entry => !RAW_ANSWER.test(cleanText(entry.value, 240)) && !/^(?:het antwoord op|the answer to|die antwort auf)/i.test(cleanText(entry.value, 240)))?.value || raw, 240);
+  const objectName = classifiedName && !INTERNAL.test(classifiedName) && !GENERIC_OBJECT.test(classifiedName) ? classifiedName : rawObjectName(initialReport, selected);
+  const understood = !GENERIC_OBJECT.test(objectName);
   const stopped = ['stop', 'professional'].includes(safety?.route);
   const exhausted = noProgress?.exhausted === true;
   const question = stopped || exhausted || directHelp ? null : questionFromTest(nextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });

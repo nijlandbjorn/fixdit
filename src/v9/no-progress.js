@@ -1,6 +1,6 @@
 import { asArray, cleanText, immutable } from './contracts.js';
 
-const UNKNOWN = /^(weet ik niet|geen idee|onbekend|i don(?:'|’)t know|no idea|ich wei(?:ss|ß) nicht|keine ahnung)$/i;
+const UNKNOWN = /^(?:weet ik niet|geen idee|onbekend|i don(?:'|’)t know|no idea|ich wei(?:ss|ß) nicht|keine ahnung|het antwoord op .+ is nog onbekend|the answer to .+ is not known yet|die antwort auf .+ ist noch unbekannt)$/i;
 const CANNOT_CHECK = /^(kan ik niet (?:controleren|zien|testen|nakijken)|dat kan ik niet controleren|cannot (?:check|see|test)|i can(?:not|'t) check|kann ich nicht (?:prüfen|sehen|testen))$/i;
 
 function normalized(value) {

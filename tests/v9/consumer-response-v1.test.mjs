@@ -75,6 +75,31 @@ test('no-progress onderscheidt onbekend van niet controleerbaar en stopt na drie
   assert.equal(inaccessible.reason, 'cannot_check');
 });
 
+test('semantisch opgeslagen onbekende antwoorden tellen mee voor de no-progress eindstaat', () => {
+  const result = detectNoProgress([
+    'Het antwoord op “Staat de kraan open” is nog onbekend.',
+    'Weet ik niet',
+    'Weet ik niet',
+  ], 'Weet ik niet');
+  assert.equal(result.unknownCount, 3);
+  assert.equal(result.exhausted, true);
+  assert.equal(result.strategy, 'stop_questions');
+});
+
+test('generieke legacy-objectnaam maakt plaats voor het concrete object uit raw evidence', async () => {
+  for (const [problem, expected] of [
+    ['Mijn iPhone-scherm is gebarsten', 'iPhone-scherm'],
+    ['Er zit een barst in mijn woonkamerraam', 'woonkamerraam'],
+  ]) {
+    const result = await runPipelineV9({
+      problem,
+      classification: { objectFamily: 'other', objectLabel: 'Voorwerp', symptom: 'breakage', intent: 'repair' },
+    });
+    assert.equal(result.consumerResponse.object.displayName, expected);
+    assert.doesNotMatch(result.consumerResponse.summary, /Voorwerp/);
+  }
+});
+
 test('algemene correctie supersedet het laatste eerdere antwoord', async () => {
   const result = await runPipelineV9({
     problem: 'Ik corrigeer mijn vorige antwoord van “De kraan staat open.” naar “De kraan staat dicht.”.',
