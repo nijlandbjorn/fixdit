@@ -67,6 +67,13 @@ function semanticMappings(prompt, language) {
   ];
   return Object.fromEntries(CHOICE_IDS.map((id, index) => [id, immutable({ label: labels[index], claim: claims[index], polarity: id === 'yes' ? 'present' : id === 'no' ? 'absent' : 'unknown' })]));
 }
+function canonicalQuestionOptions(prompt, language) {
+  const evidenceMapping = semanticMappings(prompt, language);
+  return {
+    options: Object.entries(evidenceMapping).map(([id, mapping]) => ({ id, label: mapping.label })),
+    evidenceMapping,
+  };
+}
 function questionFromTest(nextTest, language) {
   const prompt = cleanText(nextTest?.prompt, 300);
   if (!prompt) return null;
@@ -142,13 +149,22 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   const safeFirstChecks = asArray(value.safeFirstChecks).slice(0, 4).map(item => ({ text: cleanText(item?.text, 260), actionClass: cleanText(item?.actionClass, 60) })).filter(item => item.text);
   if (safeFirstChecks.some(item => !SAFE_ACTION_CLASSES.includes(item.actionClass))) return fail('unsafe_action_class');
   if (repairGate?.open !== true && safeFirstChecks.some(item => DANGEROUS.test(item.text))) return fail('repair_gate_bypass');
+  if (repairGate?.open !== true && value.repairGuidance != null) return fail('repair_guidance_when_gate_closed');
   const q = value.nextQuestion;
-  const nextQuestion = q && cleanText(q.text, 300) ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash(q.text)}`, type: cleanText(q.type, 40), text: cleanText(q.text, 300), options: asArray(q.options).slice(0, 7).map(option => ({ id: cleanText(option?.id, 80), label: cleanText(option?.label, 120) })).filter(option => option.id && option.label), evidenceKey: cleanText(q.evidenceKey, 120), evidenceMapping: q.evidenceMapping && typeof q.evidenceMapping === 'object' ? q.evidenceMapping : {}, why: cleanText(q.why, 240) } : null;
+  if (q && (Object.hasOwn(q, 'options') || Object.hasOwn(q, 'evidenceMapping'))) return fail('ai_supplied_interaction_semantics');
+  const questionText = cleanText(q?.text, 300);
+  const questionType = cleanText(q?.type, 40);
+  const canonical = ['single_choice', 'multi_choice', 'action_check'].includes(questionType)
+    ? canonicalQuestionOptions(questionText, selected)
+    : { options: [], evidenceMapping: {} };
+  const nextQuestion = q && questionText ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash([questionText, q.evidenceKey])}`, type: questionType, text: questionText, options: canonical.options, evidenceKey: cleanText(q.evidenceKey, 120), evidenceMapping: canonical.evidenceMapping, why: cleanText(q.why, 240) } : null;
   if (nextQuestion && !QUESTION_TYPES.includes(nextQuestion.type)) return fail('invalid_question_type');
   if (nextQuestion && !asArray(capabilities?.questionTypes).includes(nextQuestion.type)) return fail('unsupported_question_type');
   if (nextQuestion?.type === 'photo' && capabilities?.photoInput !== true) return fail('photo_input_unavailable');
   if (nextQuestion?.type === 'single_choice' && /\b(?:en|and|und)\b.+\?/i.test(nextQuestion.text)) return fail('compound_single_choice_question');
   if (nextQuestion && (!nextQuestion.questionId || !nextQuestion.evidenceKey)) return fail('incomplete_question_contract');
+  const answeredAxes = new Set(activeEvidence.flatMap(entry => [entry.predicate, entry.provenance?.evidenceKey]).map(axis => cleanText(axis, 120)).filter(Boolean));
+  if (nextQuestion && answeredAxes.has(nextQuestion.evidenceKey)) return fail('already_known_evidence_axis');
   if (nextQuestion && ['single_choice', 'multi_choice', 'action_check'].includes(nextQuestion.type)) {
     if (nextQuestion.options.length < 2) return fail('missing_question_options');
     if (nextQuestion.options.some(option => !nextQuestion.evidenceMapping?.[option.id])) return fail('missing_evidence_mapping');

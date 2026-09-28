@@ -50,7 +50,7 @@ test('één AI-call levert reasoning en een gevalideerde consumer response', asy
           knownFacts: [{ text: 'De laptop start hoorbaar op.', evidenceIds: [input.evidenceLedger.find(item => item.value === 'De laptop start hoorbaar op.').evidenceId] }],
           likelyCauses: [{ label: 'De beeldroute kan onderbroken zijn.', basis: 'hypothesis' }, { label: 'De schermverlichting kan zijn uitgevallen.', basis: 'hypothesis' }],
           safeFirstChecks: [{ text: 'Verhoog de helderheid met de normale toetsen.', actionClass: 'external_noninvasive_check' }, { text: 'Kijk of een extern scherm beeld geeft.', actionClass: 'observation' }],
-          nextQuestion: { questionId: 'q_external', type: 'single_choice', text: 'Geeft een extern scherm wel beeld?', options: [{ id: 'yes', label: 'Ja' }, { id: 'no', label: 'Nee' }, { id: 'unknown', label: 'Weet ik niet' }, { id: 'cannot_check', label: 'Kan ik niet controleren' }, { id: 'not_applicable', label: 'Niet van toepassing' }, { id: 'other', label: 'Anders…' }], evidenceKey: 'external_display', evidenceMapping: { yes: { claim: 'Een extern scherm geeft beeld.' }, no: { claim: 'Een extern scherm geeft geen beeld.' }, unknown: { claim: 'Het externe schermresultaat is onbekend.' }, cannot_check: { claim: 'Een extern scherm kan niet worden gecontroleerd.' }, not_applicable: { claim: 'Een extern scherm is niet van toepassing.' }, other: { claim: '' } } },
+          nextQuestion: { questionId: 'q_external', type: 'single_choice', text: 'Geeft een extern scherm beeld?', evidenceKey: 'external_display' },
           uncertainty: 'De precieze oorzaak is nog niet bevestigd.', repairGuidance: null, safety: { route: null, flags: [] },
         },
       };
@@ -71,6 +71,9 @@ test('provider-schema en validator delen dezelfde gesloten safe-action-class enu
   assert.ok(checkItem.required.includes('actionClass'));
   assert.equal(checkItem.properties.actionClass.enum.includes('low_risk_interaction'), false);
   assert.deepEqual(schema.properties.consumerResponse.properties.nextQuestion.properties.type.enum, ['single_choice', 'short_text']);
+  assert.equal(Object.hasOwn(schema.properties.consumerResponse.properties.nextQuestion.properties, 'options'), false);
+  assert.equal(Object.hasOwn(schema.properties.consumerResponse.properties.nextQuestion.properties, 'evidenceMapping'), false);
+  assert.deepEqual(schema.properties.consumerResponse.properties.repairGuidance, { type: 'null' });
 });
 
 test('Tester bewaart afgewezen AI-velden uitsluitend als gesaneerde pre-validation debug snapshot', async () => {
@@ -139,7 +142,7 @@ test('prompt injection kan safety of Repair Gate niet overrulen', async () => {
 });
 
 test('validator blokkeert samengestelde keuzevragen en hallucinated velden', () => {
-  const base = { contractVersion: 'v1', responseSource: 'ai', language: 'nl', object: { displayName: 'vaatwasser', category: 'appliance', confidence: 'high' }, summary: 'De vaatwasser neemt geen water in.', knownFacts: [], likelyCauses: [{ label: 'De toevoer kan onderbroken zijn.', basis: 'hypothesis' }], safeFirstChecks: [{ text: 'Kijk naar het display.', actionClass: 'observation' }], nextQuestion: { questionId: 'q1', type: 'single_choice', text: 'Staat de kraan open en komt er water?', options: [{ id: 'yes', label: 'Ja' }, { id: 'no', label: 'Nee' }], evidenceKey: 'water', evidenceMapping: { yes: { claim: 'De kraan staat open.' }, no: { claim: 'De kraan staat dicht.' } } }, uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null } };
+  const base = { contractVersion: 'v1', responseSource: 'ai', language: 'nl', object: { displayName: 'vaatwasser', category: 'appliance', confidence: 'high' }, summary: 'De vaatwasser neemt geen water in.', knownFacts: [], likelyCauses: [{ label: 'De toevoer kan onderbroken zijn.', basis: 'hypothesis' }], safeFirstChecks: [{ text: 'Kijk naar het display.', actionClass: 'observation' }], nextQuestion: { questionId: 'q1', type: 'single_choice', text: 'Staat de kraan open en komt er water?', evidenceKey: 'water' }, uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null } };
   assert.equal(validateConsumerResponseV1(base, { language: 'nl', repairGate: { open: false }, fallback: {} }).reason, 'compound_single_choice_question');
   assert.equal(validateConsumerResponseV1({ ...base, nextQuestion: null, secretAnswer: true }, { language: 'nl', repairGate: { open: false }, fallback: {} }).reason, 'hallucinated_field');
 });

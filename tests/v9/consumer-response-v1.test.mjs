@@ -120,6 +120,45 @@ test('semantische keuzevraag bevat zes onderscheiden antwoorden en evidence mapp
   assert.equal(new Set(response.nextQuestion.options.map(option => option.label)).size, 6);
 });
 
+test('AI levert één evidence-as; code bouwt canonical machine-opties en gelokaliseerde labels', () => {
+  const ledger = ledgerFromInput({ problem: 'Mijn toetsenbord reageert niet.' });
+  const base = {
+    contractVersion: 'v1', responseSource: 'ai', language: 'nl',
+    object: { displayName: 'toetsenbord', category: 'computer_accessory', confidence: 'high' },
+    summary: 'Twee toetsen reageren niet.', knownFacts: [],
+    likelyCauses: [{ label: 'De storing kan app-specifiek of systeemwijd zijn.', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Bekijk de toetsen van buiten.', actionClass: 'observation' }],
+    nextQuestion: { type: 'single_choice', text: 'Werken de toetsen in een ander programma?', evidenceKey: 'application_scope' },
+    uncertainty: 'De oorzaak is nog niet bevestigd.', repairGuidance: null, safety: { route: null },
+  };
+  const valid = validateConsumerResponseV1(base, { language: 'nl', ledger, repairGate: { open: false }, fallback: {} });
+  assert.equal(valid.valid, true);
+  assert.deepEqual(valid.response.nextQuestion.options.map(option => option.id), ['yes', 'no', 'unknown', 'cannot_check', 'not_applicable', 'other']);
+  assert.deepEqual(valid.response.nextQuestion.options.map(option => option.label), ['Ja', 'Nee', 'Weet ik niet', 'Kan ik niet controleren', 'Niet van toepassing', 'Anders…']);
+  assert.ok(Object.values(valid.response.nextQuestion.evidenceMapping).every(mapping => Object.hasOwn(mapping, 'claim')));
+
+  const localizedIds = { ...base, nextQuestion: { ...base.nextQuestion, options: [{ id: 'ja', label: 'Ja' }] } };
+  const malformedMapping = { ...base, nextQuestion: { ...base.nextQuestion, evidenceMapping: { ja: 'ja' } } };
+  assert.equal(validateConsumerResponseV1(localizedIds, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'ai_supplied_interaction_semantics');
+  assert.equal(validateConsumerResponseV1(malformedMapping, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'ai_supplied_interaction_semantics');
+});
+
+test('gesloten gate weigert repair guidance en reeds bekende of dubbele evidence-assen', () => {
+  const previousObservations = [{ text: 'De toetsen werken ook niet in een ander programma.', evidenceKey: 'application_scope', answerKind: 'yes', semanticClaim: 'De toetsen werken ook niet in een ander programma.' }];
+  const ledger = ledgerFromInput({ problem: 'Mijn toetsenbord reageert niet.', previousObservations });
+  const base = {
+    contractVersion: 'v1', responseSource: 'ai', language: 'nl',
+    object: { displayName: 'toetsenbord', category: 'computer_accessory', confidence: 'high' },
+    summary: 'Twee toetsen reageren niet.', knownFacts: [],
+    likelyCauses: [{ label: 'Een fysieke toetsfout kan de oorzaak zijn.', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Bekijk de toetsen van buiten.', actionClass: 'observation' }],
+    nextQuestion: { type: 'single_choice', text: 'Werken de toetsen in een ander programma?', evidenceKey: 'application_scope' },
+    uncertainty: 'De oorzaak is nog niet bevestigd.', repairGuidance: null, safety: { route: null },
+  };
+  assert.equal(validateConsumerResponseV1(base, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'already_known_evidence_axis');
+  assert.equal(validateConsumerResponseV1({ ...base, nextQuestion: null, repairGuidance: { advice: 'Vervang de toets.' } }, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'repair_guidance_when_gate_closed');
+});
+
 test('alle afgesproken vraagtypen behoren tot het canonical contract', () => {
   assert.deepEqual(QUESTION_TYPES, ['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check']);
 });
@@ -184,7 +223,7 @@ test('validator weigert photo en onbekende interaction types zonder end-to-end c
     object: { displayName: 'bad', category: 'sanitary', confidence: 'high' }, summary: 'Er verschijnt water bij het bad.',
     knownFacts: [], likelyCauses: [{ label: 'Een aansluiting kan lekken.', basis: 'hypothesis' }],
     safeFirstChecks: [{ text: 'Kijk waar het vocht verschijnt.', actionClass: 'observation' }],
-    nextQuestion: { questionId: 'q_photo', type: 'photo', text: 'Maak een foto.', options: [], evidenceKey: 'leak_location', evidenceMapping: {} },
+    nextQuestion: { questionId: 'q_photo', type: 'photo', text: 'Maak een foto.', evidenceKey: 'leak_location' },
     uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null },
   };
   assert.equal(validateConsumerResponseV1(base, { ledger, repairGate: { open: false }, capabilities: DEFAULT_INTERACTION_CAPABILITIES, fallback: {} }).reason, 'unsupported_question_type');
@@ -208,7 +247,7 @@ test('AI-photoresponse en upload failure vallen zonder dead end terug op niet-fo
       contractVersion: 'v1', responseSource: 'ai', language: 'nl', object: { displayName: 'bad', category: 'sanitary', confidence: 'high' },
       summary: 'Het bad lekt.', knownFacts: [], likelyCauses: [{ label: 'Een aansluiting kan lekken.', basis: 'hypothesis' }],
       safeFirstChecks: [{ text: 'Kijk waar het vocht verschijnt.', actionClass: 'observation' }],
-      nextQuestion: { questionId: 'q_photo', type: 'photo', text: 'Maak een foto.', options: [], evidenceKey: 'leak_location', evidenceMapping: {} },
+      nextQuestion: { questionId: 'q_photo', type: 'photo', text: 'Maak een foto.', evidenceKey: 'leak_location' },
       uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null },
     } }),
   });
