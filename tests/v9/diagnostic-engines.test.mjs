@@ -7,6 +7,7 @@ import { generateHypotheses } from '../../src/v9/hypothesis-engine.js';
 import { rankNextBestTests, selectNextBestTest } from '../../src/v9/next-best-test.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
 import { createDiagnosticState, transitionDiagnosticState } from '../../src/v9/state-machine.js';
+import { observationsFromV8 } from '../../src/v9/v8-adapter.js';
 
 test('Contradiction Detector vindt strijdige gestructureerde evidence', () => {
   const ledger = createEvidenceLedger({ entries: [
@@ -62,6 +63,21 @@ test('gestructureerde correctie wordt niet opnieuw door legacy tekstparsing gesu
   assert.equal(axis[1].status, 'active');
   assert.equal(axis[1].provenance.answerKind, 'no');
   assert.equal(ledger.entries.filter(entry => entry.source === 'user_text').length, 0);
+});
+
+test('V9-interactiehistorie behoudt machinevelden onafhankelijk van legacy reasoningContext', () => {
+  const observations = observationsFromV8({
+    reasoningContext: { observations: [
+      { text: 'Mijn vaatwasser krijgt geen water', answerTo: '' },
+      { text: 'Het antwoord is nog onbekend.', answerTo: 'Staat de kraan open?' },
+    ] },
+    v9Interactions: [
+      { text: 'Het antwoord is nog onbekend.', semanticClaim: 'Het antwoord is nog onbekend.', evidenceKey: 'water_supply', questionId: 'q_water', answerKind: 'unknown', rawAnswer: 'Weet ik niet' },
+      { text: 'Ik corrigeer dit naar ja.', semanticClaim: 'De kraan staat open.', evidenceKey: 'water_supply', questionId: 'q_water', answerKind: 'yes', rawAnswer: 'Ja', correction: true },
+    ],
+  });
+  assert.equal(observations.filter(item => item.evidenceKey === 'water_supply').length, 2);
+  assert.deepEqual(observations.filter(item => item.evidenceKey === 'water_supply').map(item => item.answerKind), ['unknown', 'yes']);
 });
 
 test('machineleesbaar cannot_check stuurt no-progress en sluit dezelfde evidence-as uit', () => {

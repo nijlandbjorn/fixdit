@@ -90,10 +90,15 @@ export function researchFromV8(diagnosis = {}) {
 }
 
 export function observationsFromV8(diagnosis = {}) {
-  return asArray(diagnosis.reasoningContext?.observations)
+  const interactions = asArray(diagnosis.v9Interactions);
+  const interactionTexts = new Set(interactions.flatMap(item => [cleanText(item?.semanticClaim, 500), cleanText(item?.text, 500)]).filter(Boolean));
+  const observations = asArray(diagnosis.reasoningContext?.observations)
+    .filter(item => !interactionTexts.has(cleanText(item?.semanticClaim || (item?.text ?? item), 500)))
+    .concat(interactions);
+  return observations
     .map(item => ({
       text: cleanText(item?.semanticClaim || (item?.text ?? item)),
-      rawText: cleanText(item?.text ?? item),
+      rawText: cleanText(item?.rawText || (item?.text ?? item)),
       answerTo: cleanText(item?.answerTo, 500),
       questionId: cleanText(item?.questionId, 160),
       evidenceKey: cleanText(item?.evidenceKey, 160),

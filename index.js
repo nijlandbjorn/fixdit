@@ -8871,7 +8871,7 @@ function interactionMetadataV9(body = {}) {
   return { answerKind, evidenceKey, questionId, semanticClaim, rawAnswer, correction: input.correction === true };
 }
 
-function attachInteractionMetadataV9(diagnosis, body, problem) {
+function attachInteractionMetadataV9(diagnosis, body, problem, previous = {}) {
   const interaction = interactionMetadataV9(body);
   if (!interaction) return diagnosis;
   const observations = [...(diagnosis?.reasoningContext?.observations || [])];
@@ -8879,7 +8879,8 @@ function attachInteractionMetadataV9(diagnosis, body, problem) {
   if (index < 0) index = observations.length - 1;
   if (index < 0) observations.push({ text:problem, answerTo:"", ...interaction });
   else observations[index] = { ...observations[index], ...interaction };
-  return { ...diagnosis, reasoningContext:{ ...(diagnosis.reasoningContext || {}), observations } };
+  const interactionHistory = [...(previous?.v9Interactions || []), { ...interaction, text:problem }].slice(-12);
+  return { ...diagnosis, reasoningContext:{ ...(diagnosis.reasoningContext || {}), observations }, v9Interactions:interactionHistory };
 }
 
 async function handleFollowup(
@@ -9055,7 +9056,7 @@ async function handleFollowup(
             analysisId
           }
         : output.diagnosis?.repairEngine
-  }, body, problem);
+  }, body, problem, previousDiagnosis);
 
   const refined =
     (
