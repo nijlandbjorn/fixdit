@@ -237,11 +237,12 @@ export async function runPipelineV9({
       providerFailure,
       validationResult: assistedResponse ? (consumerValidation.valid ? 'valid' : 'invalid') : 'not_run',
       validationReason: consumerValidation.valid ? null : consumerValidation.reason,
+      canonicalizationActions: consumerValidation.canonicalizationActions || Object.freeze([]),
       aiPreValidationResponse,
       aiCallsThisSession: aiCalls + (priorAiAttempt ? 1 : 0),
       successfulAiCalls: aiCalls && consumerValidation.valid ? 1 : 0,
       rejectedAiCalls: (priorAiAttempt ? 1 : 0) + (aiCalls && !consumerValidation.valid ? 1 : 0),
-      capacityUnavailable: ['ai_daily_allocation_exhausted', 'ai_temporary_capacity_unavailable'].includes(aiFallbackReason),
+      capacityUnavailable: ['daily_quota_exhausted', 'ai_temporary_capacity_unavailable'].includes(aiFallbackReason),
     }),
   });
 }

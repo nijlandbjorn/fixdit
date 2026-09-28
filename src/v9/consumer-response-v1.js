@@ -14,7 +14,7 @@ const INTERNAL = /\b(?:unknown|unclassified|breakage|no_flow|pressure_loss|not_w
 const DANGEROUS = /\b(?:230\s*v|blote?\s+drad|bare\s+wires?|stromführ|overbrug|bypass|demonteer|disassemble|behuizing\s+open|open\s+(?:de\s+)?behuizing|schroeven?\s+verwijder|remove\s+screws?|spanning\s+meten|measure\s+voltage|gasleiding\s+(?:open|los)|interne?\s+(?:bedrading|component))\b/i;
 const PRICE_OR_SOURCE = /(?:€|\$|\b\d+[,.]?\d*\s*(?:euro|dollar)\b|https?:\/\/|volgens (?:de )?handleiding|manufacturer manual)/i;
 const RAW_ANSWER = /^(?:ja|nee|yes|no|nein|weet ik niet|i don'?t know|weiß ich nicht|kan ik niet controleren|niet van toepassing|\d+\s*(?:jaar|years?|jahre?))$/i;
-const CHOICE_IDS = Object.freeze(['yes', 'no', 'unknown', 'cannot_check', 'not_applicable', 'other']);
+export const CHOICE_IDS = Object.freeze(['yes', 'no', 'unknown', 'cannot_check', 'not_applicable', 'other']);
 const GENERIC_OBJECT = /^(?:voorwerp|item|gegenstand|apparaat|device|gerät)$/i;
 
 function languageOf(value) { return ['nl', 'en', 'de'].includes(value) ? value : 'nl'; }
@@ -74,6 +74,43 @@ function canonicalQuestionOptions(prompt, language) {
     evidenceMapping,
   };
 }
+function canonicalCustomOptions(choices, prompt, language) {
+  const seen = new Set();
+  const options = [];
+  const evidenceMapping = {};
+  const actions = [];
+  for (const rawChoice of asArray(choices)) {
+    const label = cleanText(rawChoice, 100);
+    const duplicateKey = label.toLocaleLowerCase(language);
+    if (!label || seen.has(duplicateKey)) {
+      if (label) actions.push('duplicate_identical_choice_removed');
+      continue;
+    }
+    seen.add(duplicateKey);
+    const id = `choice_${stableHash([prompt, duplicateKey])}`;
+    options.push({ id, label });
+    evidenceMapping[id] = immutable({ label, claim: sentence(`${cleanText(prompt, 220).replace(/[?]+$/g, '')}: ${label}`), polarity: 'present' });
+    actions.push('custom_choice_machine_id_generated');
+  }
+  const standard = semanticMappings(prompt, language);
+  for (const id of ['unknown', 'cannot_check', 'not_applicable', 'other']) {
+    options.push({ id, label: standard[id].label });
+    evidenceMapping[id] = standard[id];
+  }
+  return { options, evidenceMapping, actions };
+}
+function rawStringTooLong(value, max) { return typeof value === 'string' && value.trim().length > max; }
+function hasOversizedFields(value) {
+  if (rawStringTooLong(value?.summary, 360) || rawStringTooLong(value?.uncertainty, 300)) return true;
+  if (rawStringTooLong(value?.object?.displayName, 100) || rawStringTooLong(value?.object?.category, 100)) return true;
+  if (asArray(value?.knownFacts).some(item => rawStringTooLong(item?.text, 260) || asArray(item?.evidenceIds).some(id => rawStringTooLong(id, 120)))) return true;
+  if (asArray(value?.likelyCauses).some(item => rawStringTooLong(item?.label, 240) || rawStringTooLong(item?.basis, 60))) return true;
+  if (asArray(value?.safeFirstChecks).some(item => rawStringTooLong(item?.text, 260) || rawStringTooLong(item?.actionClass, 60))) return true;
+  const q = value?.nextQuestion;
+  return rawStringTooLong(q?.questionId, 120) || rawStringTooLong(q?.type, 40) || rawStringTooLong(q?.text, 300)
+    || rawStringTooLong(q?.evidenceKey, 120) || rawStringTooLong(q?.why, 240)
+    || asArray(q?.choices).some(choice => rawStringTooLong(choice, 100));
+}
 function questionFromTest(nextTest, language) {
   const prompt = cleanText(nextTest?.prompt, 300);
   if (!prompt) return null;
@@ -131,9 +168,23 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
 export function validateConsumerResponseV1(value, { language = 'nl', repairGate = {}, safety = {}, ledger = null, fallback, capabilities = DEFAULT_INTERACTION_CAPABILITIES } = {}) {
   const fail = reason => ({ valid: false, reason, response: fallback });
   if (!value || typeof value !== 'object' || Array.isArray(value)) return fail('missing_or_malformed');
+  const required = ['object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'uncertainty', 'repairGuidance'];
+  if (required.some(key => !Object.hasOwn(value, key))) return fail('missing_required_field');
+  if (hasOversizedFields(value)) return fail('field_too_long');
+  if (asArray(value.knownFacts).length > 6 || asArray(value.likelyCauses).length > 4 || asArray(value.safeFirstChecks).length > 4 || asArray(value.nextQuestion?.choices).length > 6) return fail('array_too_long');
   const allowed = ['contractVersion', 'responseSource', 'degradedMode', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'endState', 'uncertainty', 'repairGuidance', 'safety'];
   if (Object.keys(value).some(key => !allowed.includes(key))) return fail('hallucinated_field');
+  if (!value.object || typeof value.object !== 'object' || Array.isArray(value.object)) return fail('missing_required_field');
+  if (Object.keys(value.object).some(key => !['displayName', 'category', 'source', 'confidence'].includes(key))) return fail('hallucinated_field');
+  if (!Array.isArray(value.knownFacts) || !Array.isArray(value.likelyCauses) || !Array.isArray(value.safeFirstChecks)) return fail('missing_required_field');
+  if (value.knownFacts.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['text', 'evidenceIds'].includes(key)))) return fail('hallucinated_field');
+  if (value.likelyCauses.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['label', 'basis'].includes(key)))) return fail('hallucinated_field');
+  if (value.safeFirstChecks.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['text', 'actionClass'].includes(key)))) return fail('hallucinated_field');
   const selected = languageOf(language);
+  if (value.contractVersion != null && value.contractVersion !== CONSUMER_RESPONSE_CONTRACT_VERSION) return fail('contract_version_mismatch');
+  if (value.responseSource != null && value.responseSource !== 'ai') return fail('response_source_mismatch');
+  if (value.language != null && value.language !== selected) return fail('language_mismatch');
+  if (value.object?.source != null && value.object.source !== 'ai_understanding') return fail('object_source_mismatch');
   const activeEvidence = activeUserEvidence(ledger);
   const evidenceIds = new Set(activeEvidence.map(entry => entry.evidenceId));
   const object = { displayName: cleanText(value.object?.displayName, 100), category: cleanText(value.object?.category, 100), source: 'ai_understanding', confidence: ['low', 'medium', 'high'].includes(value.object?.confidence) ? value.object.confidence : 'low' };
@@ -151,28 +202,35 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (repairGate?.open !== true && safeFirstChecks.some(item => DANGEROUS.test(item.text))) return fail('repair_gate_bypass');
   if (repairGate?.open !== true && value.repairGuidance != null) return fail('repair_guidance_when_gate_closed');
   const q = value.nextQuestion;
+  if (q && (typeof q !== 'object' || Array.isArray(q) || Object.keys(q).some(key => !['questionId', 'type', 'text', 'evidenceKey', 'why', 'choices', 'options', 'evidenceMapping'].includes(key)))) return fail('hallucinated_field');
   if (q && (Object.hasOwn(q, 'options') || Object.hasOwn(q, 'evidenceMapping'))) return fail('ai_supplied_interaction_semantics');
   const questionText = cleanText(q?.text, 300);
   const questionType = cleanText(q?.type, 40);
-  const canonical = ['single_choice', 'multi_choice', 'action_check'].includes(questionType)
-    ? canonicalQuestionOptions(questionText, selected)
+  const contentChoices = asArray(q?.choices);
+  const canonical = ['single_choice', 'multi_choice'].includes(questionType) && contentChoices.length
+    ? canonicalCustomOptions(contentChoices, questionText, selected)
+    : ['single_choice', 'multi_choice', 'action_check'].includes(questionType)
+      ? canonicalQuestionOptions(questionText, selected)
     : { options: [], evidenceMapping: {} };
   const nextQuestion = q && questionText ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash([questionText, q.evidenceKey])}`, type: questionType, text: questionText, options: canonical.options, evidenceKey: cleanText(q.evidenceKey, 120), evidenceMapping: canonical.evidenceMapping, why: cleanText(q.why, 240) } : null;
   if (nextQuestion && !QUESTION_TYPES.includes(nextQuestion.type)) return fail('invalid_question_type');
+  if (nextQuestion && contentChoices.length && !['single_choice', 'multi_choice'].includes(nextQuestion.type)) return fail('choices_on_non_choice_question');
   if (nextQuestion && !asArray(capabilities?.questionTypes).includes(nextQuestion.type)) return fail('unsupported_question_type');
   if (nextQuestion?.type === 'photo' && capabilities?.photoInput !== true) return fail('photo_input_unavailable');
-  if (nextQuestion?.type === 'single_choice' && /\b(?:en|and|und)\b.+\?/i.test(nextQuestion.text)) return fail('compound_single_choice_question');
+  if (nextQuestion && /\b(?:en|and|und|maar|but|aber|of|or|oder)\b.+\?/i.test(nextQuestion.text)) return fail('compound_question');
   if (nextQuestion && (!nextQuestion.questionId || !nextQuestion.evidenceKey)) return fail('incomplete_question_contract');
   const answeredAxes = new Set(activeEvidence.flatMap(entry => [entry.predicate, entry.provenance?.evidenceKey]).map(axis => cleanText(axis, 120)).filter(Boolean));
   if (nextQuestion && answeredAxes.has(nextQuestion.evidenceKey)) return fail('already_known_evidence_axis');
   if (nextQuestion && ['single_choice', 'multi_choice', 'action_check'].includes(nextQuestion.type)) {
     if (nextQuestion.options.length < 2) return fail('missing_question_options');
     if (nextQuestion.options.some(option => !nextQuestion.evidenceMapping?.[option.id])) return fail('missing_evidence_mapping');
-    if (nextQuestion.type === 'single_choice' && CHOICE_IDS.some(id => !nextQuestion.options.some(option => option.id === id))) return fail('incomplete_semantic_options');
+    if (contentChoices.length && contentChoices.length < 2) return fail('insufficient_content_choices');
+    if (!contentChoices.length && nextQuestion.type === 'single_choice' && CHOICE_IDS.some(id => !nextQuestion.options.some(option => option.id === id))) return fail('incomplete_semantic_options');
   }
   const response = { contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: 'ai', degradedMode: false, language: selected, object, summary: cleanText(value.summary, 360), knownFacts, likelyCauses, safeFirstChecks, nextQuestion, endState: cleanText(value.endState, 60) || null, uncertainty: cleanText(value.uncertainty, 300), repairGuidance: repairGate?.open === true ? value.repairGuidance ?? null : null, safety: { route: safety?.route || null, flags: asArray(safety?.flags).map(flag => flag.code) } };
   const text = allText(response);
   if (!response.summary || !object.displayName || !likelyCauses.length || !safeFirstChecks.length) return fail('empty_required_content');
+  if (likelyCauses.some(item => /^(?:unknown|unknown cause|onbekende oorzaak|oorzaak onbekend|unbekannte ursache|unklare ursache)[.!]?$/i.test(item.label))) return fail('placeholder_likely_cause');
   if (text.length > 2600) return fail('output_too_long');
   if (INTERNAL.test(text) || INTERNAL.test(object.displayName)) return fail('internal_label');
   if (DANGEROUS.test(text)) return fail('dangerous_instruction');
@@ -180,5 +238,5 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (selected === 'nl' && /\b(the|device|might|please check)\b/i.test(text)) return fail('wrong_language');
   if (selected === 'de' && /\b(the|device|might|please check)\b/i.test(text)) return fail('wrong_language');
   if (safety?.route && value.safety?.route && value.safety.route !== safety.route) return fail('safety_override');
-  return { valid: true, reason: null, response: immutable({ ...response, object: immutable(object), knownFacts: Object.freeze(knownFacts.map(immutable)), likelyCauses: Object.freeze(likelyCauses.map(immutable)), safeFirstChecks: Object.freeze(safeFirstChecks.map(immutable)), nextQuestion: nextQuestion ? immutable({ ...nextQuestion, options: Object.freeze(nextQuestion.options.map(immutable)), evidenceMapping: immutable(nextQuestion.evidenceMapping) }) : null, safety: immutable({ ...response.safety, flags: Object.freeze(response.safety.flags) }) }) };
+  return { valid: true, reason: null, canonicalizationActions: Object.freeze(canonical.actions || []), response: immutable({ ...response, object: immutable(object), knownFacts: Object.freeze(knownFacts.map(immutable)), likelyCauses: Object.freeze(likelyCauses.map(immutable)), safeFirstChecks: Object.freeze(safeFirstChecks.map(immutable)), nextQuestion: nextQuestion ? immutable({ ...nextQuestion, options: Object.freeze(nextQuestion.options.map(immutable)), evidenceMapping: immutable(nextQuestion.evidenceMapping) }) : null, safety: immutable({ ...response.safety, flags: Object.freeze(response.safety.flags) }) }) };
 }

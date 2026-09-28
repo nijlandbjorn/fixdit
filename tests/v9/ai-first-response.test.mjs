@@ -143,7 +143,7 @@ test('prompt injection kan safety of Repair Gate niet overrulen', async () => {
 
 test('validator blokkeert samengestelde keuzevragen en hallucinated velden', () => {
   const base = { contractVersion: 'v1', responseSource: 'ai', language: 'nl', object: { displayName: 'vaatwasser', category: 'appliance', confidence: 'high' }, summary: 'De vaatwasser neemt geen water in.', knownFacts: [], likelyCauses: [{ label: 'De toevoer kan onderbroken zijn.', basis: 'hypothesis' }], safeFirstChecks: [{ text: 'Kijk naar het display.', actionClass: 'observation' }], nextQuestion: { questionId: 'q1', type: 'single_choice', text: 'Staat de kraan open en komt er water?', evidenceKey: 'water' }, uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null } };
-  assert.equal(validateConsumerResponseV1(base, { language: 'nl', repairGate: { open: false }, fallback: {} }).reason, 'compound_single_choice_question');
+  assert.equal(validateConsumerResponseV1(base, { language: 'nl', repairGate: { open: false }, fallback: {} }).reason, 'compound_question');
   assert.equal(validateConsumerResponseV1({ ...base, nextQuestion: null, secretAnswer: true }, { language: 'nl', repairGate: { open: false }, fallback: {} }).reason, 'hallucinated_field');
 });
 

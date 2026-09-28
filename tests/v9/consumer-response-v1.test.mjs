@@ -68,7 +68,7 @@ test('bewezen providerquota is expliciet degraded met providerprovenance', async
   const reasoner = createWorkersAiReasoner({ V9_ALLOW_AI: 'true', AI: { run: async () => { throw providerError; } } });
   const result = await runPipelineV9({ problem: 'Mijn toilet blijft doorlopen.', reasoner });
   assert.equal(result.consumerResponse.degradedMode, true);
-  assert.equal(result.metrics.aiFallbackReason, 'ai_daily_allocation_exhausted');
+  assert.equal(result.metrics.aiFallbackReason, 'daily_quota_exhausted');
   assert.equal(result.metrics.capacityUnavailable, true);
   assert.equal(result.metrics.aiPlanned, true);
   assert.equal(result.metrics.aiSuppressedBeforeProvider, false);
