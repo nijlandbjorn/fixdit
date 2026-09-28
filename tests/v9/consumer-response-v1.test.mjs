@@ -166,6 +166,23 @@ test('cannot_check zonder veilige alternatieve evidence-as eindigt expliciet', a
   assert.equal(result.repairGate.open, false);
 });
 
+test('canonical known facts toont na correctie uitsluitend de actuele semantische claim', async () => {
+  const result = await runPipelineV9({
+    problem: 'Ik zei weet ik niet, maar het antwoord is ja.',
+    previousObservations: [
+      'Mijn vaatwasser doet het niet.',
+      { text: 'Weet ik niet', semanticClaim: 'Het antwoord op de normale cyclus is nog onbekend.', evidenceKey: 'failure_boundary', questionId: 'q_cycle', answerKind: 'unknown', rawAnswer: 'Weet ik niet' },
+      { text: 'Ja', semanticClaim: 'De vaatwasser begint met de normale cyclus.', evidenceKey: 'failure_boundary', questionId: 'q_cycle', answerKind: 'yes', rawAnswer: 'Ja', correction: true },
+    ],
+    classification: { objectFamily: 'appliance', objectLabel: 'vaatwasser', symptom: 'not_working', intent: 'repair' },
+  });
+  const facts = result.consumerResponse.knownFacts.map(item => item.text);
+  assert.deepEqual(facts, ['De vaatwasser begint met de normale cyclus.']);
+  assert.doesNotMatch(facts.join(' '), /onbekend|ik zei/i);
+  const axis = result.ledger.entries.filter(entry => entry.predicate === 'failure_boundary');
+  assert.deepEqual(axis.map(entry => entry.status), ['superseded', 'active']);
+});
+
 test('algemene correctie supersedet het laatste eerdere antwoord', async () => {
   const result = await runPipelineV9({
     problem: 'Ik corrigeer mijn vorige antwoord van “De kraan staat open.” naar “De kraan staat dicht.”.',

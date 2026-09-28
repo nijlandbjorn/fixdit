@@ -84,6 +84,9 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const selected = languageOf(language);
   const evidence = activeUserEvidence(ledger);
   const raw = cleanText(problem || evidence.at(-1)?.value, 240);
+  const currentAnswerEvidence = evidence.findLast(entry => entry.subject === 'user_answer');
+  const factEvidence = currentAnswerEvidence || evidence.at(-1);
+  const factText = cleanText(currentAnswerEvidence?.value || raw, 240);
   const classifiedName = cleanText(classification?.objectLabel, 80);
   const initialReport = cleanText(evidence.find(entry => !RAW_ANSWER.test(cleanText(entry.value, 240)) && !/^(?:het antwoord op|the answer to|die antwort auf)/i.test(cleanText(entry.value, 240)))?.value || raw, 240);
   const objectName = classifiedName && !INTERNAL.test(classifiedName) && !GENERIC_OBJECT.test(classifiedName) ? classifiedName : rawObjectName(initialReport, selected);
@@ -98,7 +101,7 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   return immutable({
     contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: stopped ? 'safety' : 'deterministic_fallback', language: selected,
     object: immutable({ displayName: objectName, category: cleanText(classification?.objectFamily, 100) || 'unresolved', source: classifiedName ? 'deterministic_normalization' : 'raw_user_input', confidence: understood ? 'medium' : 'low' }), summary,
-    knownFacts: Object.freeze(raw && evidence.at(-1)?.evidenceId && !RAW_ANSWER.test(raw) && !/\b(?:ik zei|i said|ich sagte)\b/i.test(raw) ? [immutable({ text: sentence(raw), evidenceIds: Object.freeze([evidence.at(-1).evidenceId]) })] : []),
+    knownFacts: Object.freeze(factText && factEvidence?.evidenceId && !RAW_ANSWER.test(factText) && !/\b(?:ik zei|i said|ich sagte)\b/i.test(factText) ? [immutable({ text: sentence(factText), evidenceIds: Object.freeze([factEvidence.evidenceId]) })] : []),
     likelyCauses: Object.freeze(stopped ? [] : causes.map(label => immutable({ label: sentence(label), basis: 'deterministic_hypothesis' }))),
     safeFirstChecks: Object.freeze(stopped ? [] : checks.map(text => immutable({ text: sentence(text), actionClass: 'observation' }))), nextQuestion: question,
     endState: exhausted ? 'insufficient_evidence' : stopped ? 'safety_stop' : directHelp ? 'direct_help' : null,
