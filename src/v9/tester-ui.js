@@ -36,7 +36,7 @@ export function renderV9TesterHtml() {
     <textarea class="problem" id="problem" placeholder="Beschrijf wat je ziet, hoort of merkt…" maxlength="500"></textarea>
     <label class="label" for="aiModel">Workers Free-model (bake-off)</label>
     <select id="aiModel">
-      <option value="@cf/zai-org/glm-4.7-flash">GLM-4.7 Flash</option>
+      <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">Llama 3.3 70B FP8 Fast</option>
       <option value="@cf/google/gemma-4-26b-a4b-it">Gemma 4 26B</option>
       <option value="@cf/nvidia/nemotron-3-120b-a12b">Nemotron 3 120B</option>
     </select>

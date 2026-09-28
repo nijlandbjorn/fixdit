@@ -6,6 +6,7 @@ export const REASONING_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
 const PREVIEW_REASONING_MODELS = Object.freeze([
   REASONING_MODEL,
+  '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
   '@cf/zai-org/glm-4.7-flash',
   '@cf/google/gemma-4-26b-a4b-it',
   '@cf/nvidia/nemotron-3-120b-a12b',

@@ -21,7 +21,7 @@
       "V9_ALLOW_AI": "true",
       "V9_ALLOW_RESEARCH": "false",
       "V9_TESTER_ENABLED": "true",
-      "V9_AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast"
+      "V9_AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
     },
     "observability": {
       "enabled": true,
