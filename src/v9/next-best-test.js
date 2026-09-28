@@ -2,7 +2,7 @@ import { asArray, cleanText, immutable, stableHash } from './contracts.js';
 import { buildPhotoRequest } from './photo-request.js';
 
 const VISUAL_FACTS = /location|damage|attachment|material|crack|leak|visible|condition/i;
-const BOOLEAN_FACTS = new Set(['water_supply', 'known_good_supply', 'inlet_hose_condition', 'inlet_filter_condition', 'aquastop_state', 'door_lock_state', 'external_display', 'water_in_drum', 'wired_connection', 'manual_light', 'reservoir_level', 'gas_supply_state']);
+const BOOLEAN_FACTS = new Set(['water_supply', 'known_good_supply', 'inlet_hose_condition', 'inlet_filter_condition', 'aquastop_state', 'door_lock_state', 'external_display', 'water_in_drum', 'wired_connection', 'manual_light', 'reservoir_level', 'gas_supply_state', 'growth_or_movement', 'failure_boundary']);
 
 const FACT_COPY = Object.freeze({
   external_display: { nl: 'Geeft een extern scherm wel beeld?', en: 'Does an external display show an image?', de: 'Zeigt ein externer Bildschirm ein Bild?' },
@@ -91,9 +91,9 @@ const FACT_COPY = Object.freeze({
     de: 'Was hast du bei der letzten Benutzung beobachtet, und welche Reaktion blieb aus? Wiederhole es nicht für diese Frage.',
   },
   failure_boundary: {
-    nl: 'Welke functies werken nog wel en bij welke concrete handeling gaat het voor het eerst mis?',
-    en: 'Which functions still work, and at which specific action does it first fail?',
-    de: 'Welche Funktionen arbeiten noch, und bei welchem konkreten Schritt tritt der Fehler zuerst auf?',
+    nl: 'Begint het apparaat met de normale cyclus wanneer je het start?',
+    en: 'Does the appliance begin its normal cycle when you start it?',
+    de: 'Beginnt das Gerät beim Start mit dem normalen Ablauf?',
   },
   inlet_hose_condition: { nl: 'Is de toevoerslang vrij van knikken en zichtbare blokkades?', en: 'Is the inlet hose free of kinks and visible blockages?', de: 'Ist der Zulaufschlauch frei von Knicken und sichtbaren Blockaden?' },
   inlet_filter_condition: { nl: 'Is het bereikbare inlaatfilter zichtbaar schoon?', en: 'Is the accessible inlet filter visibly clean?', de: 'Ist der zugängliche Zulauffilter sichtbar sauber?' },
@@ -184,6 +184,12 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
     .sort((a, b) => b.rankScore - a.rankScore || a.code.localeCompare(b.code)));
 }
 
-export function selectNextBestTest(input) {
-  return rankNextBestTests(input)[0] || null;
+export function selectNextBestTest(input, { previousObservations = [], axisOffset = 0 } = {}) {
+  const asked = new Set(asArray(previousObservations)
+    .map(item => cleanText(item?.answerTo, 500).toLocaleLowerCase())
+    .filter(Boolean));
+  const candidates = rankNextBestTests(input)
+    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()));
+  if (!candidates.length) return null;
+  return candidates[Math.min(Math.max(0, axisOffset), candidates.length - 1)] || candidates[0];
 }

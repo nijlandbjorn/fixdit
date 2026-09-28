@@ -101,10 +101,11 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
   }
 
   const currentProblem = cleanText(problem);
-  const correction = /\b(?:sorry[, ]+)?(?:ik\s+)?(?:zei|said|sagte).{0,30}\b(ja|yes|nein|nee|no)\b.{0,30}\b(?:bedoel(?:de)?|meant|meinte).{0,15}\b(ja|yes|nein|nee|no)\b/i.exec(currentProblem);
-  if (correction && correction[1].toLowerCase() !== correction[2].toLowerCase()) {
+  const correction = /\b(?:sorry[, ]+)?(?:ik\s+)?(?:zei|said|sagte).{0,50}\b(ja|yes|nein|nee|no)\b.{0,50}\b(?:bedoel(?:de)?|meant|meinte).{0,30}\b(ja|yes|nein|nee|no)\b/i.exec(currentProblem);
+  const explicitCorrection = /\b(?:ik\s+)?corrigeer\s+mijn\s+vorige\s+antwoord\s+van\s+[“"'](.+?)[”"']\s+naar\s+[“"'](.+?)[”"']/i.exec(currentProblem);
+  if ((correction && correction[1].toLowerCase() !== correction[2].toLowerCase()) || explicitCorrection) {
     for (let index = entries.length - 1; index >= 0; index -= 1) {
-      if (/^(?:ja|yes|nee|no|nein)$/i.test(String(entries[index].value).trim())) {
+      if (entries[index].source === 'previous_user_text') {
         entries[index] = { ...entries[index], status: 'superseded', provenance: { ...entries[index].provenance, supersededByCorrectionTurn: asArray(previousObservations).length } };
         break;
       }
@@ -120,7 +121,7 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
       polarity: 'present',
       confidence: 1,
       turnNumber: asArray(previousObservations).length,
-      provenance: correction ? { correction: true, replacesAnswer: correction[1], correctedAnswer: correction[2] } : {},
+      provenance: correction || explicitCorrection ? { correction: true, replacesAnswer: correction?.[1] || explicitCorrection?.[1], correctedAnswer: correction?.[2] || explicitCorrection?.[2] } : {},
     });
   }
 

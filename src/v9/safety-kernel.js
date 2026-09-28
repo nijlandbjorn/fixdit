@@ -10,7 +10,7 @@ const TRUSTED_SOURCES = new Set([
 
 const RULES = Object.freeze([
   ['gas', 'stop', /\b(gaslucht|gaslek|ruik(?:t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}ruik(?:t)?|smell(?:s)?(?:\s+\w+){0,2}\s+gas|gas smell|gas leak|gasgeruch|gasleck|riech(?:e|t)?(?:\s+\w+){0,2}\s+gas|gas.{0,20}riech(?:e|t)?)\b/i],
-  ['fire_smoke', 'stop', /\b(rook(?:t)?|vonken|vlammen|brandlucht|fire|smok(?:e|es|ing)|sparks|flames|burning smell|rauch(?:t)?|funken|flammen|brandgeruch)\b/i],
+  ['fire_smoke', 'stop', /\b(rook(?:t)?|vonk(?:t|en|te|ten)?|vlammen|brandlucht|fire|smok(?:e|es|ing)|spark(?:s|ing|ed)?|flames|burning smell|rauch(?:t)?|funk(?:e|en|t)?|flammen|brandgeruch)\b/i],
   ['mains_exposed', 'stop', /\b(blootliggende.{0,20}(?:draden|bedrading)|exposed mains|live wire|freiliegende.{0,20}(?:leitung|drähte)|230\s*v.{0,20}(?:bloot|exposed|freiliegend))\b/i],
   ['battery_damage', 'stop', /\b(opgezwollen.{0,30}(?:accu|batterij)|(?:\w*batterij|accu).{0,60}opgezwollen|swollen battery|battery.{0,30}swollen|aufgeblähte batterie|batterie.{0,30}aufgebläht)\b/i],
   ['battery_overheat', 'stop', /\b((?:batterij|accu|battery|batterie).{0,12}(?:extreem heet|oververhit|extremely hot|overheating|extrem heiß|überhitzt)|(?:extreem hete?|oververhitte?|extremely hot|overheating|extrem heiße?|überhitzte?).{0,12}(?:batterij|accu|battery|batterie))\b/i],
@@ -46,7 +46,9 @@ function matchIsNegated(text, matchIndex, matchedText = '') {
   const clause = text.slice(lastBoundaryBefore(text, matchIndex), matchIndex);
   if (UNCERTAIN_NEGATION.test(clause) || NON_NEGATING.test(clause)) return false;
   if (laterContrastAffirmsHazard(text, matchIndex + matchedText.length)) return false;
-  return NEGATION.test(clause) || NEGATION.test(matchedText);
+  const immediatelyAfter = text.slice(matchIndex + matchedText.length).split(/[.;,:!?]/, 1)[0];
+  const postNegated = /^\s+(?:niet|not|nicht)\b(?!\s+(?:altijd|always|immer))/i.test(immediatelyAfter);
+  return NEGATION.test(clause) || NEGATION.test(matchedText) || postNegated;
 }
 
 function evidenceText(entry) {

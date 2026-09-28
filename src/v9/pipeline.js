@@ -11,7 +11,8 @@ import { runIndependentCritic } from './independent-critic.js';
 import { createDiagnosticState, transitionDiagnosticState } from './state-machine.js';
 import { buildDirectHelp, selectDiagnosticRoute } from './decision-layer.js';
 import { detectNoProgress } from './no-progress.js';
-import { buildDeterministicConsumerResponse, validateConsumerResponse } from './consumer-response.js';
+import { buildFallbackConsumerResponse, validateConsumerResponseV1 } from './consumer-response-v1.js';
+import { classificationFromUserText } from './raw-classification.js';
 
 function transitionForDecision(state, safety, gate, nextTest) {
   if (safety.route === 'stop') {
@@ -51,6 +52,7 @@ export async function runPipelineV9({
   critic = null,
 } = {}) {
   const started = Date.now();
+  classification = immutable({ ...classification, ...classificationFromUserText(problem) });
   const actualRunId = runId || `v9_${stableHash([analysisId, problem, Date.now()])}`;
   let ledger = ledgerFromInput({ runId: actualRunId, problem, previousObservations, classification });
   if (structuredVision) {
@@ -71,7 +73,10 @@ export async function runPipelineV9({
   const noProgress = detectNoProgress(previousObservations, problem);
   const decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
   const nextTest = decision.route === 'diagnose' && !noProgress.exhausted
-    ? selectNextBestTest({ hypotheses, contradictions, language, safety, classification })
+    ? selectNextBestTest(
+        { hypotheses, contradictions, language, safety, classification },
+        { previousObservations, axisOffset: noProgress.detected ? Math.max(1, noProgress.consecutive) : 0 },
+      )
     : null;
   let repairGate = evaluateRepairGate({
     ledger,
@@ -108,8 +113,8 @@ export async function runPipelineV9({
     ? buildDirectHelp({ classification, hypotheses, safety })
     : null;
 
-  const deterministicResponse = buildDeterministicConsumerResponse({
-    language, problem, classification, hypotheses, nextTest, noProgress, decision, safety,
+  const deterministicResponse = buildFallbackConsumerResponse({
+    language, problem, ledger, noProgress, safety, classification, hypotheses, nextTest, directHelp,
   });
   let aiFallbackReason = typeof reasoner === 'function' ? null : 'ai_unavailable';
   if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
@@ -117,7 +122,7 @@ export async function runPipelineV9({
     try {
       const assisted = await reasoner({
         language, originalUserInput: problem, classification, safety,
-        evidenceLedger: ledger.entries.map(entry => ({ source: entry.source, subject: entry.subject, predicate: entry.predicate, value: entry.value, polarity: entry.polarity, status: entry.status })),
+        evidenceLedger: ledger.entries.map(entry => ({ evidenceId: entry.evidenceId, source: entry.source, subject: entry.subject, predicate: entry.predicate, value: entry.value, polarity: entry.polarity, status: entry.status })),
         hypotheses, contradictions, previousTurns: asArray(previousObservations), route: decision.route,
         repairGate, noProgress, nextQuestion: nextTest,
       });
@@ -139,8 +144,8 @@ export async function runPipelineV9({
     hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
   }
 
-  const consumerValidation = validateConsumerResponse(assistedResponse, {
-    language, repairGate, safety, classification, fallback: deterministicResponse,
+  const consumerValidation = validateConsumerResponseV1(assistedResponse, {
+    language, repairGate, safety, ledger, fallback: deterministicResponse,
   });
   const consumerResponse = consumerValidation.valid ? consumerValidation.response : deterministicResponse;
   if (!consumerValidation.valid && assistedResponse && !aiFallbackReason) aiFallbackReason = consumerValidation.reason;

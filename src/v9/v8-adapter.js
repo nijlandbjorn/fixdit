@@ -112,7 +112,7 @@ export function attachV9Metadata(v8Diagnosis, v9Result, { comparison = null, per
       hypotheses: v9Result.hypotheses,
       nextTest: v9Result.nextTest,
       directHelp: v9Result.directHelp,
-      consumerResponse: v9Result.consumerResponse,
+      consumer_response: v9Result.consumerResponse,
       repairGate: v9Result.repairGate,
       critic: v9Result.critic,
       plan: v9Result.plan,

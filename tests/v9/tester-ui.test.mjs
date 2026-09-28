@@ -50,7 +50,7 @@ test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate
   assert.match(html, /data-answer="Nee"/);
   assert.match(html, /data-answer="Weet ik niet"/);
   assert.match(html, /Technisch tester-paneel/);
-  assert.match(html, /consumerResponse/);
+  assert.match(html, /consumer_response/);
   assert.doesNotMatch(html, /ondersteuningsscore/);
 });
 

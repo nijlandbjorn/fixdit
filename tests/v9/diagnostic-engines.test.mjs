@@ -84,7 +84,7 @@ test('Next-Best-Test vertaalt interne evidence-doelen naar natuurlijke NL/EN/DE-
   const cases = [
     ['maintenance_history', 'nl', /Wanneer is het apparaat voor het laatst gereinigd of ontkalkt/],
     ['observable_behavior', 'en', /What did you observe during the last use/],
-    ['failure_boundary', 'de', /Welche Funktionen arbeiten noch/],
+    ['failure_boundary', 'de', /Beginnt das Gerät beim Start mit dem normalen Ablauf/],
   ];
   for (const [fact, language, expected] of cases) {
     const [next] = rankNextBestTests({
