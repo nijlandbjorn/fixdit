@@ -116,10 +116,17 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   const allowed = ['contractVersion', 'responseSource', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'endState', 'uncertainty', 'repairGuidance', 'safety'];
   if (Object.keys(value).some(key => !allowed.includes(key))) return fail('hallucinated_field');
   const selected = languageOf(language);
-  const evidenceIds = new Set(activeUserEvidence(ledger).map(entry => entry.evidenceId));
+  const activeEvidence = activeUserEvidence(ledger);
+  const evidenceIds = new Set(activeEvidence.map(entry => entry.evidenceId));
   const object = { displayName: cleanText(value.object?.displayName, 100), category: cleanText(value.object?.category, 100), source: 'ai_understanding', confidence: ['low', 'medium', 'high'].includes(value.object?.confidence) ? value.object.confidence : 'low' };
   const knownFacts = asArray(value.knownFacts).slice(0, 6).map(item => ({ text: sentence(item?.text), evidenceIds: asArray(item?.evidenceIds).map(String) })).filter(item => item.text);
   if (knownFacts.some(item => !item.evidenceIds.length || item.evidenceIds.some(id => !evidenceIds.has(id)) || RAW_ANSWER.test(item.text))) return fail('untraceable_known_fact');
+  const currentAnswerEvidence = activeEvidence.findLast(entry => entry.subject === 'user_answer');
+  const currentAnswerText = sentence(currentAnswerEvidence?.value);
+  if (currentAnswerText && currentAnswerEvidence?.evidenceId && !knownFacts.some(item => item.evidenceIds.includes(currentAnswerEvidence.evidenceId))) {
+    knownFacts.push({ text: currentAnswerText, evidenceIds: [currentAnswerEvidence.evidenceId] });
+    if (knownFacts.length > 6) knownFacts.shift();
+  }
   const likelyCauses = asArray(value.likelyCauses).slice(0, 4).map(item => ({ label: cleanText(item?.label, 240), basis: cleanText(item?.basis, 60) || 'model_inference' })).filter(item => item.label);
   const safeFirstChecks = asArray(value.safeFirstChecks).slice(0, 4).map(item => ({ text: cleanText(item?.text, 260), actionClass: cleanText(item?.actionClass, 60) })).filter(item => item.text);
   if (safeFirstChecks.some(item => !SAFE_ACTION_CLASSES.includes(item.actionClass))) return fail('unsafe_action_class');

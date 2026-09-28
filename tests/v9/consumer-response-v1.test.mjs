@@ -66,6 +66,28 @@ test('validator weigert reparatie vermomd als veilige controle bij gesloten gate
   assert.equal(validateConsumerResponseV1(response, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'repair_gate_bypass');
 });
 
+test('AI consumer response kan actuele semantische correctie niet uit Wat we weten weglaten', () => {
+  const ledger = ledgerFromInput({
+    problem: 'Ik zei weet ik niet, maar het antwoord is ja.',
+    previousObservations: [
+      { text: 'Weet ik niet', semanticClaim: 'Het antwoord op de normale cyclus is nog onbekend.', evidenceKey: 'failure_boundary', questionId: 'q_cycle', answerKind: 'unknown', rawAnswer: 'Weet ik niet' },
+      { text: 'Ja', semanticClaim: 'De vaatwasser begint met de normale cyclus.', evidenceKey: 'failure_boundary', questionId: 'q_cycle', answerKind: 'yes', rawAnswer: 'Ja', correction: true },
+    ],
+  });
+  const response = {
+    contractVersion: 'v1', responseSource: 'ai', language: 'nl',
+    object: { displayName: 'vaatwasser', category: 'appliance', confidence: 'high' },
+    summary: 'De vaatwasser heeft een storing.', knownFacts: [],
+    likelyCauses: [{ label: 'Een gebruiksvoorwaarde ontbreekt mogelijk.', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Bekijk het display van buitenaf.', actionClass: 'observation' }],
+    nextQuestion: null, uncertainty: 'De oorzaak is nog onzeker.', repairGuidance: null, safety: { route: null },
+  };
+  const result = validateConsumerResponseV1(response, { ledger, repairGate: { open: false }, fallback: {} });
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.response.knownFacts.map(item => item.text), ['De vaatwasser begint met de normale cyclus.']);
+  assert.equal(result.response.knownFacts[0].evidenceIds.length, 1);
+});
+
 test('validator weigert photo en onbekende interaction types zonder end-to-end capability', () => {
   const ledger = ledgerFromInput({ problem: 'Het bad lekt' });
   const base = {
