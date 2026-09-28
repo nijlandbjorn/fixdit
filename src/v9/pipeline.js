@@ -52,6 +52,7 @@ export async function runPipelineV9({
   critic = null,
   capabilities = DEFAULT_INTERACTION_CAPABILITIES,
   aiUnavailableReason = '',
+  priorAiAttempt = false,
 } = {}) {
   const started = Date.now();
   const conversationEvidence = [...asArray(previousObservations).map(item => item?.text ?? item), problem]
@@ -199,9 +200,9 @@ export async function runPipelineV9({
       aiCallReason: aiCalls ? 'reasoning_and_consumer_response' : null,
       externalResearchCalls: 0,
       aiError,
-      aiCallsThisSession: aiCalls,
+      aiCallsThisSession: aiCalls + (priorAiAttempt ? 1 : 0),
       successfulAiCalls: aiCalls && consumerValidation.valid ? 1 : 0,
-      rejectedAiCalls: aiCalls && !consumerValidation.valid ? 1 : 0,
+      rejectedAiCalls: (priorAiAttempt ? 1 : 0) + (aiCalls && !consumerValidation.valid ? 1 : 0),
       capacityUnavailable: aiFallbackReason === 'ai_quota_unavailable',
     }),
   });

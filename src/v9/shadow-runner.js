@@ -33,6 +33,7 @@ export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', la
     legacyDiagnosis: v8Diagnosis,
     reasoner: capacityUnavailable ? null : createWorkersAiReasoner(env),
     aiUnavailableReason: capacityUnavailable ? (v8Diagnosis?.aiFallbackReason || 'ai_quota_unavailable') : '',
+    priorAiAttempt: capacityUnavailable,
     critic: createWorkersAiCritic(env),
   });
   const comparison = compareV8V9(v8Diagnosis, result);
