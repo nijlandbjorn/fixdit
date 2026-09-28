@@ -73,7 +73,7 @@ function questionFromTest(nextTest, language) {
     type,
     text: prompt,
     options: Object.freeze(Object.entries(evidenceMapping).map(([id, mapping]) => immutable({ id, label: mapping.label }))),
-    evidenceKey: cleanText(nextTest.code, 120) || 'user_observation',
+    evidenceKey: cleanText(nextTest.evidenceKey || nextTest.code, 120) || 'user_observation',
     evidenceMapping: immutable(evidenceMapping),
     why: cleanText(nextTest.rationale, 240),
   });

@@ -50,12 +50,12 @@ test('per exclusieve evidence-as blijft maximaal één userwaarde actief', () =>
 test('machineleesbaar cannot_check stuurt no-progress en sluit dezelfde evidence-as uit', () => {
   const observations = [{
     text: 'Kan ik niet controleren', semanticClaim: 'Een extern scherm kan nu niet worden gecontroleerd.',
-    evidenceKey: 'backlight_external_display', questionId: 'q_external', answerKind: 'cannot_check', rawAnswer: 'Kan ik niet controleren',
+    evidenceKey: 'external_display', questionId: 'q_external', answerKind: 'cannot_check', rawAnswer: 'Kan ik niet controleren',
   }];
   const noProgress = detectNoProgress(observations, 'Een extern scherm kan nu niet worden gecontroleerd.');
   assert.equal(noProgress.reason, 'cannot_check');
   const selected = selectNextBestTest({ hypotheses: [{ hypothesisId: 'hy-1', code: 'backlight', statement: 'Test.', missingEvidence: ['external_display', 'observable_behavior'] }] }, { previousObservations: observations, axisOffset: 1 });
-  assert.notEqual(selected?.code, 'backlight_external_display');
+  assert.notEqual(selected?.evidenceKey, 'external_display');
 });
 
 test('Hypothesis Engine levert gerangschikte, begrensde hypotheses', () => {

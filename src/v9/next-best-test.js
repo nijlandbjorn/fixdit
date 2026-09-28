@@ -155,6 +155,7 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
         : null;
       candidates.push({
         code: `${hypothesis.code}_${fact}`,
+        evidenceKey: fact,
         kind: photoSupported ? 'photo' : 'question',
         questionType: photoSupported ? 'photo' : BOOLEAN_FACTS.has(fact) ? 'boolean' : 'short_text',
         prompt: photoSpec?.prompt || localQuestion(fact, language),
@@ -191,7 +192,7 @@ export function selectNextBestTest(input, { previousObservations = [], axisOffse
     .filter(Boolean));
   const answeredAxes = new Set(asArray(previousObservations).map(item => cleanText(item?.evidenceKey, 160)).filter(Boolean));
   const candidates = rankNextBestTests(input)
-    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()) && !answeredAxes.has(candidate.code));
+    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()) && !answeredAxes.has(candidate.evidenceKey || candidate.code));
   if (!candidates.length) return null;
   return candidates[Math.min(Math.max(0, axisOffset), candidates.length - 1)] || candidates[0];
 }
