@@ -42,10 +42,10 @@ function clarification(language) {
   if (language === 'en') return 'I do not yet understand which item or part you mean. Can you briefly say what is broken?';
   return 'Ik begrijp nog niet precies welk onderdeel of apparaat je bedoelt. Kun je kort aangeven wat er kapot is?';
 }
-function externalCheck(language) {
-  if (language === 'de') return 'Betrachte den betroffenen Gegenstand nur von außen und achte auf sichtbare Schäden oder lose äußere Verbindungen.';
-  if (language === 'en') return 'Inspect the affected item only from the outside for visible damage or loose external connections.';
-  return 'Bekijk het betrokken voorwerp alleen van buiten op zichtbare schade of losse externe aansluitingen.';
+function externalCheck(language, objectName = '') {
+  if (language === 'de') return objectName ? `Betrachte ${objectName} nur von außen und achte auf sichtbare Schäden oder lose äußere Verbindungen.` : 'Betrachte das betroffene Teil nur von außen und achte auf sichtbare Schäden oder lose äußere Verbindungen.';
+  if (language === 'en') return objectName ? `Inspect ${objectName} only from the outside for visible damage or loose external connections.` : 'Inspect the affected part only from the outside for visible damage or loose external connections.';
+  return objectName ? `Bekijk ${objectName} alleen van buiten op zichtbare schade of losse externe aansluitingen.` : 'Bekijk het betrokken onderdeel alleen van buiten op zichtbare schade of losse externe aansluitingen.';
 }
 function choiceLabels(language) {
   return language === 'de'
@@ -107,7 +107,7 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft: ${sentence(initialReport)}`, `You described: ${sentence(initialReport)}`, `Du beschreibst: ${sentence(initialReport)}`);
   const causes = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(text => text && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(text)).slice(0, 3);
   const suppliedChecks = asArray(directHelp?.now).filter(text => !DANGEROUS.test(text)).slice(0, 2);
-  const checks = [...suppliedChecks, externalCheck(selected), localized(selected, 'Controleer alleen normaal bereikbare aansluitingen en bedieningsstanden.', 'Check only normally accessible connections and controls.', 'Prüfe nur normal zugängliche Anschlüsse und Bedieneinstellungen.')].slice(0, 2);
+  const checks = [...suppliedChecks, externalCheck(selected, objectName), localized(selected, 'Controleer alleen normaal bereikbare aansluitingen en bedieningsstanden.', 'Check only normally accessible connections and controls.', 'Prüfe nur normal zugängliche Anschlüsse und Bedieneinstellungen.')].slice(0, 2);
   return immutable({
     contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: stopped ? 'safety' : 'deterministic_fallback', language: selected,
     object: immutable({ displayName: objectName, category: classifiedIsAuthoritative ? (cleanText(classification?.objectFamily, 100) || 'unresolved') : 'unresolved', source: classifiedName && classifiedIsAuthoritative ? 'deterministic_normalization' : 'raw_user_input', confidence: understood ? 'medium' : 'low' }), summary,

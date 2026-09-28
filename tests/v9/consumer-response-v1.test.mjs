@@ -45,6 +45,7 @@ test('degraded fallback behoudt raw object en symptoom zonder voorwerp-placehold
   assert.match(result.consumerResponse.summary, /W en D toetsen/i);
   assert.doesNotMatch(JSON.stringify(result.consumerResponse), /onvoldoende afgebakend|displayName":"voorwerp/i);
   assert.match(result.consumerResponse.uncertainty, /slimme analyse is tijdelijk niet beschikbaar/i);
+  assert.doesNotMatch(JSON.stringify(result.consumerResponse), /\bvoorwerp\b/i);
   assert.equal(result.repairGate.open, false);
 });
 
