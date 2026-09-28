@@ -52,7 +52,13 @@ export async function runPipelineV9({
   critic = null,
 } = {}) {
   const started = Date.now();
-  classification = immutable({ ...classification, ...classificationFromUserText(problem) });
+  const conversationEvidence = [...asArray(previousObservations).map(item => item?.text ?? item), problem]
+    .map(value => String(value || '').trim())
+    .filter(Boolean)
+    .join('\n');
+  // Follow-up answers such as "Weet ik niet" must not erase the concrete object/problem
+  // that the user supplied at the start of this same diagnosis.
+  classification = immutable({ ...classification, ...classificationFromUserText(conversationEvidence) });
   const actualRunId = runId || `v9_${stableHash([analysisId, problem, Date.now()])}`;
   let ledger = ledgerFromInput({ runId: actualRunId, problem, previousObservations, classification });
   if (structuredVision) {

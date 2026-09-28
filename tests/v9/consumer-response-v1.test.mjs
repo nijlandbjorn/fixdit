@@ -100,6 +100,16 @@ test('generieke legacy-objectnaam maakt plaats voor het concrete object uit raw 
   }
 });
 
+test('een onbekend follow-upantwoord wist de oorspronkelijke sessieclassificatie niet', async () => {
+  const result = await runPipelineV9({
+    problem: 'Weet ik niet',
+    previousObservations: ['Mijn vaatwasser krijgt geen water'],
+    classification: { objectFamily: 'other', objectLabel: 'Voorwerp', symptom: 'unknown', intent: 'repair' },
+  });
+  assert.equal(result.consumerResponse.object.displayName, 'vaatwasser');
+  assert.ok(result.hypotheses.some(item => /watertoevoer|toevoerslang|inlaatfilter/i.test(item.statement)));
+});
+
 test('algemene correctie supersedet het laatste eerdere antwoord', async () => {
   const result = await runPipelineV9({
     problem: 'Ik corrigeer mijn vorige antwoord van “De kraan staat open.” naar “De kraan staat dicht.”.',
