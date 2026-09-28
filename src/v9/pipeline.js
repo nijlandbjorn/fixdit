@@ -151,7 +151,7 @@ export async function runPipelineV9({
       aiLatencyMs = Date.now() - aiStarted;
     }
   } else if (['stop', 'professional'].includes(safety.route)) {
-    aiFallbackReason = 'deterministic_safety';
+    aiFallbackReason ||= 'deterministic_safety';
   }
 
   if (assistedHypotheses.length > asArray(modelHypotheses).length) {

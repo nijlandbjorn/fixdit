@@ -81,6 +81,14 @@ test('upstream quota-afwijzing telt één keer en voorkomt een tweede V9-call', 
   assert.equal(result.metrics.primaryAiCalls, 0);
 });
 
+test('deterministic safety bewaart bekende upstream capaciteitsprovenance', async () => {
+  const result = await runPipelineV9({ problem: 'Mijn stofzuiger ruikt verbrand.', reasoner: null, aiUnavailableReason: 'ai_quota_unavailable', priorAiAttempt: true });
+  assert.equal(result.consumerResponse.responseSource, 'safety');
+  assert.equal(result.metrics.aiFallbackReason, 'ai_quota_unavailable');
+  assert.equal(result.metrics.capacityUnavailable, true);
+  assert.equal(result.metrics.aiCallsThisSession, 1);
+});
+
 test('semantische keuzevraag bevat zes onderscheiden antwoorden en evidence mappings', () => {
   const problem = 'Mijn vaatwasser krijgt geen water';
   const ledger = ledgerFromInput({ problem });
