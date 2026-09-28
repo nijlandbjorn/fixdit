@@ -96,6 +96,7 @@ export async function runPipelineV9({
   let aiCalls = 0;
   let aiError = null;
   let providerFailure = null;
+  let providerResponseNormalization = null;
   const aiPlanned = !['stop', 'professional'].includes(safety.route);
   let providerCallStarted = false;
   let providerCallCompleted = false;
@@ -169,12 +170,17 @@ export async function runPipelineV9({
       providerCallCompleted = true;
       assistedHypotheses = [...assistedHypotheses, ...asArray(assisted?.hypotheses)];
       assistedResponse = assisted?.consumerResponse;
+      providerResponseNormalization = assisted?.normalization || null;
     } catch (error) {
       aiCalls = 1;
-      providerCallFailed = true;
+      providerCallCompleted = error?.providerCallCompleted === true;
+      providerCallFailed = !providerCallCompleted;
       aiError = String(error?.message || error);
       providerFailure = error?.providerFailure || null;
-      aiFallbackReason = providerFailure?.reason || (/timed?\s*out|timeout/i.test(aiError) ? 'ai_timeout' : 'ai_provider_error');
+      providerResponseNormalization = error?.normalization || null;
+      aiFallbackReason = providerResponseNormalization?.normalizationFailureReason
+        || providerFailure?.reason
+        || (/timed?\s*out|timeout/i.test(aiError) ? 'ai_timeout' : 'ai_provider_error');
     } finally {
       aiLatencyMs = Date.now() - aiStarted;
     }
@@ -236,6 +242,7 @@ export async function runPipelineV9({
       providerCallCompleted,
       providerCallFailed,
       providerFailure,
+      providerResponseNormalization,
       validationResult: assistedResponse ? (consumerValidation.valid ? 'valid' : 'invalid') : 'not_run',
       validationReason: consumerValidation.valid ? null : consumerValidation.reason,
       canonicalizationActions: consumerValidation.canonicalizationActions || Object.freeze([]),

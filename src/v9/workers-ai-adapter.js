@@ -124,6 +124,79 @@ async function runProvider(env, model, input) {
   }
 }
 
+function rawType(value) {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'array';
+  return typeof value;
+}
+
+function parseStructuredCandidate(candidate, location) {
+  if (candidate === null) return { failure: location === 'root' ? 'provider_returned_null' : 'missing_structured_payload' };
+  if (typeof candidate === 'string') {
+    if (!candidate.trim()) return { failure: 'missing_structured_payload' };
+    try {
+      const parsed = JSON.parse(candidate);
+      if (parsed === null) return { failure: 'parser_returned_null' };
+      if (typeof parsed !== 'object' || Array.isArray(parsed)) return { failure: 'wrong_payload_type' };
+      return { payload: parsed };
+    } catch {
+      return { failure: 'malformed_json' };
+    }
+  }
+  if (typeof candidate !== 'object' || Array.isArray(candidate)) return { failure: 'wrong_payload_type' };
+  return { payload: candidate };
+}
+
+export function normalizeWorkersAiResponse(rawResponse) {
+  const diagnostics = {
+    rawResponsePresent: rawResponse !== null && rawResponse !== undefined,
+    rawResponseType: rawType(rawResponse),
+    rawResponseIsArray: Array.isArray(rawResponse),
+    topLevelKeys: rawResponse && typeof rawResponse === 'object' && !Array.isArray(rawResponse)
+      ? Object.keys(rawResponse).slice(0, 20)
+      : [],
+    structuredPayloadLocation: null,
+    normalizationResult: 'failure',
+    normalizationFailureReason: null,
+  };
+
+  const candidates = [];
+  if (rawResponse && typeof rawResponse === 'object' && !Array.isArray(rawResponse)) {
+    if ('hypotheses' in rawResponse || 'consumerResponse' in rawResponse) candidates.push(['root', rawResponse]);
+    if ('response' in rawResponse) candidates.push(['response', rawResponse.response]);
+    const message = rawResponse.choices?.[0]?.message;
+    if (message && typeof message === 'object') {
+      if ('parsed' in message) candidates.push(['choices[0].message.parsed', message.parsed]);
+      if ('content' in message) candidates.push(['choices[0].message.content', message.content]);
+    }
+  } else {
+    candidates.push(['root', rawResponse]);
+  }
+
+  if (!candidates.length) diagnostics.normalizationFailureReason = 'unsupported_response_shape';
+  for (const [location, candidate] of candidates) {
+    diagnostics.structuredPayloadLocation = location;
+    const normalized = parseStructuredCandidate(candidate, location);
+    if (!normalized.payload) {
+      diagnostics.normalizationFailureReason = normalized.failure;
+      continue;
+    }
+    if (!Object.hasOwn(normalized.payload, 'hypotheses') || !Object.hasOwn(normalized.payload, 'consumerResponse')) {
+      diagnostics.normalizationFailureReason = Object.keys(normalized.payload).length ? 'missing_required_structured_fields' : 'empty_object';
+      continue;
+    }
+    diagnostics.normalizationResult = 'success';
+    diagnostics.normalizationFailureReason = null;
+    return { payload: normalized.payload, diagnostics: Object.freeze({ ...diagnostics }) };
+  }
+
+  const error = new Error(diagnostics.normalizationFailureReason || 'unsupported_response_shape');
+  error.name = 'WorkersAiNormalizationError';
+  error.normalization = Object.freeze({ ...diagnostics });
+  error.providerCallCompleted = true;
+  throw error;
+}
+
 export function workersAiEnabled(env) {
   return String(env?.V9_ALLOW_AI || '').toLocaleLowerCase() === 'true' && typeof env?.AI?.run === 'function';
 }
@@ -193,9 +266,12 @@ export function createWorkersAiReasoner(env) {
       max_tokens: 1400,
       temperature: 0,
     });
-    const raw = result?.response ?? result?.choices?.[0]?.message?.content;
-    const parsed = typeof raw === 'object' ? raw : JSON.parse(String(raw || '{}'));
-    return { hypotheses: validateReasoningHypotheses(parsed.hypotheses, input?.language), consumerResponse: parsed.consumerResponse };
+    const { payload, diagnostics } = normalizeWorkersAiResponse(result);
+    return {
+      hypotheses: validateReasoningHypotheses(payload.hypotheses, input?.language),
+      consumerResponse: payload.consumerResponse,
+      normalization: diagnostics,
+    };
   };
   reasoner.modelId = model;
   return reasoner;

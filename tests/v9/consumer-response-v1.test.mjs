@@ -5,7 +5,57 @@ import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, QUESTI
 import { ledgerFromInput } from '../../src/v9/evidence-ledger.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
-import { createWorkersAiReasoner, REASONING_MODEL, resolveReasoningModel } from '../../src/v9/workers-ai-adapter.js';
+import { createWorkersAiReasoner, normalizeWorkersAiResponse, REASONING_MODEL, resolveReasoningModel } from '../../src/v9/workers-ai-adapter.js';
+
+test('Workers AI response normalizer accepteert uitsluitend gedocumenteerde structured vormen', () => {
+  const payload = { hypotheses: [], consumerResponse: { summary: 'Test' } };
+  for (const [raw, location] of [
+    [payload, 'root'],
+    [{ response: payload }, 'response'],
+    [{ response: JSON.stringify(payload) }, 'response'],
+    [{ choices: [{ message: { parsed: payload } }] }, 'choices[0].message.parsed'],
+    [{ choices: [{ message: { content: JSON.stringify(payload) } }] }, 'choices[0].message.content'],
+  ]) {
+    const result = normalizeWorkersAiResponse(raw);
+    assert.deepEqual(result.payload, payload);
+    assert.equal(result.diagnostics.normalizationResult, 'success');
+    assert.equal(result.diagnostics.structuredPayloadLocation, location);
+  }
+});
+
+test('Workers AI response normalizer classificeert contractfouten zonder TypeError', () => {
+  for (const [raw, reason] of [
+    [null, 'provider_returned_null'],
+    [{ response: null }, 'missing_structured_payload'],
+    [{ response: 'null' }, 'parser_returned_null'],
+    [{ response: '{kapot' }, 'malformed_json'],
+    [{ response: 42 }, 'wrong_payload_type'],
+    [{ response: {} }, 'empty_object'],
+    [{ unexpected: true }, 'unsupported_response_shape'],
+    [{ response: { hypotheses: [] } }, 'missing_required_structured_fields'],
+  ]) {
+    assert.throws(
+      () => normalizeWorkersAiResponse(raw),
+      error => error.name === 'WorkersAiNormalizationError'
+        && error.normalization.normalizationFailureReason === reason
+        && error.providerCallCompleted === true,
+    );
+  }
+});
+
+test('adapter-normalisatiefout blijft zichtbaar en start geen consumer-validatie', async () => {
+  const reasoner = createWorkersAiReasoner({
+    V9_ALLOW_AI: 'true',
+    AI: { run: async () => ({ response: 'null' }) },
+  });
+  const result = await runPipelineV9({ problem: 'Mijn rolmaat rolt niet meer vanzelf op.', mode: 'tester', reasoner });
+  assert.equal(result.metrics.providerCallCompleted, true);
+  assert.equal(result.metrics.providerCallFailed, false);
+  assert.equal(result.metrics.providerResponseNormalization.normalizationFailureReason, 'parser_returned_null');
+  assert.equal(result.metrics.validationResult, 'not_run');
+  assert.equal(result.metrics.aiFallbackReason, 'parser_returned_null');
+  assert.equal(result.metrics.aiPreValidationResponse, null);
+});
 
 test('Preview reasoning model is configureerbaar via een gesloten gratis-kandidatenlijst', async () => {
   const candidate = '@cf/zai-org/glm-4.7-flash';
@@ -14,7 +64,7 @@ test('Preview reasoning model is configureerbaar via een gesloten gratis-kandida
   let usedModel = null;
   const reasoner = createWorkersAiReasoner({
     V9_ALLOW_AI: 'true', V9_AI_MODEL: candidate,
-    AI: { run: async model => { usedModel = model; return { response: {} }; } },
+    AI: { run: async model => { usedModel = model; return { response: { hypotheses: [], consumerResponse: null } }; } },
   });
   await reasoner({ language: 'nl' });
   assert.equal(reasoner.modelId, candidate);
