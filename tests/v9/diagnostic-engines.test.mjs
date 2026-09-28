@@ -242,3 +242,12 @@ test('interactieve state gebruikt optimistic revision checks', () => {
   assert.equal(state.phase, 'collecting_evidence');
   assert.deepEqual(state.completedTestIds, ['test-1']);
 });
+
+test('raw locatie-evidence sluit dezelfde next-best-test-as generiek uit', () => {
+  const next = selectNextBestTest({
+    rawEvidenceText: 'Mijn tuinslang lekt bij de koppeling.',
+    hypotheses: [{ hypothesisId: 'hy-leak', code: 'connection_leak', statement: 'Een verbinding lekt.', missingEvidence: ['leak_location', 'damage_location'] }],
+    language: 'nl',
+  });
+  assert.equal(next.evidenceKey, 'damage_location');
+});

@@ -51,6 +51,7 @@ export async function runPipelineV9({
   reasoner = null,
   critic = null,
   capabilities = DEFAULT_INTERACTION_CAPABILITIES,
+  aiUnavailableReason = '',
 } = {}) {
   const started = Date.now();
   const conversationEvidence = [...asArray(previousObservations).map(item => item?.text ?? item), problem]
@@ -81,7 +82,7 @@ export async function runPipelineV9({
   let decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
   const nextTest = decision.route === 'diagnose' && !noProgress.exhausted
     ? selectNextBestTest(
-        { hypotheses, contradictions, language, safety, classification, capabilities },
+        { hypotheses, contradictions, language, safety, classification, capabilities, rawEvidenceText: conversationEvidence },
         { previousObservations, axisOffset: noProgress.detected ? Math.max(1, noProgress.consecutive) : 0 },
       )
     : null;
@@ -127,7 +128,7 @@ export async function runPipelineV9({
   const deterministicResponse = buildFallbackConsumerResponse({
     language, problem, ledger, noProgress, safety, classification, hypotheses, nextTest, directHelp,
   });
-  let aiFallbackReason = typeof reasoner === 'function' ? null : 'ai_unavailable';
+  let aiFallbackReason = typeof reasoner === 'function' ? null : (aiUnavailableReason || 'ai_unavailable');
   if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
     const aiStarted = Date.now();
     try {
@@ -143,7 +144,8 @@ export async function runPipelineV9({
     } catch (error) {
       aiCalls = 1;
       aiError = String(error?.message || error);
-      aiFallbackReason = 'model_error';
+      aiFallbackReason = /(?:4006|daily free allocation|neurons|quota)/i.test(aiError) ? 'ai_quota_unavailable'
+        : /timed?\s*out|timeout/i.test(aiError) ? 'ai_timeout' : 'ai_provider_error';
     } finally {
       aiLatencyMs = Date.now() - aiStarted;
     }
@@ -197,6 +199,10 @@ export async function runPipelineV9({
       aiCallReason: aiCalls ? 'reasoning_and_consumer_response' : null,
       externalResearchCalls: 0,
       aiError,
+      aiCallsThisSession: aiCalls,
+      successfulAiCalls: aiCalls && consumerValidation.valid ? 1 : 0,
+      rejectedAiCalls: aiCalls && !consumerValidation.valid ? 1 : 0,
+      capacityUnavailable: aiFallbackReason === 'ai_quota_unavailable',
     }),
   });
 }

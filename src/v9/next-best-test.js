@@ -191,6 +191,9 @@ export function selectNextBestTest(input, { previousObservations = [], axisOffse
     .map(item => cleanText(item?.answerTo, 500).toLocaleLowerCase())
     .filter(Boolean));
   const answeredAxes = new Set(asArray(previousObservations).map(item => cleanText(item?.evidenceKey, 160)).filter(Boolean));
+  const rawEvidence = asArray(previousObservations).map(item => cleanText(item?.semanticClaim || item?.text || item, 500)).concat(cleanText(input?.rawEvidenceText, 500)).join(' ');
+  if (/\b(?:lekt|leak(?:s|ing)?|undicht)\b/i.test(rawEvidence) && /\b(?:bij|onder|rond|langs|aan\s+de|koppeling|aansluiting|at|under|around|near|coupling|connection|bei|unter|um|kupplung|anschluss)\b/i.test(rawEvidence)) answeredAxes.add('leak_location');
+  if (/\b(?:start|begint|draait|gaat\s+aan|turns?\s+on|starts?|beginnt|springt\s+an)\b/i.test(rawEvidence)) answeredAxes.add('failure_boundary');
   const candidates = rankNextBestTests(input)
     .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()) && !answeredAxes.has(candidate.evidenceKey || candidate.code));
   if (!candidates.length) return null;

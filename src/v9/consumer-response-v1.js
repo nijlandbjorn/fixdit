@@ -23,9 +23,14 @@ function sentence(value) { const text = cleanText(value, 260); return text ? `${
 function activeUserEvidence(ledger) { return asArray(ledger?.entries).filter(entry => entry.status === 'active' && ['user_text', 'previous_user_text', 'vision_structured'].includes(entry.source)); }
 function rawObjectName(problem, language) {
   const raw = cleanText(problem, 180).replace(/[.!?]+$/g, '');
-  const match = /^(?:mijn|m['’]n|my|mein(?:e|en|er)?)\s+(.+?)(?:\s+(?:is|heeft|doet|gaat|werkt|start|blijft|zakt|loopt|lekt|wordt|geeft|draait|trapt|staat|krijgt|laadt|koelt|ontsteekt|vonkt|maakt|has|does|starts|stays|drops|leaks|sparks|ist|hat|funktioniert|startet|bleibt|sinkt|läuft|leckt|funkt|wird)\b|$)/i.exec(raw);
-  const mentioned = /\b(?:mijn|my|mein(?:e|en|er)?)\s+([\p{L}\d-]+)/iu.exec(raw)?.[1];
-  return cleanText(match?.[1] || mentioned || (language === 'de' ? 'Gegenstand' : language === 'en' ? 'item' : 'voorwerp'), 80);
+  const verb = '(?:is|zijn|heeft|hebben|doet|doen|gaat|werken?|start|begint|blijft|zakt|steekt|loopt|lekt|wordt|geeft|draait|trapt|staat|krijgt|laadt|koelt|ontsteekt|vonkt|maakt|knippert|dubbelklikt|sluit|hangt|wiebelt|kraakt|slaat|valt|slingert|stopt|trekt|reageert|springt|zit|ruikt|komt|has|does|starts|stays|drops|leaks|sparks|closes|hangs|falls|clicks|ist|hat|funktioniert|startet|bleibt|sinkt|läuft|leckt|funkt|wird)';
+  const possessive = new RegExp('(?:^|\\b)(?:mijn|m[’\']n|my|mein(?:e|en|er)?)\\s+(.+?)(?=\\s+' + verb + '\\b|$)', 'iu').exec(raw)?.[1];
+  let phrase = cleanText(possessive, 100);
+  const nested = /\b(?:mijn|my|mein(?:e|en|er)?)\s+([\p{L}\d-]+(?:\s+[\p{L}\d-]+){0,2})$/iu.exec(phrase)?.[1];
+  if (nested) phrase = nested;
+  if (!phrase) phrase = cleanText(new RegExp('^(?:een|de|het|a|an|the|ein(?:e|en)?|der|die|das)?\\s*(.+?)(?=\\s+' + verb + '\\b|$)', 'iu').exec(raw)?.[1], 100);
+  phrase = phrase.replace(/\s+(?:vandaan|away|heraus)$/i, '');
+  return cleanText(phrase, 80);
 }
 function safetyCopy(language) {
   if (language === 'de') return 'Benutze es nicht weiter. Halte Abstand und schalte es nur ab, wenn das ohne Annäherung an die Gefahr sicher möglich ist.';
@@ -89,23 +94,29 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const factText = cleanText(currentAnswerEvidence?.value || raw, 240);
   const classifiedName = cleanText(classification?.objectLabel, 80);
   const initialReport = cleanText(evidence.find(entry => !RAW_ANSWER.test(cleanText(entry.value, 240)) && !/^(?:het antwoord op|the answer to|die antwort auf)/i.test(cleanText(entry.value, 240)))?.value || raw, 240);
-  const objectName = classifiedName && !INTERNAL.test(classifiedName) && !GENERIC_OBJECT.test(classifiedName) ? classifiedName : rawObjectName(initialReport, selected);
-  const understood = !GENERIC_OBJECT.test(objectName);
+  const rawName = rawObjectName(initialReport, selected);
+  const classifiedIsAuthoritative = classification?.evidenceAuthority?.objectLabel !== 'legacy_inference';
+  const objectName = classifiedName && classifiedIsAuthoritative && !INTERNAL.test(classifiedName) && !GENERIC_OBJECT.test(classifiedName) ? classifiedName : rawName;
+  const understood = Boolean(objectName) && !GENERIC_OBJECT.test(objectName);
   const stopped = ['stop', 'professional'].includes(safety?.route);
   const exhausted = noProgress?.exhausted === true;
-  const question = stopped || exhausted || directHelp ? null : questionFromTest(nextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });
-  const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft een probleem met ${objectName}.`, `You describe a problem with ${objectName}.`, `Du beschreibst ein Problem mit ${objectName}.`);
-  const causes = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(Boolean).slice(0, 3);
+  const groundedNextTest = nextTest?.evidenceKey === 'observable_behavior'
+    ? { ...nextTest, evidenceKey: 'occurrence_pattern', prompt: localized(selected, 'Is dit voortdurend, of alleen onder bepaalde omstandigheden?', 'Does this happen continuously, or only under certain conditions?', 'Tritt das ständig oder nur unter bestimmten Bedingungen auf?') }
+    : nextTest;
+  const question = stopped || exhausted || directHelp ? null : questionFromTest(groundedNextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });
+  const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft: ${sentence(initialReport)}`, `You described: ${sentence(initialReport)}`, `Du beschreibst: ${sentence(initialReport)}`);
+  const causes = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(text => text && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(text)).slice(0, 3);
   const suppliedChecks = asArray(directHelp?.now).filter(text => !DANGEROUS.test(text)).slice(0, 2);
   const checks = [...suppliedChecks, externalCheck(selected), localized(selected, 'Controleer alleen normaal bereikbare aansluitingen en bedieningsstanden.', 'Check only normally accessible connections and controls.', 'Prüfe nur normal zugängliche Anschlüsse und Bedieneinstellungen.')].slice(0, 2);
   return immutable({
     contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: stopped ? 'safety' : 'deterministic_fallback', language: selected,
-    object: immutable({ displayName: objectName, category: cleanText(classification?.objectFamily, 100) || 'unresolved', source: classifiedName ? 'deterministic_normalization' : 'raw_user_input', confidence: understood ? 'medium' : 'low' }), summary,
+    object: immutable({ displayName: objectName, category: classification?.evidenceAuthority?.objectFamily === 'legacy_inference' ? 'unresolved' : (cleanText(classification?.objectFamily, 100) || 'unresolved'), source: classifiedName && classifiedIsAuthoritative ? 'deterministic_normalization' : 'raw_user_input', confidence: understood ? 'medium' : 'low' }), summary,
     knownFacts: Object.freeze(factText && factEvidence?.evidenceId && !RAW_ANSWER.test(factText) && !/\b(?:ik zei|i said|ich sagte)\b/i.test(factText) ? [immutable({ text: sentence(factText), evidenceIds: Object.freeze([factEvidence.evidenceId]) })] : []),
     likelyCauses: Object.freeze(stopped ? [] : causes.map(label => immutable({ label: sentence(label), basis: 'deterministic_hypothesis' }))),
     safeFirstChecks: Object.freeze(stopped ? [] : checks.map(text => immutable({ text: sentence(text), actionClass: 'observation' }))), nextQuestion: question,
     endState: exhausted ? 'insufficient_evidence' : stopped ? 'safety_stop' : directHelp ? 'direct_help' : null,
-    uncertainty: exhausted ? localized(selected, 'Er is na drie pogingen nog onvoldoende nieuwe informatie. De diagnose stopt hier om een vragenlus te voorkomen.', 'After three attempts there is still insufficient new information. The diagnosis stops here to prevent a question loop.', 'Nach drei Versuchen fehlen weiterhin neue Informationen. Die Diagnose endet hier, um eine Frageschleife zu vermeiden.') : localized(selected, 'De precieze oorzaak is nog niet bevestigd.', 'The exact cause has not yet been confirmed.', 'Die genaue Ursache ist noch nicht bestätigt.'),
+    degradedMode: !stopped,
+    uncertainty: exhausted ? localized(selected, 'Er is na drie pogingen nog onvoldoende nieuwe informatie. De diagnose stopt hier om een vragenlus te voorkomen.', 'After three attempts there is still insufficient new information. The diagnosis stops here to prevent a question loop.', 'Nach drei Versuchen fehlen weiterhin neue Informationen. Die Diagnose endet hier, um eine Frageschleife zu vermeiden.') : stopped ? localized(selected, 'Veiligheid gaat nu voor verdere analyse.', 'Safety takes priority over further analysis.', 'Sicherheit hat jetzt Vorrang vor weiterer Analyse.') : localized(selected, 'De slimme analyse is tijdelijk niet beschikbaar. Ik kan je wel helpen met veilige basiscontroles, of je kunt later opnieuw proberen.', 'Smart analysis is temporarily unavailable. I can still help with safe basic checks, or you can try again later.', 'Die intelligente Analyse ist vorübergehend nicht verfügbar. Ich kann bei sicheren Basiskontrollen helfen, oder du versuchst es später erneut.'),
     repairGuidance: null, safety: immutable({ route: safety?.route || null, flags: Object.freeze(asArray(safety?.flags).map(flag => flag.code)) }),
   });
 }
@@ -113,7 +124,7 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
 export function validateConsumerResponseV1(value, { language = 'nl', repairGate = {}, safety = {}, ledger = null, fallback, capabilities = DEFAULT_INTERACTION_CAPABILITIES } = {}) {
   const fail = reason => ({ valid: false, reason, response: fallback });
   if (!value || typeof value !== 'object' || Array.isArray(value)) return fail('missing_or_malformed');
-  const allowed = ['contractVersion', 'responseSource', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'endState', 'uncertainty', 'repairGuidance', 'safety'];
+  const allowed = ['contractVersion', 'responseSource', 'degradedMode', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'endState', 'uncertainty', 'repairGuidance', 'safety'];
   if (Object.keys(value).some(key => !allowed.includes(key))) return fail('hallucinated_field');
   const selected = languageOf(language);
   const activeEvidence = activeUserEvidence(ledger);
@@ -143,7 +154,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
     if (nextQuestion.options.some(option => !nextQuestion.evidenceMapping?.[option.id])) return fail('missing_evidence_mapping');
     if (nextQuestion.type === 'single_choice' && CHOICE_IDS.some(id => !nextQuestion.options.some(option => option.id === id))) return fail('incomplete_semantic_options');
   }
-  const response = { contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: 'ai', language: selected, object, summary: cleanText(value.summary, 360), knownFacts, likelyCauses, safeFirstChecks, nextQuestion, endState: cleanText(value.endState, 60) || null, uncertainty: cleanText(value.uncertainty, 300), repairGuidance: repairGate?.open === true ? value.repairGuidance ?? null : null, safety: { route: safety?.route || null, flags: asArray(safety?.flags).map(flag => flag.code) } };
+  const response = { contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: 'ai', degradedMode: false, language: selected, object, summary: cleanText(value.summary, 360), knownFacts, likelyCauses, safeFirstChecks, nextQuestion, endState: cleanText(value.endState, 60) || null, uncertainty: cleanText(value.uncertainty, 300), repairGuidance: repairGate?.open === true ? value.repairGuidance ?? null : null, safety: { route: safety?.route || null, flags: asArray(safety?.flags).map(flag => flag.code) } };
   const text = allText(response);
   if (!response.summary || !object.displayName || !likelyCauses.length || !safeFirstChecks.length) return fail('empty_required_content');
   if (text.length > 2600) return fail('output_too_long');

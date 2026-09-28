@@ -121,6 +121,21 @@ test('Safety Kernel behandelt expliciete negatie niet als hazard', () => {
   assert.deepEqual(safetyFlagCodes(decision), []);
 });
 
+test('Safety Kernel modelleert algemene geur-, laadwarmte- en mobiliteitsgevaren meertalig', () => {
+  for (const problem of [
+    'Mijn stofzuiger ruikt verbrand.', 'The appliance smells burnt.', 'Das Gerät riecht verbrannt.',
+    'Mijn telefoon wordt heel warm tijdens het opladen.', 'My phone gets very hot while charging.', 'Mein Handy wird beim Laden sehr heiß.',
+    'Mijn elektrische fiets valt tijdens het rijden uit.', 'My e-bike cuts out while riding.', 'Mein Pedelec fällt während der Fahrt aus.',
+  ]) assert.equal(evaluateSafety(ledgerFromInput({ problem })).route, 'stop', problem);
+});
+
+test('Safety Kernel respecteert expliciete negatie van nieuwe hazardconcepten', () => {
+  for (const problem of [
+    'Hij ruikt niet verbrand.', 'De telefoon wordt niet heet tijdens het opladen.',
+    'Mijn elektrische fiets valt niet uit tijdens het rijden.', 'The device does not smell burnt.', 'Das Gerät riecht nicht verbrannt.',
+  ]) assert.equal(evaluateSafety(ledgerFromInput({ problem })).route, null, problem);
+});
+
 test('Safety Kernel laat een ontkende term een echte term niet maskeren', () => {
   const ledger = ledgerFromInput({ problem: 'Er is geen rook, maar ik ruik wel brandlucht.' });
   const decision = evaluateSafety(ledger);

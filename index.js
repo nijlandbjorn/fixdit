@@ -9207,6 +9207,8 @@ function deterministicAiFallbackV861({ problem, lang, previous }, error) {
   diagnosis = fallbackV861(diagnosis, facts, lang, reason);
   diagnosis = synchronizeV861(diagnosis, lang, facts, "fallback");
   diagnosis.performance = { phaseLatencyMs:{}, totalMs:Date.now() - started };
+  diagnosis.aiFallbackReason = reason;
+  diagnosis.aiCapacityUnavailable = reason === "ai_quota_unavailable";
   return {
     diagnosis,
     usage:{ input:0, output:0 },

@@ -34,6 +34,44 @@ test('fallback levert één canoniek contract zonder interne labels', async () =
   assert.ok(result.consumerResponse.likelyCauses.every(cause => cause.basis));
 });
 
+test('degraded fallback behoudt raw object en symptoom zonder voorwerp-placeholder', async () => {
+  const result = await runPipelineV9({
+    problem: 'Mijn W en D toetsen op mijn toetsenbord doen het niet meer.',
+    classification: { objectFamily: 'other', objectLabel: 'Voorwerp', symptom: 'unknown', intent: 'repair', evidenceAuthority: { objectFamily: 'legacy_inference', objectLabel: 'legacy_inference' } },
+  });
+  assert.equal(result.consumerResponse.degradedMode, true);
+  assert.equal(result.consumerResponse.object.displayName, 'toetsenbord');
+  assert.equal(result.consumerResponse.object.category, 'unresolved');
+  assert.match(result.consumerResponse.summary, /W en D toetsen/i);
+  assert.doesNotMatch(JSON.stringify(result.consumerResponse), /onvoldoende afgebakend|displayName":"voorwerp/i);
+  assert.match(result.consumerResponse.uncertainty, /slimme analyse is tijdelijk niet beschikbaar/i);
+  assert.equal(result.repairGate.open, false);
+});
+
+test('zwakke legacycategorie verslechtert duidelijke raw objectterm niet', async () => {
+  for (const [problem, legacyFamily, object] of [
+    ['Mijn tuinslang lekt bij de koppeling.', 'automotive', 'tuinslang'],
+    ['Er komt water onder mijn wastafel vandaan.', 'furniture', 'wastafel'],
+    ['koptelefoon scharnier zit los', 'door_window', 'koptelefoon scharnier'],
+    ['radiator boven blijft koud', 'appliance', 'radiator boven'],
+  ]) {
+    const result = await runPipelineV9({ problem, classification: { objectFamily: legacyFamily, objectLabel: 'Voorwerp', symptom: 'unknown', intent: 'repair', evidenceAuthority: { objectFamily: 'legacy_inference', objectLabel: 'legacy_inference' } } });
+    assert.equal(result.consumerResponse.object.displayName, object, problem);
+    assert.equal(result.consumerResponse.object.category, 'unresolved', problem);
+  }
+});
+
+test('quota-uitval is expliciet degraded zonder technisch jargon voor de gebruiker', async () => {
+  const result = await runPipelineV9({ problem: 'Mijn toilet blijft doorlopen.', reasoner: async () => { throw new Error('4006 daily free allocation of neurons exhausted'); } });
+  assert.equal(result.consumerResponse.degradedMode, true);
+  assert.equal(result.metrics.aiFallbackReason, 'ai_quota_unavailable');
+  assert.equal(result.metrics.capacityUnavailable, true);
+  assert.equal(result.metrics.aiCallsThisSession, 1);
+  assert.equal(result.metrics.successfulAiCalls, 0);
+  assert.equal(result.metrics.rejectedAiCalls, 1);
+  assert.doesNotMatch(JSON.stringify(result.consumerResponse), /4006|quota|neurons|model error/i);
+});
+
 test('semantische keuzevraag bevat zes onderscheiden antwoorden en evidence mappings', () => {
   const problem = 'Mijn vaatwasser krijgt geen water';
   const ledger = ledgerFromInput({ problem });

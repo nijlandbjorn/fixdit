@@ -20,6 +20,7 @@ export function sampledForV9(key, percentage) {
 
 export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', language = 'nl', mode = 'shadow' } = {}) {
   const analysisId = v8Diagnosis?.analysisId || '';
+  const capacityUnavailable = v8Diagnosis?.aiCapacityUnavailable === true;
   const result = await runPipelineV9({
     analysisId,
     mode,
@@ -30,7 +31,8 @@ export async function runV9AlongsideV8({ env = {}, v8Diagnosis, problem = '', la
     technique: techniqueFromV8(v8Diagnosis),
     research: researchFromV8(v8Diagnosis),
     legacyDiagnosis: v8Diagnosis,
-    reasoner: createWorkersAiReasoner(env),
+    reasoner: capacityUnavailable ? null : createWorkersAiReasoner(env),
+    aiUnavailableReason: capacityUnavailable ? (v8Diagnosis?.aiFallbackReason || 'ai_quota_unavailable') : '',
     critic: createWorkersAiCritic(env),
   });
   const comparison = compareV8V9(v8Diagnosis, result);
