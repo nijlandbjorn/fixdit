@@ -80,6 +80,20 @@ test('V9-interactiehistorie behoudt machinevelden onafhankelijk van legacy reaso
   assert.deepEqual(observations.filter(item => item.evidenceKey === 'water_supply').map(item => item.answerKind), ['unknown', 'yes']);
 });
 
+test('correctiereconciliatie koppelt een legacy onbekend-antwoord terug aan de gecorrigeerde as', () => {
+  const correctionText = 'Ik corrigeer mijn vorige antwoord naar ja.';
+  const ledger = ledgerFromInput({
+    problem: correctionText,
+    previousObservations: [
+      { text: 'Mijn vaatwasser krijgt geen water' },
+      { text: 'Het antwoord op “Staat de kraan open” is nog onbekend.' },
+      { text: correctionText, rawText: correctionText, semanticClaim: 'De kraan staat open.', evidenceKey: 'water_supply', questionId: 'q_water', answerKind: 'yes', rawAnswer: 'Ja', correction: true },
+    ],
+  });
+  const axis = ledger.entries.filter(entry => entry.provenance?.evidenceKey === 'water_supply');
+  assert.deepEqual(axis.map(entry => [entry.provenance.answerKind, entry.status]), [['unknown', 'superseded'], ['yes', 'active']]);
+});
+
 test('machineleesbaar cannot_check stuurt no-progress en sluit dezelfde evidence-as uit', () => {
   const observations = [{
     text: 'Kan ik niet controleren', semanticClaim: 'Een extern scherm kan nu niet worden gecontroleerd.',

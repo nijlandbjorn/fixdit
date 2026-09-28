@@ -84,8 +84,33 @@ export function activeEvidence(ledger, predicate = () => true) {
 }
 
 export function ledgerFromInput({ runId = '', problem = '', previousObservations = [], classification = null } = {}) {
+  const observations = asArray(previousObservations).map(item => typeof item === 'object' && item !== null ? { ...item } : item);
+  const latestStructuredCorrection = [...observations].reverse().find(item => item?.correction === true && cleanText(item?.evidenceKey, 160));
+  if (latestStructuredCorrection) {
+    const correctionIndex = observations.lastIndexOf(latestStructuredCorrection);
+    for (let index = correctionIndex - 1; index >= 0; index -= 1) {
+      const prior = observations[index];
+      if (!prior || typeof prior !== 'object' || cleanText(prior?.evidenceKey, 160)) continue;
+      const priorText = cleanText(prior?.semanticClaim || prior?.text, 500);
+      if (!priorText) continue;
+      const inferredKind = /(?:nog onbekend|weet ik niet|not known|wei(?:ss|ß) ich nicht)/i.test(priorText)
+        ? 'unknown'
+        : /(?:niet (?:veilig of praktisch )?worden gecontroleerd|cannot be checked|nicht .*geprüft)/i.test(priorText)
+          ? 'cannot_check'
+          : '';
+      observations[index] = {
+        ...prior,
+        evidenceKey: latestStructuredCorrection.evidenceKey,
+        questionId: latestStructuredCorrection.questionId,
+        answerKind: inferredKind || cleanText(prior?.answerKind, 80) || 'other',
+        rawAnswer: cleanText(prior?.rawAnswer, 500) || priorText,
+        semanticClaim: priorText,
+      };
+      break;
+    }
+  }
   const entries = [];
-  for (const [index, observation] of asArray(previousObservations).entries()) {
+  for (const [index, observation] of observations.entries()) {
     const text = cleanText(observation?.semanticClaim || (observation?.text ?? observation));
     if (!text) continue;
     const evidenceKey = cleanText(observation?.evidenceKey, 160);
@@ -121,7 +146,7 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
   const currentProblem = cleanText(problem);
   const correction = /\b(?:sorry[, ]+)?(?:ik\s+)?(?:zei|said|sagte).{0,50}\b(ja|yes|nein|nee|no)\b.{0,50}\b(?:bedoel(?:de)?|meant|meinte).{0,30}\b(ja|yes|nein|nee|no)\b/i.exec(currentProblem);
   const explicitCorrection = /\b(?:ik\s+)?corrigeer\s+mijn\s+vorige\s+antwoord\s+van\s+[“"'](.+?)[”"']\s+naar\s+[“"'](.+?)[”"']/i.exec(currentProblem);
-  const latestStructured = asArray(previousObservations).at(-1);
+  const latestStructured = observations.at(-1);
   const structuredCorrection = latestStructured?.correction === true && cleanText(latestStructured?.evidenceKey, 160);
   if (!structuredCorrection && ((correction && correction[1].toLowerCase() !== correction[2].toLowerCase()) || explicitCorrection)) {
     for (let index = entries.length - 1; index >= 0; index -= 1) {
