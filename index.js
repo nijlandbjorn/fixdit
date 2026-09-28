@@ -1407,7 +1407,7 @@ function hardSafetyFlags(
   }
 
   if (
-    /\b(rook|vonken|vlammen|brandlucht|fire|smoke|sparks|flames|burning smell|rauch|funken|flammen|brandgeruch)\b/
+    /\b(rook(?:t)?|vonk(?:t|en|te|ten)?|vlammen|brandlucht|fire|smok(?:e|es|ing)|spark(?:s|ing|ed)?|flames|burning smell|rauch(?:t)?|funk(?:e|en|t)?|flammen|brandgeruch)\b/
       .test(hay)
   ) {
     add("fire_smoke");
@@ -9011,7 +9011,7 @@ async function handleFollowup(
   );
 
   const output =
-    await runPipeline(
+    await runPipelineWithAiFallback(
       env,
       {
         problem,
@@ -9151,6 +9151,61 @@ async function handleFollowup(
   );
 }
 
+function aiFallbackEligibleV861(error) {
+  return /(?:4006|daily free allocation|neurons|quota|ai[_ -]?(?:offline|unavailable)|timed?\s*out|timeout)/i.test(String(error?.message || error));
+}
+
+function deterministicAiFallbackV861({ problem, lang, previous }, error) {
+  const started = Date.now();
+  const flags = cleanList([...hardSafetyFlags({ objectFamily:"other" }, "", problem), ...(previous?.safetyFlags || [])]);
+  if (safetyDecision(flags).route === "stop") return safetyResultV861(problem, lang, previous, flags, started);
+  const c = normalizeClassification({}, "", problem);
+  const title = tr(lang, {
+    nl:"Veilig verder onderzoeken",
+    en:"Continue with safe checks",
+    de:"Sicher weiter prüfen"
+  });
+  let diagnosis = normalizePlan({
+    solutionTitle:title,
+    summary:title,
+    steps:[],
+    materials:[],
+    tools:[],
+    needMoreInfo:true,
+    risk:"laag"
+  }, c, "", problem, flags, lang);
+  const reason = /4006|allocation|neurons|quota/i.test(String(error?.message || error))
+    ? "ai_quota_unavailable"
+    : "ai_temporarily_unavailable";
+  const facts = factsV861(problem, previous);
+  diagnosis = fallbackV861(diagnosis, facts, lang, reason);
+  diagnosis = synchronizeV861(diagnosis, lang, facts, "fallback");
+  diagnosis.performance = { phaseLatencyMs:{}, totalMs:Date.now() - started };
+  return {
+    diagnosis,
+    usage:{ input:0, output:0 },
+    languageCorrected:false,
+    qualityReviewed:false,
+    qualityApproved:false,
+    qualityIssues:[reason],
+    visualInspection:"",
+    research:diagnosis.repairEngine?.research || { required:false, status:"skipped", sources:[] },
+    technique:diagnosis.repairTechnique,
+    latencyMs:Date.now() - started,
+    aiFallbackReason:reason
+  };
+}
+
+async function runPipelineWithAiFallback(env, input) {
+  try {
+    return await runPipeline(env, input);
+  } catch (error) {
+    if (!aiFallbackEligibleV861(error)) throw error;
+    console.warn("AI unavailable; deterministic fallback remains active", error);
+    return deterministicAiFallbackV861(input, error);
+  }
+}
+
 async function handleAnalysis(
   request,
   env,
@@ -9288,7 +9343,7 @@ async function handleAnalysis(
   );
 
   const output =
-    await runPipeline(
+    await runPipelineWithAiFallback(
       env,
       {
         problem,
@@ -10012,4 +10067,6 @@ export const __v861Test = Object.freeze({
   buildResearchQueriesV86,
   researchSourceTypeV86,
   researchTrustScoreV86,
+  aiFallbackEligibleV861,
+  deterministicAiFallbackV861,
 });

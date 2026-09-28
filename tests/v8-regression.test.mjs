@@ -64,6 +64,27 @@ test('V8 hard-safety resultaat voldoet aan het D1 persistence-contract', () => {
   }
 });
 
+test('Workers AI quota-uitval valt veilig en zonder reparatieadvies terug', () => {
+  assert.equal(v8.aiFallbackEligibleV861(new Error('4006: daily free allocation of 10,000 neurons used')), true);
+  const output = v8.deterministicAiFallbackV861({
+    problem: 'Mijn vaatwasser doet het niet', lang: 'nl', previous: null,
+  }, new Error('4006: daily free allocation of 10,000 neurons used'));
+  assert.equal(output.diagnosis.qualityFallback, true);
+  assert.equal(output.diagnosis.qualityFallbackReason, 'ai_quota_unavailable');
+  assert.equal(output.diagnosis.needMoreInfo, true);
+  assert.equal(output.diagnosis.repairabilityStatus, 'DIY_AFTER_DETAILS');
+  assert.ok(output.diagnosis.safeSteps.length >= 1);
+});
+
+test('Workers AI quota-uitval kan een deterministische vonken-stop niet omzeilen', () => {
+  const output = v8.deterministicAiFallbackV861({
+    problem: 'Mijn magnetron vonkt', lang: 'nl', previous: null,
+  }, new Error('4006: quota'));
+  assert.equal(output.diagnosis.route, 'stop');
+  assert.ok(output.diagnosis.safetyFlags.includes('fire_smoke'));
+  assert.equal(output.diagnosis.safeSteps.length, 0);
+});
+
 test('V8 deterministische validator blokkeert reparatie vóór ontbrekende informatie', () => {
   const checked = v8.deterministicPlanValidation(
     {
