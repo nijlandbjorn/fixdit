@@ -47,6 +47,23 @@ test('per exclusieve evidence-as blijft maximaal één userwaarde actief', () =>
   }
 });
 
+test('gestructureerde correctie wordt niet opnieuw door legacy tekstparsing gesupersedet', () => {
+  const rawCorrection = 'Ik corrigeer mijn vorige antwoord van “De kraan staat open: ja.” naar “De kraan staat open: nee.”.';
+  const ledger = ledgerFromInput({
+    problem: rawCorrection,
+    previousObservations: [
+      { text: 'Ja', semanticClaim: 'De kraan staat open: ja.', evidenceKey: 'water_supply', questionId: 'q_water', answerKind: 'yes', rawAnswer: 'Ja' },
+      { text: rawCorrection, rawText: rawCorrection, semanticClaim: 'De kraan staat open: nee.', evidenceKey: 'water_supply', questionId: 'q_water', answerKind: 'no', rawAnswer: 'Nee', correction: true },
+    ],
+  });
+  const axis = ledger.entries.filter(entry => entry.provenance?.evidenceKey === 'water_supply');
+  assert.equal(axis.length, 2);
+  assert.equal(axis[0].status, 'superseded');
+  assert.equal(axis[1].status, 'active');
+  assert.equal(axis[1].provenance.answerKind, 'no');
+  assert.equal(ledger.entries.filter(entry => entry.source === 'user_text').length, 0);
+});
+
 test('machineleesbaar cannot_check stuurt no-progress en sluit dezelfde evidence-as uit', () => {
   const observations = [{
     text: 'Kan ik niet controleren', semanticClaim: 'Een extern scherm kan nu niet worden gecontroleerd.',

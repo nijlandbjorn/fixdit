@@ -121,7 +121,9 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
   const currentProblem = cleanText(problem);
   const correction = /\b(?:sorry[, ]+)?(?:ik\s+)?(?:zei|said|sagte).{0,50}\b(ja|yes|nein|nee|no)\b.{0,50}\b(?:bedoel(?:de)?|meant|meinte).{0,30}\b(ja|yes|nein|nee|no)\b/i.exec(currentProblem);
   const explicitCorrection = /\b(?:ik\s+)?corrigeer\s+mijn\s+vorige\s+antwoord\s+van\s+[“"'](.+?)[”"']\s+naar\s+[“"'](.+?)[”"']/i.exec(currentProblem);
-  if ((correction && correction[1].toLowerCase() !== correction[2].toLowerCase()) || explicitCorrection) {
+  const latestStructured = asArray(previousObservations).at(-1);
+  const structuredCorrection = latestStructured?.correction === true && cleanText(latestStructured?.evidenceKey, 160);
+  if (!structuredCorrection && ((correction && correction[1].toLowerCase() !== correction[2].toLowerCase()) || explicitCorrection)) {
     for (let index = entries.length - 1; index >= 0; index -= 1) {
       if (entries[index].source === 'previous_user_text') {
         entries[index] = { ...entries[index], status: 'superseded', provenance: { ...entries[index].provenance, supersededByCorrectionTurn: asArray(previousObservations).length } };
@@ -130,8 +132,9 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
     }
   }
 
-  const latestObservation = asArray(previousObservations).at(-1);
-  const currentAlreadyCaptured = currentProblem && cleanText(latestObservation?.semanticClaim || (latestObservation?.text ?? latestObservation)) === currentProblem;
+  const latestObservation = latestStructured;
+  const currentAlreadyCaptured = currentProblem && [latestObservation?.semanticClaim, latestObservation?.rawText, latestObservation?.text ?? latestObservation]
+    .some(value => cleanText(value) === currentProblem);
   if (currentProblem && !currentAlreadyCaptured) {
     entries.push({
       source: 'user_text',
