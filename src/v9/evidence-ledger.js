@@ -86,17 +86,35 @@ export function activeEvidence(ledger, predicate = () => true) {
 export function ledgerFromInput({ runId = '', problem = '', previousObservations = [], classification = null } = {}) {
   const entries = [];
   for (const [index, observation] of asArray(previousObservations).entries()) {
-    const text = cleanText(observation?.text ?? observation);
+    const text = cleanText(observation?.semanticClaim || (observation?.text ?? observation));
     if (!text) continue;
+    const evidenceKey = cleanText(observation?.evidenceKey, 160);
+    const answerKind = cleanText(observation?.answerKind, 80);
+    if (evidenceKey) {
+      for (let prior = entries.length - 1; prior >= 0; prior -= 1) {
+        if (entries[prior].provenance?.evidenceKey === evidenceKey && entries[prior].status !== 'superseded') {
+          entries[prior] = { ...entries[prior], status: 'superseded', provenance: { ...entries[prior].provenance, supersededByEvidenceAxis: evidenceKey, supersededByTurn: index } };
+          break;
+        }
+      }
+    }
     entries.push({
       source: 'previous_user_text',
-      subject: 'user_report',
-      predicate: 'raw_text',
+      subject: evidenceKey ? 'user_answer' : 'user_report',
+      predicate: evidenceKey || 'raw_text',
       value: text,
-      polarity: 'present',
+      polarity: answerKind === 'no' ? 'absent' : ['unknown', 'cannot_check'].includes(answerKind) ? 'unknown' : 'present',
       confidence: 1,
       turnNumber: index,
-      provenance: { answerTo: cleanText(observation?.answerTo, 500) },
+      provenance: {
+        answerTo: cleanText(observation?.answerTo, 500),
+        questionId: cleanText(observation?.questionId, 160),
+        evidenceKey,
+        answerKind,
+        rawAnswer: cleanText(observation?.rawAnswer, 500),
+        semanticClaim: text,
+        correction: observation?.correction === true,
+      },
     });
   }
 
@@ -112,7 +130,9 @@ export function ledgerFromInput({ runId = '', problem = '', previousObservations
     }
   }
 
-  if (currentProblem) {
+  const latestObservation = asArray(previousObservations).at(-1);
+  const currentAlreadyCaptured = currentProblem && cleanText(latestObservation?.semanticClaim || (latestObservation?.text ?? latestObservation)) === currentProblem;
+  if (currentProblem && !currentAlreadyCaptured) {
     entries.push({
       source: 'user_text',
       subject: 'user_report',

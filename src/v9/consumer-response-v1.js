@@ -3,6 +3,12 @@ import { asArray, cleanText, immutable, stableHash } from './contracts.js';
 export const CONSUMER_RESPONSE_CONTRACT_VERSION = 'v1';
 export const QUESTION_TYPES = Object.freeze(['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check']);
 export const SAFE_ACTION_CLASSES = Object.freeze(['observation', 'external_noninvasive_check']);
+export const DEFAULT_INTERACTION_CAPABILITIES = Object.freeze({
+  photoInput: false,
+  cameraCapture: false,
+  fileUpload: false,
+  questionTypes: Object.freeze(['single_choice', 'multi_choice', 'number', 'short_text', 'action_check']),
+});
 
 const INTERNAL = /\b(?:unknown|unclassified|breakage|no_flow|pressure_loss|not_working|maintenance_history|observable_behavior|failure_boundary|known_good_supply|[a-z]+_[a-z_]+)\b/i;
 const DANGEROUS = /\b(?:230\s*v|blote?\s+drad|bare\s+wires?|stromführ|overbrug|bypass|demonteer|disassemble|behuizing\s+open|open\s+(?:de\s+)?behuizing|schroeven?\s+verwijder|remove\s+screws?|spanning\s+meten|measure\s+voltage|gasleiding\s+(?:open|los)|interne?\s+(?:bedrading|component))\b/i;
@@ -101,7 +107,7 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   });
 }
 
-export function validateConsumerResponseV1(value, { language = 'nl', repairGate = {}, safety = {}, ledger = null, fallback } = {}) {
+export function validateConsumerResponseV1(value, { language = 'nl', repairGate = {}, safety = {}, ledger = null, fallback, capabilities = DEFAULT_INTERACTION_CAPABILITIES } = {}) {
   const fail = reason => ({ valid: false, reason, response: fallback });
   if (!value || typeof value !== 'object' || Array.isArray(value)) return fail('missing_or_malformed');
   const allowed = ['contractVersion', 'responseSource', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'endState', 'uncertainty', 'repairGuidance', 'safety'];
@@ -118,6 +124,8 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   const q = value.nextQuestion;
   const nextQuestion = q && cleanText(q.text, 300) ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash(q.text)}`, type: cleanText(q.type, 40), text: cleanText(q.text, 300), options: asArray(q.options).slice(0, 7).map(option => ({ id: cleanText(option?.id, 80), label: cleanText(option?.label, 120) })).filter(option => option.id && option.label), evidenceKey: cleanText(q.evidenceKey, 120), evidenceMapping: q.evidenceMapping && typeof q.evidenceMapping === 'object' ? q.evidenceMapping : {}, why: cleanText(q.why, 240) } : null;
   if (nextQuestion && !QUESTION_TYPES.includes(nextQuestion.type)) return fail('invalid_question_type');
+  if (nextQuestion && !asArray(capabilities?.questionTypes).includes(nextQuestion.type)) return fail('unsupported_question_type');
+  if (nextQuestion?.type === 'photo' && capabilities?.photoInput !== true) return fail('photo_input_unavailable');
   if (nextQuestion?.type === 'single_choice' && /\b(?:en|and|und)\b.+\?/i.test(nextQuestion.text)) return fail('compound_single_choice_question');
   if (nextQuestion && (!nextQuestion.questionId || !nextQuestion.evidenceKey)) return fail('incomplete_question_contract');
   if (nextQuestion && ['single_choice', 'multi_choice', 'action_check'].includes(nextQuestion.type)) {

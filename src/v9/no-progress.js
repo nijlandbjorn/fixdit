@@ -8,7 +8,9 @@ function normalized(value) {
 }
 
 export function detectNoProgress(previousObservations = [], problem = '') {
-  const values = asArray(previousObservations).map(item => item?.text ?? item).map(normalized).filter(Boolean);
+  const observations = asArray(previousObservations);
+  const values = observations.map(item => item?.semanticClaim || (item?.text ?? item)).map(normalized).filter(Boolean);
+  const kinds = observations.map(item => cleanText(item?.answerKind, 80));
   const current = normalized(problem);
   // V8 includes the current report in reasoningContext; do not count that adapter echo as a second turn.
   if (current && current !== values.at(-1)) values.push(current);
@@ -18,12 +20,13 @@ export function detectNoProgress(previousObservations = [], problem = '') {
   const seen = new Set();
   for (let index = values.length - 1; index >= 0; index -= 1) {
     const value = values[index];
+    const kind = kinds[index] || '';
     const repeated = seen.has(value);
     seen.add(value);
-    if (UNKNOWN.test(value) || CANNOT_CHECK.test(value) || repeated) {
+    if (kind === 'unknown' || kind === 'cannot_check' || UNKNOWN.test(value) || CANNOT_CHECK.test(value) || repeated) {
       consecutive += 1;
-      if (UNKNOWN.test(value)) unknownCount += 1;
-      if (CANNOT_CHECK.test(value)) cannotCheckCount += 1;
+      if (kind === 'unknown' || UNKNOWN.test(value)) unknownCount += 1;
+      if (kind === 'cannot_check' || CANNOT_CHECK.test(value)) cannotCheckCount += 1;
     }
     else break;
   }

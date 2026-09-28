@@ -124,7 +124,7 @@ function localPhotoTarget(fact, language) {
   }[lang];
 }
 
-export function rankNextBestTests({ hypotheses = [], contradictions = [], language = 'nl', safety = null, classification = {} } = {}) {
+export function rankNextBestTests({ hypotheses = [], contradictions = [], language = 'nl', safety = null, classification = {}, capabilities = {} } = {}) {
   if (['stop', 'professional'].includes(safety?.route)) return Object.freeze([]);
   const candidates = [];
 
@@ -149,13 +149,14 @@ export function rankNextBestTests({ hypotheses = [], contradictions = [], langua
   for (const hypothesis of asArray(hypotheses)) {
     for (const fact of asArray(hypothesis.missingEvidence)) {
       const visual = VISUAL_FACTS.test(fact);
-      const photoSpec = visual
+      const photoSupported = visual && capabilities?.photoInput === true && capabilities?.cameraCapture === true && capabilities?.fileUpload === true;
+      const photoSpec = photoSupported
         ? buildPhotoRequest({ target: localPhotoTarget(fact, language), purpose: localQuestion(fact, language), language })
         : null;
       candidates.push({
         code: `${hypothesis.code}_${fact}`,
-        kind: visual ? 'photo' : 'question',
-        questionType: visual ? 'photo' : BOOLEAN_FACTS.has(fact) ? 'boolean' : 'short_text',
+        kind: photoSupported ? 'photo' : 'question',
+        questionType: photoSupported ? 'photo' : BOOLEAN_FACTS.has(fact) ? 'boolean' : 'short_text',
         prompt: photoSpec?.prompt || localQuestion(fact, language),
         photoSpec,
         hypothesisIds: [hypothesis.hypothesisId],
@@ -188,8 +189,9 @@ export function selectNextBestTest(input, { previousObservations = [], axisOffse
   const asked = new Set(asArray(previousObservations)
     .map(item => cleanText(item?.answerTo, 500).toLocaleLowerCase())
     .filter(Boolean));
+  const answeredAxes = new Set(asArray(previousObservations).map(item => cleanText(item?.evidenceKey, 160)).filter(Boolean));
   const candidates = rankNextBestTests(input)
-    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()));
+    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()) && !answeredAxes.has(candidate.code));
   if (!candidates.length) return null;
   return candidates[Math.min(Math.max(0, axisOffset), candidates.length - 1)] || candidates[0];
 }

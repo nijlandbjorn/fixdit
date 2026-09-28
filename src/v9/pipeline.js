@@ -11,7 +11,7 @@ import { runIndependentCritic } from './independent-critic.js';
 import { createDiagnosticState, transitionDiagnosticState } from './state-machine.js';
 import { buildDirectHelp, selectDiagnosticRoute } from './decision-layer.js';
 import { detectNoProgress } from './no-progress.js';
-import { buildFallbackConsumerResponse, validateConsumerResponseV1 } from './consumer-response-v1.js';
+import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, validateConsumerResponseV1 } from './consumer-response-v1.js';
 import { classificationFromUserText } from './raw-classification.js';
 
 function transitionForDecision(state, safety, gate, nextTest) {
@@ -50,6 +50,7 @@ export async function runPipelineV9({
   legacyDiagnosis = null,
   reasoner = null,
   critic = null,
+  capabilities = DEFAULT_INTERACTION_CAPABILITIES,
 } = {}) {
   const started = Date.now();
   const conversationEvidence = [...asArray(previousObservations).map(item => item?.text ?? item), problem]
@@ -80,7 +81,7 @@ export async function runPipelineV9({
   const decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
   const nextTest = decision.route === 'diagnose' && !noProgress.exhausted
     ? selectNextBestTest(
-        { hypotheses, contradictions, language, safety, classification },
+        { hypotheses, contradictions, language, safety, classification, capabilities },
         { previousObservations, axisOffset: noProgress.detected ? Math.max(1, noProgress.consecutive) : 0 },
       )
     : null;
@@ -130,7 +131,7 @@ export async function runPipelineV9({
         language, originalUserInput: problem, classification, safety,
         evidenceLedger: ledger.entries.map(entry => ({ evidenceId: entry.evidenceId, source: entry.source, subject: entry.subject, predicate: entry.predicate, value: entry.value, polarity: entry.polarity, status: entry.status })),
         hypotheses, contradictions, previousTurns: asArray(previousObservations), route: decision.route,
-        repairGate, noProgress, nextQuestion: nextTest,
+        repairGate, noProgress, nextQuestion: nextTest, capabilities,
       });
       aiCalls = 1;
       assistedHypotheses = [...assistedHypotheses, ...asArray(assisted?.hypotheses)];
@@ -151,7 +152,7 @@ export async function runPipelineV9({
   }
 
   const consumerValidation = validateConsumerResponseV1(assistedResponse, {
-    language, repairGate, safety, ledger, fallback: deterministicResponse,
+    language, repairGate, safety, ledger, fallback: deterministicResponse, capabilities,
   });
   const consumerResponse = consumerValidation.valid ? consumerValidation.response : deterministicResponse;
   if (!consumerValidation.valid && assistedResponse && !aiFallbackReason) aiFallbackReason = consumerValidation.reason;

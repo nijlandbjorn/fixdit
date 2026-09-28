@@ -91,7 +91,17 @@ export function researchFromV8(diagnosis = {}) {
 
 export function observationsFromV8(diagnosis = {}) {
   return asArray(diagnosis.reasoningContext?.observations)
-    .map(item => ({ text: cleanText(item?.text ?? item), answerTo: cleanText(item?.answerTo, 500) }))
+    .map(item => ({
+      text: cleanText(item?.semanticClaim || (item?.text ?? item)),
+      rawText: cleanText(item?.text ?? item),
+      answerTo: cleanText(item?.answerTo, 500),
+      questionId: cleanText(item?.questionId, 160),
+      evidenceKey: cleanText(item?.evidenceKey, 160),
+      answerKind: cleanText(item?.answerKind, 80),
+      rawAnswer: cleanText(item?.rawAnswer, 500),
+      semanticClaim: cleanText(item?.semanticClaim, 500),
+      correction: item?.correction === true,
+    }))
     .filter(item => item.text);
 }
 

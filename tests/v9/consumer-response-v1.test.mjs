@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildFallbackConsumerResponse, QUESTION_TYPES, validateConsumerResponseV1 } from '../../src/v9/consumer-response-v1.js';
+import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, QUESTION_TYPES, validateConsumerResponseV1 } from '../../src/v9/consumer-response-v1.js';
 import { ledgerFromInput } from '../../src/v9/evidence-ledger.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
@@ -64,6 +64,46 @@ test('validator weigert reparatie vermomd als veilige controle bij gesloten gate
     nextQuestion: null, uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null },
   };
   assert.equal(validateConsumerResponseV1(response, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'repair_gate_bypass');
+});
+
+test('validator weigert photo en onbekende interaction types zonder end-to-end capability', () => {
+  const ledger = ledgerFromInput({ problem: 'Het bad lekt' });
+  const base = {
+    contractVersion: 'v1', responseSource: 'ai', language: 'nl',
+    object: { displayName: 'bad', category: 'sanitary', confidence: 'high' }, summary: 'Er verschijnt water bij het bad.',
+    knownFacts: [], likelyCauses: [{ label: 'Een aansluiting kan lekken.', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Kijk waar het vocht verschijnt.', actionClass: 'observation' }],
+    nextQuestion: { questionId: 'q_photo', type: 'photo', text: 'Maak een foto.', options: [], evidenceKey: 'leak_location', evidenceMapping: {} },
+    uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null },
+  };
+  assert.equal(validateConsumerResponseV1(base, { ledger, repairGate: { open: false }, capabilities: DEFAULT_INTERACTION_CAPABILITIES, fallback: {} }).reason, 'unsupported_question_type');
+  assert.equal(validateConsumerResponseV1({ ...base, nextQuestion: { ...base.nextQuestion, type: 'gesture' } }, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'invalid_question_type');
+});
+
+test('pipeline transformeert een foto-afhankelijke lekkagevraag naar een veilig tekstalternatief', async () => {
+  const result = await runPipelineV9({
+    problem: 'Mijn bad is lek',
+    classification: { objectFamily: 'sanitary', objectLabel: 'bad', symptom: 'leak', intent: 'repair' },
+  });
+  assert.notEqual(result.consumerResponse.nextQuestion?.type, 'photo');
+  assert.match(result.consumerResponse.nextQuestion?.text || '', /waar|welke|wat/i);
+});
+
+test('AI-photoresponse en upload failure vallen zonder dead end terug op niet-foto-interactie', async () => {
+  const result = await runPipelineV9({
+    problem: 'Mijn bad is lek',
+    classification: { objectFamily: 'sanitary', objectLabel: 'bad', symptom: 'leak', intent: 'repair' },
+    reasoner: async () => ({ hypotheses: [], consumerResponse: {
+      contractVersion: 'v1', responseSource: 'ai', language: 'nl', object: { displayName: 'bad', category: 'sanitary', confidence: 'high' },
+      summary: 'Het bad lekt.', knownFacts: [], likelyCauses: [{ label: 'Een aansluiting kan lekken.', basis: 'hypothesis' }],
+      safeFirstChecks: [{ text: 'Kijk waar het vocht verschijnt.', actionClass: 'observation' }],
+      nextQuestion: { questionId: 'q_photo', type: 'photo', text: 'Maak een foto.', options: [], evidenceKey: 'leak_location', evidenceMapping: {} },
+      uncertainty: 'Nog onzeker.', repairGuidance: null, safety: { route: null },
+    } }),
+  });
+  assert.equal(result.metrics.aiFallbackReason, 'unsupported_question_type');
+  assert.notEqual(result.consumerResponse.nextQuestion?.type, 'photo');
+  assert.ok(result.consumerResponse.nextQuestion);
 });
 
 test('no-progress onderscheidt onbekend van niet controleerbaar en stopt na drie turns', () => {

@@ -51,6 +51,10 @@ test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate
   assert.match(html, /data-answer="Weet ik niet"/);
   assert.match(html, /Technisch tester-paneel/);
   assert.match(html, /consumer_response/);
+  assert.match(html, /photoInput:false,cameraCapture:false,fileUpload:false/);
+  assert.match(html, /answerKind:optionId/);
+  assert.match(html, /evidenceKey:activeQuestion\.evidenceKey/);
+  assert.match(html, /semanticClaim:claim/);
   assert.doesNotMatch(html, /ondersteuningsscore/);
 });
 

@@ -8859,6 +8859,29 @@ async function handleTrack(
   );
 }
 
+function interactionMetadataV9(body = {}) {
+  const input = body?.interaction;
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null;
+  const answerKind = cleanString(input.answerKind).slice(0,80);
+  const evidenceKey = cleanString(input.evidenceKey).slice(0,160);
+  const questionId = cleanString(input.questionId).slice(0,160);
+  const semanticClaim = cleanString(input.semanticClaim).slice(0,500);
+  const rawAnswer = cleanString(input.rawAnswer).slice(0,500);
+  if (!evidenceKey || !semanticClaim || !["yes","no","unknown","cannot_check","not_applicable","other","short_text","number","action_confirmed"].includes(answerKind)) return null;
+  return { answerKind, evidenceKey, questionId, semanticClaim, rawAnswer, correction: input.correction === true };
+}
+
+function attachInteractionMetadataV9(diagnosis, body, problem) {
+  const interaction = interactionMetadataV9(body);
+  if (!interaction) return diagnosis;
+  const observations = [...(diagnosis?.reasoningContext?.observations || [])];
+  let index = observations.findLastIndex(item => String(item?.text || "").trim() === problem);
+  if (index < 0) index = observations.length - 1;
+  if (index < 0) observations.push({ text:problem, answerTo:"", ...interaction });
+  else observations[index] = { ...observations[index], ...interaction };
+  return { ...diagnosis, reasoningContext:{ ...(diagnosis.reasoningContext || {}), observations } };
+}
+
 async function handleFollowup(
   request,
   env,
@@ -9022,7 +9045,7 @@ async function handleFollowup(
       }
     );
 
-  const diagnosis = {
+  const diagnosis = attachInteractionMetadataV9({
     ...output.diagnosis,
     analysisId,
     repairEngine:
@@ -9032,7 +9055,7 @@ async function handleFollowup(
             analysisId
           }
         : output.diagnosis?.repairEngine
-  };
+  }, body, problem);
 
   const refined =
     (
