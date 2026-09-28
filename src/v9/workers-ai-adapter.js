@@ -2,6 +2,89 @@ import { asArray } from './contracts.js';
 
 const CRITIC_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 export const REASONING_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
+const SAFE_ACTION_CLASSES = Object.freeze(['observation', 'external_noninvasive_check']);
+const QUESTION_TYPES = Object.freeze(['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check']);
+
+export function buildReasoningJsonSchema({ capabilities = {}, language = 'nl' } = {}) {
+  const requestedTypes = asArray(capabilities?.questionTypes).filter(type => QUESTION_TYPES.includes(type));
+  const photoReady = capabilities?.photoInput === true && capabilities?.cameraCapture === true && capabilities?.fileUpload === true;
+  const questionTypes = (requestedTypes.length ? requestedTypes : QUESTION_TYPES.filter(type => type !== 'photo'))
+    .filter(type => type !== 'photo' || photoReady);
+  const selectedLanguage = ['nl', 'en', 'de'].includes(language) ? language : 'nl';
+  const text = maxLength => ({ type: 'string', maxLength });
+  return {
+    type: 'object', additionalProperties: false,
+    properties: {
+      hypotheses: {
+        type: 'array', maxItems: 3, items: {
+          type: 'object', additionalProperties: false,
+          properties: {
+            code: { type: 'string', minLength: 2, maxLength: 100, pattern: '^[A-Za-z0-9_-]+$' },
+            statement: { type: 'string', minLength: 8, maxLength: 500 },
+            missingEvidence: { type: 'array', maxItems: 5, items: text(120) },
+          },
+          required: ['code', 'statement', 'missingEvidence'],
+        },
+      },
+      consumerResponse: {
+        type: 'object', additionalProperties: false,
+        properties: {
+          contractVersion: { type: 'string', enum: ['v1'] },
+          responseSource: { type: 'string', enum: ['ai'] },
+          language: { type: 'string', enum: [selectedLanguage] },
+          object: {
+            type: 'object', additionalProperties: false,
+            properties: {
+              displayName: text(100), category: text(100),
+              source: { type: 'string', enum: ['ai_understanding'] },
+              confidence: { type: 'string', enum: ['low', 'medium', 'high'] },
+            },
+            required: ['displayName', 'category', 'source', 'confidence'],
+          },
+          summary: text(360),
+          knownFacts: {
+            type: 'array', maxItems: 6, items: {
+              type: 'object', additionalProperties: false,
+              properties: { text: text(260), evidenceIds: { type: 'array', minItems: 1, maxItems: 8, items: text(120) } },
+              required: ['text', 'evidenceIds'],
+            },
+          },
+          likelyCauses: {
+            type: 'array', minItems: 1, maxItems: 4, items: {
+              type: 'object', additionalProperties: false,
+              properties: { label: text(240), basis: text(60) }, required: ['label', 'basis'],
+            },
+          },
+          safeFirstChecks: {
+            type: 'array', minItems: 1, maxItems: 4, items: {
+              type: 'object', additionalProperties: false,
+              properties: { text: text(260), actionClass: { type: 'string', enum: [...SAFE_ACTION_CLASSES] } },
+              required: ['text', 'actionClass'],
+            },
+          },
+          nextQuestion: {
+            type: ['object', 'null'], additionalProperties: false,
+            properties: {
+              questionId: text(120), type: { type: 'string', enum: questionTypes }, text: text(300),
+              options: { type: 'array', maxItems: 7, items: { type: 'object', additionalProperties: false, properties: { id: text(80), label: text(120) }, required: ['id', 'label'] } },
+              evidenceKey: text(120), evidenceMapping: { type: 'object' }, why: text(240),
+            },
+            required: ['questionId', 'type', 'text', 'options', 'evidenceKey', 'evidenceMapping'],
+          },
+          endState: { type: ['string', 'null'], maxLength: 60 },
+          uncertainty: text(300), repairGuidance: { type: ['object', 'null'] },
+          safety: {
+            type: 'object', additionalProperties: false,
+            properties: { route: { type: ['string', 'null'], enum: [null, 'stop', 'professional'] }, flags: { type: 'array', maxItems: 12, items: text(100) } },
+            required: ['route', 'flags'],
+          },
+        },
+        required: ['contractVersion', 'responseSource', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'uncertainty', 'repairGuidance', 'safety'],
+      },
+    },
+    required: ['hypotheses', 'consumerResponse'],
+  };
+}
 
 function sanitizedProviderError(error, model) {
   const message = String(error?.message || error || 'Workers AI request failed')
@@ -102,36 +185,7 @@ export function createWorkersAiReasoner(env) {
       ],
       response_format: {
         type: 'json_schema',
-        json_schema: {
-          type: 'object',
-          properties: {
-            hypotheses: {
-              type: 'array', maxItems: 3, items: {
-                type: 'object',
-                properties: {
-                  code: { type: 'string' }, statement: { type: 'string' },
-                  missingEvidence: { type: 'array', items: { type: 'string' } },
-                },
-                required: ['code', 'statement', 'missingEvidence'],
-              },
-            },
-            consumerResponse: {
-              type: 'object',
-              properties: {
-                contractVersion: { type: 'string' }, responseSource: { type: 'string' }, language: { type: 'string' },
-                object: { type: 'object', properties: { displayName: { type: 'string' }, category: { type: 'string' }, source: { type: 'string' }, confidence: { type: 'string' } }, required: ['displayName', 'category', 'source', 'confidence'] },
-                summary: { type: 'string' },
-                knownFacts: { type: 'array', maxItems: 6, items: { type: 'object', properties: { text: { type: 'string' }, evidenceIds: { type: 'array', items: { type: 'string' } } }, required: ['text', 'evidenceIds'] } },
-                likelyCauses: { type: 'array', maxItems: 4, items: { type: 'object', properties: { label: { type: 'string' }, basis: { type: 'string' } }, required: ['label', 'basis'] } },
-                safeFirstChecks: { type: 'array', maxItems: 4, items: { type: 'object', properties: { text: { type: 'string' }, actionClass: { type: 'string' } }, required: ['text', 'actionClass'] } },
-                nextQuestion: { type: ['object', 'null'], properties: { questionId: { type: 'string' }, type: { type: 'string', enum: ['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check'] }, text: { type: 'string' }, options: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, label: { type: 'string' } }, required: ['id', 'label'] } }, evidenceKey: { type: 'string' }, evidenceMapping: { type: 'object' }, why: { type: 'string' } } },
-                endState: { type: ['string', 'null'] }, uncertainty: { type: 'string' }, repairGuidance: { type: ['object', 'null'] }, safety: { type: 'object' },
-              },
-              required: ['contractVersion', 'responseSource', 'language', 'object', 'summary', 'knownFacts', 'likelyCauses', 'safeFirstChecks', 'nextQuestion', 'uncertainty', 'repairGuidance', 'safety'],
-            },
-          },
-          required: ['hypotheses', 'consumerResponse'],
-        },
+        json_schema: buildReasoningJsonSchema(input),
       },
       max_tokens: 1400,
       temperature: 0,

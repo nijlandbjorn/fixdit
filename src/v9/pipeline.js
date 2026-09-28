@@ -1,4 +1,4 @@
-import { V9_ENGINE_VERSION, asArray, immutable, stableHash } from './contracts.js';
+import { V9_ENGINE_VERSION, asArray, cleanText, immutable, stableHash } from './contracts.js';
 import { appendEvidence, ledgerFromInput } from './evidence-ledger.js';
 import { normalizeVisionEvidence } from './vision-evidence.js';
 import { detectContradictions } from './contradiction-detector.js';
@@ -33,6 +33,26 @@ function transitionForDecision(state, safety, gate, nextTest) {
     });
   }
   return state;
+}
+
+function sanitizeDebugValue(value, depth = 0) {
+  if (value == null || typeof value === 'boolean' || typeof value === 'number') return value ?? null;
+  if (typeof value === 'string') return cleanText(value, 500);
+  if (depth >= 3) return '[bounded]';
+  if (Array.isArray(value)) return value.slice(0, 8).map(item => sanitizeDebugValue(item, depth + 1));
+  if (typeof value !== 'object') return null;
+  return Object.fromEntries(Object.entries(value).slice(0, 16).map(([key, item]) => [cleanText(key, 80), sanitizeDebugValue(item, depth + 1)]));
+}
+
+function preValidationSnapshot(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return immutable({
+    summary: cleanText(value.summary, 360),
+    likelyCauses: sanitizeDebugValue(asArray(value.likelyCauses).slice(0, 4)),
+    safeFirstChecks: sanitizeDebugValue(asArray(value.safeFirstChecks).slice(0, 4)),
+    nextQuestion: sanitizeDebugValue(value.nextQuestion),
+    repairGuidance: sanitizeDebugValue(value.repairGuidance),
+  });
 }
 
 export async function runPipelineV9({
@@ -170,6 +190,7 @@ export async function runPipelineV9({
     language, repairGate, safety, ledger, fallback: deterministicResponse, capabilities,
   });
   const consumerResponse = consumerValidation.valid ? consumerValidation.response : deterministicResponse;
+  const aiPreValidationResponse = mode === 'tester' ? preValidationSnapshot(assistedResponse) : null;
   if (!consumerValidation.valid && assistedResponse && !aiFallbackReason) aiFallbackReason = consumerValidation.reason;
 
   return immutable({
@@ -214,6 +235,9 @@ export async function runPipelineV9({
       providerCallCompleted,
       providerCallFailed,
       providerFailure,
+      validationResult: assistedResponse ? (consumerValidation.valid ? 'valid' : 'invalid') : 'not_run',
+      validationReason: consumerValidation.valid ? null : consumerValidation.reason,
+      aiPreValidationResponse,
       aiCallsThisSession: aiCalls + (priorAiAttempt ? 1 : 0),
       successfulAiCalls: aiCalls && consumerValidation.valid ? 1 : 0,
       rejectedAiCalls: (priorAiAttempt ? 1 : 0) + (aiCalls && !consumerValidation.valid ? 1 : 0),

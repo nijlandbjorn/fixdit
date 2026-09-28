@@ -4,6 +4,7 @@ import test from 'node:test';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
 import { classificationFromUserText } from '../../src/v9/raw-classification.js';
 import { validateConsumerResponseV1 } from '../../src/v9/consumer-response-v1.js';
+import { buildReasoningJsonSchema } from '../../src/v9/workers-ai-adapter.js';
 
 const REAL_WORLD = [
   ['Mijn laptop doet wel wat maar scherm zwart', 'black_screen'],
@@ -61,6 +62,39 @@ test('één AI-call levert reasoning en een gevalideerde consumer response', asy
   assert.equal(seen.route, 'diagnose');
   assert.ok(seen.evidenceLedger.length > 0);
   assert.equal(seen.repairGate.open, false);
+});
+
+test('provider-schema en validator delen dezelfde gesloten safe-action-class enum', () => {
+  const schema = buildReasoningJsonSchema({ language: 'nl', capabilities: { questionTypes: ['single_choice', 'short_text'], photoInput: false, cameraCapture: false, fileUpload: false } });
+  const checkItem = schema.properties.consumerResponse.properties.safeFirstChecks.items;
+  assert.deepEqual(checkItem.properties.actionClass.enum, ['observation', 'external_noninvasive_check']);
+  assert.ok(checkItem.required.includes('actionClass'));
+  assert.equal(checkItem.properties.actionClass.enum.includes('low_risk_interaction'), false);
+  assert.deepEqual(schema.properties.consumerResponse.properties.nextQuestion.properties.type.enum, ['single_choice', 'short_text']);
+});
+
+test('Tester bewaart afgewezen AI-velden uitsluitend als gesaneerde pre-validation debug snapshot', async () => {
+  const problem = 'Mijn toetsenbord werkt niet goed.';
+  const consumerResponse = {
+    contractVersion: 'v1', responseSource: 'ai', language: 'nl',
+    object: { displayName: 'toetsenbord', category: 'computer_accessory', source: 'ai_understanding', confidence: 'high' },
+    summary: 'Twee toetsen reageren niet.', knownFacts: [],
+    likelyCauses: [{ label: 'Een instelling of fysieke toetsfout kan de oorzaak zijn.', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Test de toetsen in een ander programma.', actionClass: 'low_risk_interaction' }],
+    nextQuestion: null, uncertainty: 'De oorzaak is nog niet bevestigd.', repairGuidance: null, safety: { route: null, flags: [] },
+  };
+  const result = await runPipelineV9({ mode: 'tester', problem, reasoner: async () => ({ hypotheses: [], consumerResponse }) });
+  assert.equal(result.metrics.validationResult, 'invalid');
+  assert.equal(result.metrics.validationReason, 'unsafe_action_class');
+  assert.equal(result.metrics.aiPreValidationResponse.safeFirstChecks[0].actionClass, 'low_risk_interaction');
+  assert.equal(result.consumerResponse.responseSource, 'deterministic_fallback');
+  assert.doesNotMatch(JSON.stringify(result.consumerResponse), /aiPreValidationResponse|low_risk_interaction/);
+});
+
+test('pre-validation snapshot wordt buiten Tester niet opgenomen', async () => {
+  const result = await runPipelineV9({ mode: 'shadow', problem: 'Mijn toetsenbord werkt niet.', reasoner: async () => ({ hypotheses: [], consumerResponse: null }) });
+  assert.equal(result.metrics.aiPreValidationResponse, null);
+  assert.equal(result.metrics.validationResult, 'not_run');
 });
 
 test('malformed, lege, te lange en gevaarlijke AI-output vallen deterministisch terug', async () => {

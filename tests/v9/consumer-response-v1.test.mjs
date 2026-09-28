@@ -137,6 +137,24 @@ test('validator weigert reparatie vermomd als veilige controle bij gesloten gate
   assert.equal(validateConsumerResponseV1(response, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'repair_gate_bypass');
 });
 
+test('validator houdt exact twee safe action classes aan en weigert ontbrekende of willekeurige waarden', () => {
+  const ledger = ledgerFromInput({ problem: 'Mijn toetsenbord reageert niet.' });
+  const base = {
+    contractVersion: 'v1', responseSource: 'ai', language: 'nl',
+    object: { displayName: 'toetsenbord', category: 'computer_accessory', confidence: 'high' },
+    summary: 'Het toetsenbord reageert niet.', knownFacts: [],
+    likelyCauses: [{ label: 'Een instelling kan de invoer blokkeren.', basis: 'hypothesis' }],
+    safeFirstChecks: [
+      { text: 'Bekijk de toetsen van buiten.', actionClass: 'observation' },
+      { text: 'Test de toetsen in een normaal tekstveld.', actionClass: 'external_noninvasive_check' },
+    ],
+    nextQuestion: null, uncertainty: 'De oorzaak is nog onzeker.', repairGuidance: null, safety: { route: null },
+  };
+  assert.equal(validateConsumerResponseV1(base, { ledger, repairGate: { open: false }, fallback: {} }).valid, true);
+  assert.equal(validateConsumerResponseV1({ ...base, safeFirstChecks: [{ text: 'Kijk naar de toets.' }] }, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'unsafe_action_class');
+  assert.equal(validateConsumerResponseV1({ ...base, safeFirstChecks: [{ text: 'Test de toets.', actionClass: 'low_risk_interaction' }] }, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'unsafe_action_class');
+});
+
 test('AI consumer response kan actuele semantische correctie niet uit Wat we weten weglaten', () => {
   const ledger = ledgerFromInput({
     problem: 'Ik zei weet ik niet, maar het antwoord is ja.',
