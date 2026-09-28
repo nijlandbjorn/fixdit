@@ -8859,10 +8859,12 @@ async function handleTrack(
   );
 }
 
-function interactionMetadataV9(body = {}) {
+export function interactionMetadataV9(body = {}) {
   const input = body?.interaction;
   if (!input || typeof input !== "object" || Array.isArray(input)) return null;
-  const answerKind = cleanString(input.answerKind).slice(0,80);
+  // `unknown` is a meaningful closed-enum answer here, even though the legacy
+  // generic string cleaner intentionally treats that word as an empty value.
+  const answerKind = String(input.answerKind ?? "").trim().slice(0,80);
   const evidenceKey = cleanString(input.evidenceKey).slice(0,160);
   const questionId = cleanString(input.questionId).slice(0,160);
   const semanticClaim = cleanString(input.semanticClaim).slice(0,500);

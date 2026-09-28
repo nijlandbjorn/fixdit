@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { interactionMetadataV9 } from '../../index.js';
 import { appendEvidence, createEvidenceLedger, ledgerFromInput, supersedeEvidence } from '../../src/v9/evidence-ledger.js';
 import { detectContradictions } from '../../src/v9/contradiction-detector.js';
 import { generateHypotheses } from '../../src/v9/hypothesis-engine.js';
@@ -8,6 +9,15 @@ import { rankNextBestTests, selectNextBestTest } from '../../src/v9/next-best-te
 import { detectNoProgress } from '../../src/v9/no-progress.js';
 import { createDiagnosticState, transitionDiagnosticState } from '../../src/v9/state-machine.js';
 import { observationsFromV8 } from '../../src/v9/v8-adapter.js';
+
+test('API-interactiecontract bewaart unknown als betekenisvolle answerKind', () => {
+  const interaction = interactionMetadataV9({ interaction: {
+    answerKind: 'unknown', evidenceKey: 'failure_boundary', questionId: 'q_cycle',
+    rawAnswer: 'Weet ik niet', semanticClaim: 'Het antwoord op de normale cyclus is nog onbekend.',
+  } });
+  assert.equal(interaction.answerKind, 'unknown');
+  assert.equal(interaction.evidenceKey, 'failure_boundary');
+});
 
 test('Contradiction Detector vindt strijdige gestructureerde evidence', () => {
   const ledger = createEvidenceLedger({ entries: [
