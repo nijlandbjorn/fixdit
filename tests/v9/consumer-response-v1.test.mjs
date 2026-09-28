@@ -5,7 +5,21 @@ import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, QUESTI
 import { ledgerFromInput } from '../../src/v9/evidence-ledger.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
-import { createWorkersAiReasoner, REASONING_MODEL } from '../../src/v9/workers-ai-adapter.js';
+import { createWorkersAiReasoner, REASONING_MODEL, resolveReasoningModel } from '../../src/v9/workers-ai-adapter.js';
+
+test('Preview reasoning model is configureerbaar via een gesloten gratis-kandidatenlijst', async () => {
+  const candidate = '@cf/zai-org/glm-4.7-flash';
+  assert.equal(resolveReasoningModel({ V9_AI_MODEL: candidate }), candidate);
+  assert.equal(resolveReasoningModel({ V9_AI_MODEL: '@cf/not-approved/paid-model' }), REASONING_MODEL);
+  let usedModel = null;
+  const reasoner = createWorkersAiReasoner({
+    V9_ALLOW_AI: 'true', V9_AI_MODEL: candidate,
+    AI: { run: async model => { usedModel = model; return { response: {} }; } },
+  });
+  await reasoner({ language: 'nl' });
+  assert.equal(reasoner.modelId, candidate);
+  assert.equal(usedModel, candidate);
+});
 
 test('deterministic safety stopt magnetronvonken en vergelijkbare echte hazards', async () => {
   for (const problem of [

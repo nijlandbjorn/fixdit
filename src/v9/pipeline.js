@@ -227,6 +227,7 @@ export async function runPipelineV9({
       aiFallback: consumerValidation.valid !== true,
       aiFallbackReason: consumerValidation.valid ? null : (aiFallbackReason || consumerValidation.reason),
       aiCallReason: aiCalls ? 'reasoning_and_consumer_response' : null,
+      aiModel: cleanText(reasoner?.modelId, 160) || null,
       externalResearchCalls: 0,
       aiError,
       aiPlanned,

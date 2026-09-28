@@ -9749,6 +9749,12 @@ export default {
       const body =
         await request.json();
 
+      // Only the gated Preview Tester can select an allow-listed bake-off
+      // model. Normal requests keep the configured/default model.
+      const runtimeEnv = testerAccess && typeof body.aiModel === "string"
+        ? { ...env, V9_AI_MODEL: body.aiModel }
+        : env;
+
       const lang =
         normalizeLanguage(
           body.language
@@ -9834,7 +9840,7 @@ export default {
       ) {
         return handleFollowup(
           request,
-          env,
+          runtimeEnv,
           body,
           deviceKey,
           lang,
@@ -9845,7 +9851,7 @@ export default {
 
       return handleAnalysis(
         request,
-        env,
+        runtimeEnv,
         body,
         deviceKey,
         lang,

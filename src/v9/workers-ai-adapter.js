@@ -4,6 +4,18 @@ import { QUESTION_TYPES, SAFE_ACTION_CLASSES } from './consumer-response-v1.js';
 const CRITIC_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 export const REASONING_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
+const PREVIEW_REASONING_MODELS = Object.freeze([
+  REASONING_MODEL,
+  '@cf/zai-org/glm-4.7-flash',
+  '@cf/google/gemma-4-26b-a4b-it',
+  '@cf/nvidia/nemotron-3-120b-a12b',
+]);
+
+export function resolveReasoningModel(env = {}) {
+  const configured = String(env?.V9_AI_MODEL || '').trim();
+  return PREVIEW_REASONING_MODELS.includes(configured) ? configured : REASONING_MODEL;
+}
+
 export function buildReasoningJsonSchema({ capabilities = {}, language = 'nl', repairGate = {} } = {}) {
   const requestedTypes = asArray(capabilities?.questionTypes).filter(type => QUESTION_TYPES.includes(type));
   const photoReady = capabilities?.photoInput === true && capabilities?.cameraCapture === true && capabilities?.fileUpload === true;
@@ -164,8 +176,9 @@ export function createWorkersAiCritic(env) {
 
 export function createWorkersAiReasoner(env) {
   if (!workersAiEnabled(env)) return null;
-  return async input => {
-    const result = await runProvider(env, REASONING_MODEL, {
+  const model = resolveReasoningModel(env);
+  const reasoner = async input => {
+    const result = await runProvider(env, model, {
       messages: [
         {
           role: 'system',
@@ -184,4 +197,6 @@ export function createWorkersAiReasoner(env) {
     const parsed = typeof raw === 'object' ? raw : JSON.parse(String(raw || '{}'));
     return { hypotheses: validateReasoningHypotheses(parsed.hypotheses, input?.language), consumerResponse: parsed.consumerResponse };
   };
+  reasoner.modelId = model;
+  return reasoner;
 }
