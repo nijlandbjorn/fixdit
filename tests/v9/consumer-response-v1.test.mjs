@@ -150,6 +150,22 @@ test('een onbekend follow-upantwoord wist de oorspronkelijke sessieclassificatie
   assert.ok(result.hypotheses.some(item => /watertoevoer|toevoerslang|inlaatfilter/i.test(item.statement)));
 });
 
+test('cannot_check zonder veilige alternatieve evidence-as eindigt expliciet', async () => {
+  const result = await runPipelineV9({
+    problem: 'Een extern scherm kan nu niet veilig of praktisch worden gecontroleerd.',
+    previousObservations: [
+      'Mijn laptop start maar het scherm blijft zwart',
+      { text: 'Kan ik niet controleren', semanticClaim: 'Een extern scherm kan nu niet veilig of praktisch worden gecontroleerd.', evidenceKey: 'external_display', questionId: 'q_external', answerKind: 'cannot_check', rawAnswer: 'Kan ik niet controleren' },
+    ],
+    classification: { objectFamily: 'electronics', objectLabel: 'laptop', symptom: 'black_screen', intent: 'repair' },
+  });
+  assert.equal(result.noProgress.exhausted, true);
+  assert.match(result.noProgress.reason, /cannot_check_no_alternative/);
+  assert.equal(result.consumerResponse.endState, 'insufficient_evidence');
+  assert.equal(result.consumerResponse.nextQuestion, null);
+  assert.equal(result.repairGate.open, false);
+});
+
 test('algemene correctie supersedet het laatste eerdere antwoord', async () => {
   const result = await runPipelineV9({
     problem: 'Ik corrigeer mijn vorige antwoord van “De kraan staat open.” naar “De kraan staat dicht.”.',

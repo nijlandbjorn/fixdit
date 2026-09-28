@@ -77,14 +77,18 @@ export async function runPipelineV9({
   let assistedResponse = null;
   let assistedHypotheses = asArray(modelHypotheses);
   let hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
-  const noProgress = detectNoProgress(previousObservations, problem);
-  const decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
+  let noProgress = detectNoProgress(previousObservations, problem);
+  let decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
   const nextTest = decision.route === 'diagnose' && !noProgress.exhausted
     ? selectNextBestTest(
         { hypotheses, contradictions, language, safety, classification, capabilities },
         { previousObservations, axisOffset: noProgress.detected ? Math.max(1, noProgress.consecutive) : 0 },
       )
     : null;
+  if (decision.route === 'diagnose' && noProgress.detected && !noProgress.exhausted && !nextTest) {
+    noProgress = immutable({ ...noProgress, exhausted: true, strategy: 'stop_questions', reason: `${noProgress.reason || 'no_progress'}_no_alternative` });
+    decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
+  }
   let repairGate = evaluateRepairGate({
     ledger,
     safety,
