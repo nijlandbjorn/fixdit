@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 import worker from '../../index.js';
 import {
+  createTesterUiActions,
   isTesterApiPath,
   isTesterPath,
   renderV9TesterHtml,
@@ -56,13 +57,45 @@ test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate
   assert.match(html, /evidenceKey:activeQuestion\.evidenceKey/);
   assert.match(html, /semanticClaim:claim/);
   assert.match(html, /data-testid="start-diagnosis"/);
-  assert.match(html, /data-testid="add-photo"/);
+  assert.match(html, /id="diagnosis-photo-input" data-testid="diagnosis-photo-input" type="file"[^>]*hidden/);
+  assert.match(html, /id="add-photo" data-testid="add-photo" type="button">Foto toevoegen/);
   assert.match(html, /data-testid="submit-answer"/);
   assert.match(html, /button\.dataset\.testid='answer-option-'\+option\.id/);
-  assert.match(html, /el\('start'\)\.addEventListener\('click',\(\)=>send\(el\('problem'\)\.value\)\)/);
-  assert.match(html, /el\('photo'\)\.addEventListener\('change'/);
+  assert.match(html, /id="start-diagnosis" data-testid="start-diagnosis" type="submit"/);
+  assert.match(html, /el\('diagnosis-form'\)\.addEventListener\('submit',testerUiActions\.submitDiagnosis\)/);
+  assert.match(html, /openPhotoPicker:\(\)=>el\('diagnosis-photo-input'\)\.click\(\)/);
+  assert.match(html, /el\('diagnosis-photo-input'\)\.addEventListener\('change'/);
   assert.match(html, /button\.addEventListener\('click',\(\)=>selectSemanticAnswer\(option\.id\)\)/);
   assert.doesNotMatch(html, /ondersteuningsscore/);
+});
+
+test('diagnose-submit en foto-picker zijn strikt gescheiden UI-acties', () => {
+  let diagnoses = 0;
+  let photoClicks = 0;
+  let prevented = 0;
+  const actions = createTesterUiActions({
+    submitDiagnosis: () => { diagnoses += 1; },
+    openPhotoPicker: () => { photoClicks += 1; },
+  });
+
+  actions.submitDiagnosis({ preventDefault: () => { prevented += 1; } });
+  assert.deepEqual({ diagnoses, photoClicks, prevented }, { diagnoses: 1, photoClicks: 0, prevented: 1 });
+
+  diagnoses = 0; photoClicks = 0; prevented = 0;
+  actions.addPhoto({ preventDefault: () => { prevented += 1; } });
+  assert.deepEqual({ diagnoses, photoClicks, prevented }, { diagnoses: 0, photoClicks: 1, prevented: 1 });
+});
+
+test('form-submit via Enter start diagnose zonder file picker', () => {
+  let diagnoses = 0;
+  let photoClicks = 0;
+  const actions = createTesterUiActions({
+    submitDiagnosis: () => { diagnoses += 1; },
+    openPhotoPicker: () => { photoClicks += 1; },
+  });
+  actions.submitDiagnosis({ type: 'submit', preventDefault() {} });
+  assert.equal(diagnoses, 1);
+  assert.equal(photoClicks, 0);
 });
 
 test('inline tester-script is syntactisch geldig', () => {
