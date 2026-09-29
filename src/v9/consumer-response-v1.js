@@ -139,6 +139,17 @@ function canonicalCustomOptions(choices, prompt, language) {
   const options = [];
   const evidenceMapping = {};
   const actions = [];
+  const standard = semanticMappings(prompt, language);
+  const standardId = label => {
+    const normalized = label.toLocaleLowerCase(language).replace(/[.!?…]+$/g, '').trim();
+    if (/^(?:ja|yes)$/.test(normalized)) return 'yes';
+    if (/^(?:nee|no|nein)$/.test(normalized)) return 'no';
+    if (/^(?:weet ik niet|i don'?t know|weiss ich nicht|weiß ich nicht)$/.test(normalized)) return 'unknown';
+    if (/^(?:kan ik niet controleren|i can'?t check|kann ich nicht prüfen)$/.test(normalized)) return 'cannot_check';
+    if (/^(?:niet van toepassing|not applicable|nicht zutreffend)$/.test(normalized)) return 'not_applicable';
+    if (/^(?:anders|other)$/.test(normalized)) return 'other';
+    return '';
+  };
   for (const rawChoice of asArray(choices)) {
     const label = cleanText(rawChoice, 100);
     const duplicateKey = label.toLocaleLowerCase(language);
@@ -147,13 +158,15 @@ function canonicalCustomOptions(choices, prompt, language) {
       continue;
     }
     seen.add(duplicateKey);
-    const id = `choice_${stableHash([prompt, duplicateKey])}`;
-    options.push({ id, label });
-    evidenceMapping[id] = immutable({ label, claim: sentence(`${cleanText(prompt, 220).replace(/[?]+$/g, '')}: ${label}`), polarity: 'present' });
-    actions.push('custom_choice_machine_id_generated');
+    const semanticId = standardId(label);
+    const id = semanticId || `choice_${stableHash([prompt, duplicateKey])}`;
+    if (evidenceMapping[id]) continue;
+    options.push({ id, label: semanticId ? standard[id].label : label });
+    evidenceMapping[id] = semanticId ? standard[id] : immutable({ label, claim: sentence(`${cleanText(prompt, 220).replace(/[?]+$/g, '')}: ${label}`), polarity: 'present' });
+    actions.push(semanticId ? 'standard_choice_canonicalized' : 'custom_choice_machine_id_generated');
   }
-  const standard = semanticMappings(prompt, language);
   for (const id of ['unknown', 'cannot_check', 'not_applicable', 'other']) {
+    if (evidenceMapping[id]) continue;
     options.push({ id, label: standard[id].label });
     evidenceMapping[id] = standard[id];
   }

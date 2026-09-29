@@ -402,6 +402,12 @@ test('AI levert één evidence-as; code bouwt canonical machine-opties en geloka
   assert.deepEqual(valid.response.nextQuestion.options.map(option => option.label), ['Ja', 'Nee', 'Weet ik niet', 'Kan ik niet controleren', 'Niet van toepassing', 'Anders…']);
   assert.ok(Object.values(valid.response.nextQuestion.evidenceMapping).every(mapping => Object.hasOwn(mapping, 'claim')));
 
+  const lowercaseBinary = validateConsumerResponseV1({ ...base, nextQuestion: { ...base.nextQuestion, choices: ['ja', 'nee'] } }, { language: 'nl', ledger, repairGate: { open: false }, fallback: {} });
+  assert.equal(lowercaseBinary.valid, true);
+  assert.deepEqual(lowercaseBinary.response.nextQuestion.options.map(option => option.id), ['yes', 'no', 'unknown', 'cannot_check', 'not_applicable', 'other']);
+  assert.equal(lowercaseBinary.response.nextQuestion.evidenceMapping.no.polarity, 'absent');
+  assert.equal(lowercaseBinary.response.nextQuestion.evidenceMapping.no.claim, 'Werken de toetsen in een ander programma: nee.');
+
   const localizedIds = { ...base, nextQuestion: { ...base.nextQuestion, options: [{ id: 'ja', label: 'Ja' }] } };
   const malformedMapping = { ...base, nextQuestion: { ...base.nextQuestion, evidenceMapping: { ja: 'ja' } } };
   assert.equal(validateConsumerResponseV1(localizedIds, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'ai_supplied_interaction_semantics');
