@@ -57,6 +57,16 @@ test('canonicalization normaliseert alleen ondubbelzinnige keuze-representatie',
   assert.ok(result.canonicalizationActions.includes('duplicate_identical_choice_removed'));
 });
 
+test('één-as binaire vrije vraag wordt tap-first zonder compound contractfout', () => {
+  const response = validResponse('kraan', 'De koude waterstroom is zwakker dan de warme.');
+  response.nextQuestion = { type: 'short_text', text: 'Is het koude water helder of troebel?', evidenceKey: 'water_clarity' };
+  const result = validateConsumerResponseV1(response, { ledger: ledgerFromInput({ problem: 'Koud water stroomt zwak.' }), repairGate: { open: false }, fallback: {} });
+  assert.equal(result.valid, true);
+  assert.equal(result.response.nextQuestion.type, 'single_choice');
+  assert.deepEqual(result.response.nextQuestion.options.slice(0, 2).map(option => option.label), ['Helder', 'Troebel']);
+  assert.ok(result.canonicalizationActions.includes('binary_alternative_question_made_tap_first'));
+});
+
 test('mutation gate weigert inhoudelijke en structurele contractafwijkingen fail-closed', () => {
   const ledger = ledgerFromInput({ problem: 'Een apparaat hapert.' });
   const check = value => validateConsumerResponseV1(value, { ledger, repairGate: { open: false }, fallback: {} }).reason;

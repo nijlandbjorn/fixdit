@@ -131,6 +131,17 @@ function canonicalCustomOptions(choices, prompt, language) {
   }
   return { options, evidenceMapping, actions };
 }
+function binaryQuestionChoices(question, type, choices) {
+  if (type !== 'short_text' || asArray(choices).length) return null;
+  const text = cleanText(question, 300).replace(/[?]+$/g, '').trim();
+  const match = /^(.*)\b(?:of|or|oder)\b\s+([\p{L}-]+(?:\s+[\p{L}-]+){0,2})$/iu.exec(text);
+  if (!match || /[,;]/.test(match[1])) return null;
+  const before = match[1].trim().split(/\s+/).at(-1);
+  const after = match[2].trim();
+  if (!before || /^(?:wat|waar|wanneer|wie|welk|what|where|when|who|which|was|wo|wann|wer|welch)$/i.test(before)) return null;
+  const label = value => value.charAt(0).toLocaleUpperCase() + value.slice(1);
+  return [label(before), label(after)];
+}
 function rawStringTooLong(value, max) { return typeof value === 'string' && value.trim().length > max; }
 function hasOversizedFields(value) {
   if (rawStringTooLong(value?.summary, 360) || rawStringTooLong(value?.uncertainty, 300)) return true;
@@ -238,8 +249,11 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (q && (typeof q !== 'object' || Array.isArray(q) || Object.keys(q).some(key => !['questionId', 'type', 'text', 'evidenceKey', 'why', 'choices', 'options', 'evidenceMapping'].includes(key)))) return fail('hallucinated_field');
   if (q && (Object.hasOwn(q, 'options') || Object.hasOwn(q, 'evidenceMapping'))) return fail('ai_supplied_interaction_semantics');
   const questionText = cleanText(q?.text, 300);
-  const questionType = cleanText(q?.type, 40);
-  const contentChoices = asArray(q?.choices);
+  const proposedType = cleanText(q?.type, 40);
+  const proposedChoices = asArray(q?.choices);
+  const inferredChoices = binaryQuestionChoices(questionText, proposedType, proposedChoices);
+  const questionType = inferredChoices ? 'single_choice' : proposedType;
+  const contentChoices = inferredChoices || proposedChoices;
   const canonical = ['single_choice', 'multi_choice'].includes(questionType) && contentChoices.length
     ? canonicalCustomOptions(contentChoices, questionText, selected)
     : ['single_choice', 'multi_choice', 'action_check'].includes(questionType)
@@ -250,7 +264,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (nextQuestion && contentChoices.length && !['single_choice', 'multi_choice'].includes(nextQuestion.type)) return fail('choices_on_non_choice_question');
   if (nextQuestion && !asArray(capabilities?.questionTypes).includes(nextQuestion.type)) return fail('unsupported_question_type');
   if (nextQuestion?.type === 'photo' && capabilities?.photoInput !== true) return fail('photo_input_unavailable');
-  if (nextQuestion && /\b(?:en|and|und|maar|but|aber|of|or|oder)\b.+\?/i.test(nextQuestion.text)) return fail('compound_question');
+  if (nextQuestion && !inferredChoices && /\b(?:en|and|und|maar|but|aber|of|or|oder)\b.+\?/i.test(nextQuestion.text)) return fail('compound_question');
   if (nextQuestion && (!nextQuestion.questionId || !nextQuestion.evidenceKey)) return fail('incomplete_question_contract');
   const answeredAxes = new Set(activeEvidence.flatMap(entry => [entry.predicate, entry.provenance?.evidenceKey]).map(axis => cleanText(axis, 120)).filter(Boolean));
   if (nextQuestion && answeredAxes.has(nextQuestion.evidenceKey)) return fail('already_known_evidence_axis');
@@ -271,5 +285,6 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (selected === 'nl' && /\b(the|device|might|please check)\b/i.test(text)) return fail('wrong_language');
   if (selected === 'de' && /\b(the|device|might|please check)\b/i.test(text)) return fail('wrong_language');
   if (safety?.route && value.safety?.route && value.safety.route !== safety.route) return fail('safety_override');
-  return { valid: true, reason: null, canonicalizationActions: Object.freeze(canonical.actions || []), response: immutable({ ...response, object: immutable(object), knownFacts: Object.freeze(knownFacts.map(immutable)), likelyCauses: Object.freeze(likelyCauses.map(immutable)), safeFirstChecks: Object.freeze(safeFirstChecks.map(immutable)), nextQuestion: nextQuestion ? immutable({ ...nextQuestion, options: Object.freeze(nextQuestion.options.map(immutable)), evidenceMapping: immutable(nextQuestion.evidenceMapping) }) : null, safety: immutable({ ...response.safety, flags: Object.freeze(response.safety.flags) }) }) };
+  const canonicalizationActions = [...(canonical.actions || []), ...(inferredChoices ? ['binary_alternative_question_made_tap_first'] : [])];
+  return { valid: true, reason: null, canonicalizationActions: Object.freeze(canonicalizationActions), response: immutable({ ...response, object: immutable(object), knownFacts: Object.freeze(knownFacts.map(immutable)), likelyCauses: Object.freeze(likelyCauses.map(immutable)), safeFirstChecks: Object.freeze(safeFirstChecks.map(immutable)), nextQuestion: nextQuestion ? immutable({ ...nextQuestion, options: Object.freeze(nextQuestion.options.map(immutable)), evidenceMapping: immutable(nextQuestion.evidenceMapping) }) : null, safety: immutable({ ...response.safety, flags: Object.freeze(response.safety.flags) }) }) };
 }
