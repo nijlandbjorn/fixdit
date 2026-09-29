@@ -24,6 +24,17 @@ export function inferEvidenceAxesFromText(value = '') {
   return axes;
 }
 
+export function inferCheckEvidenceAxis(value = '') {
+  const text = cleanText(value, 400).toLocaleLowerCase();
+  if (/zichtbaar|visible|sichtbar|schade|damage|beschäd/.test(text)) return 'visible_damage';
+  if (/aangesloten|seated|eingesteckt/.test(text)) return 'connector_seating';
+  if (/lampje|scherm|display|indicator|anzeige/.test(text)) return 'indicator_state';
+  if (/weerstand|speling|resistance|play|widerstand/.test(text)) return 'movement_resistance';
+  if (/doorstrom|flow|durchfluss/.test(text)) return 'flow_difference';
+  if (/vocht.*eerste|water.*eerste|moisture.*first|feuchtigkeit.*zuerst/.test(text)) return 'leak_location';
+  return 'safe_check_observation';
+}
+
 export function canonicalQuestionEvidenceAxis(question = {}) {
   const text = cleanText(question?.text, 300).toLocaleLowerCase();
   const choices = asArray(question?.choices || question?.options).map(choice => cleanText(choice?.label ?? choice, 120).toLocaleLowerCase());
@@ -47,6 +58,24 @@ export function handledEvidenceAxes({ ledger = null, observations = [], rawText 
   for (const inferred of inferEvidenceAxesFromText(rawText)) axes.add(inferred);
   axes.delete('');
   return axes;
+}
+
+export function evidenceAxisRestrictions({ ledger = null, observations = [], rawText = '', previousQuestionEvidenceKey = '' } = {}) {
+  const answered = new Set();
+  for (const entry of asArray(ledger?.entries)) {
+    if (entry.status !== 'active' || entry.subject !== 'user_answer') continue;
+    const axis = normalizeEvidenceAxis(entry.provenance?.evidenceKey || entry.predicate);
+    if (axis) answered.add(axis);
+  }
+  const known = handledEvidenceAxes({ ledger, observations, rawText });
+  const previousAxis = normalizeEvidenceAxis(previousQuestionEvidenceKey || asArray(observations).at(-1)?.evidenceKey);
+  const forbidden = new Set(known);
+  if (previousAxis) forbidden.add(previousAxis);
+  return Object.freeze({
+    answeredEvidenceKeys: Object.freeze([...answered]),
+    knownEvidenceKeys: Object.freeze([...known]),
+    forbiddenNextEvidenceKeys: Object.freeze([...forbidden]),
+  });
 }
 
 export function sameAxisAlternativeQuestion(text = '', evidenceKey = '') {

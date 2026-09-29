@@ -1,5 +1,6 @@
 import { asArray, cleanText, immutable, stableHash } from './contracts.js';
-import { canonicalQuestionEvidenceAxis, handledEvidenceAxes, normalizeEvidenceAxis, sameAxisAlternativeQuestion } from './diagnostic-axis.js';
+import { canonicalQuestionEvidenceAxis, handledEvidenceAxes, inferCheckEvidenceAxis, normalizeEvidenceAxis, sameAxisAlternativeQuestion } from './diagnostic-axis.js';
+import { functionalPatternGuidance } from './functional-patterns.js';
 
 export const CONSUMER_RESPONSE_CONTRACT_VERSION = 'v1';
 export const QUESTION_TYPES = Object.freeze(['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check']);
@@ -59,17 +60,17 @@ function fallbackMechanism(text) {
 function fallbackChecks(language, mechanism, objectName = '') {
   const object = objectName || localized(language, 'het betrokken onderdeel', 'the affected part', 'das betroffene Teil');
   const copy = {
-    mechanical: [`Kijk van buiten of ${object} zichtbaar geblokkeerd, verbogen of verschoven is.`, `Let zonder kracht te zetten op weerstand, speling of een afwijkend geluid bij normale beweging.`],
-    alignment: [`Bekijk van buiten waar ${object} aanloopt, klemt of uit lijn staat.`, `Vergelijk de stand en vrije ruimte aan beide zijden zonder iets los te maken.`],
-    powered: [`Controleer ${object} van buiten op een losse of beschadigde kabel, stekker of aansluiting die bij dit probleem hoort.`, `Let bij ${object} op welk normaal zichtbaar lampje, scherm of laadteken wel of niet verschijnt.`],
-    connection: [`Bekijk de bereikbare kabel en stekker van ${object} op een zichtbare knik, scheur of losse buitenkant.`, `Let op bij welk bereikbaar uiteinde een kleine normale beweging het gedrag verandert, zonder kracht te zetten.`],
-    software: [`Let bij ${object} op welke normale status of verbinding zichtbaar verandert wanneer het probleem optreedt.`, `Vergelijk het gedrag van ${object} in één andere normale gebruikssituatie zonder instellingen te wijzigen.`],
-    flow: [`Controleer bij ${object} de normaal bereikbare toevoer of afvoer op een zichtbare knik of blokkade.`, `Vergelijk de doorstroming van ${object} tijdens normaal gebruik zonder onderdelen te openen.`],
-    leak: [`Dep ${object} aan de buitenkant droog en kijk waar het vocht als eerste opnieuw zichtbaar wordt.`, `Controleer van buiten of een bereikbare koppeling, rand of slang van ${object} zichtbaar nat is.`],
-    thermal: [`Controleer van buiten waar bij ${object} warmte, kou of ijsvorming het duidelijkst optreedt.`, `Kijk of een deur, rooster of afdichting van ${object} zichtbaar niet goed aansluit.`],
-    unknown: [`Bekijk ${object} alleen van buiten op een zichtbare blokkade, beschadiging of afwijkende stand.`, `Let bij normaal gebruik van ${object} op het eerste zichtbare of hoorbare verschil zonder iets los te maken.`],
+    mechanical: [[`Kijk van buiten of ${object} zichtbaar geblokkeerd, verbogen of verschoven is.`, 'visible_obstruction'], [`Let zonder kracht te zetten op weerstand, speling of een afwijkend geluid bij normale beweging.`, 'movement_resistance']],
+    alignment: [[`Bekijk van buiten waar ${object} aanloopt, klemt of uit lijn staat.`, 'contact_location'], [`Vergelijk de stand en vrije ruimte aan beide zijden zonder iets los te maken.`, 'alignment_comparison'], [`Let tijdens normaal sluiten op het eerste punt waar de beweging merkbaar zwaarder wordt.`, 'resistance_onset']],
+    powered: [[`Controleer ${object} van buiten op een losse of beschadigde kabel, stekker of aansluiting die bij dit probleem hoort.`, 'visible_damage'], [`Let bij ${object} op welk normaal zichtbaar lampje, scherm of laadteken wel of niet verschijnt.`, 'indicator_state']],
+    connection: [[`Bekijk de bereikbare kabel en stekker van ${object} op een zichtbare knik, scheur of losse buitenkant.`, 'visible_damage'], [`Controleer zonder kracht te zetten of de bereikbare stekker volledig en recht is aangesloten.`, 'connector_seating'], [`Let op bij welk bereikbaar uiteinde een kleine normale beweging het gedrag verandert.`, 'connection_location']],
+    software: [[`Let bij ${object} op welke normale status of verbinding zichtbaar verandert wanneer het probleem optreedt.`, 'status_change'], [`Vergelijk het gedrag van ${object} in één andere normale gebruikssituatie zonder instellingen te wijzigen.`, 'cross_context_behavior']],
+    flow: [[`Controleer bij ${object} de normaal bereikbare toevoer of afvoer op een zichtbare knik of blokkade.`, 'accessible_path'], [`Vergelijk de doorstroming van ${object} tijdens normaal gebruik zonder onderdelen te openen.`, 'flow_difference']],
+    leak: [[`Dep ${object} aan de buitenkant droog en kijk waar het vocht als eerste opnieuw zichtbaar wordt.`, 'leak_location'], [`Controleer van buiten of een bereikbare koppeling, rand of slang van ${object} zichtbaar nat is.`, 'wet_component']],
+    thermal: [[`Controleer van buiten waar bij ${object} warmte, kou of ijsvorming het duidelijkst optreedt.`, 'temperature_location'], [`Kijk of een deur, rooster of afdichting van ${object} zichtbaar niet goed aansluit.`, 'seal_condition']],
+    unknown: [[`Bekijk ${object} alleen van buiten op een zichtbare blokkade, beschadiging of afwijkende stand.`, 'visible_condition'], [`Let bij normaal gebruik van ${object} op het eerste zichtbare of hoorbare verschil zonder iets los te maken.`, 'observed_change']],
   };
-  return (copy[mechanism] || copy.unknown).map(text => localized(language, text, text, text));
+  return (copy[mechanism] || copy.unknown).map(([text, evidenceKey]) => ({ text: localized(language, text, text, text), evidenceKey }));
 }
 function fallbackCauses(language, mechanism, objectName = '') {
   const object = objectName || localized(language, 'het betrokken onderdeel', 'the affected part', 'das betroffene Teil');
@@ -189,7 +190,7 @@ function hasOversizedFields(value) {
   if (rawStringTooLong(value?.object?.displayName, 100) || rawStringTooLong(value?.object?.category, 100)) return true;
   if (asArray(value?.knownFacts).some(item => rawStringTooLong(item?.text, 260) || asArray(item?.evidenceIds).some(id => rawStringTooLong(id, 120)))) return true;
   if (asArray(value?.likelyCauses).some(item => rawStringTooLong(item?.label, 240) || rawStringTooLong(item?.basis, 60))) return true;
-  if (asArray(value?.safeFirstChecks).some(item => rawStringTooLong(item?.text, 260) || rawStringTooLong(item?.actionClass, 60))) return true;
+  if (asArray(value?.safeFirstChecks).some(item => rawStringTooLong(item?.text, 260) || rawStringTooLong(item?.actionClass, 60) || rawStringTooLong(item?.evidenceKey, 120))) return true;
   const q = value?.nextQuestion;
   return rawStringTooLong(q?.questionId, 120) || rawStringTooLong(q?.type, 40) || rawStringTooLong(q?.text, 300)
     || rawStringTooLong(q?.evidenceKey, 120) || rawStringTooLong(q?.why, 240)
@@ -213,7 +214,7 @@ function questionFromTest(nextTest, language) {
 }
 function allText(response) { return [response.object?.displayName, response.summary, ...response.knownFacts.map(x => x.text), ...response.likelyCauses.map(x => x.label), ...response.safeFirstChecks.map(x => x.text), response.nextQuestion?.text, response.uncertainty].filter(Boolean).join(' '); }
 
-export function buildFallbackConsumerResponse({ language = 'nl', problem = '', ledger = null, noProgress = {}, safety = {}, classification = {}, hypotheses = [], nextTest = null, directHelp = null } = {}) {
+export function buildFallbackConsumerResponse({ language = 'nl', problem = '', ledger = null, noProgress = {}, safety = {}, classification = {}, hypotheses = [], nextTest = null, directHelp = null, fallbackReason = '', functionalPatterns = [] } = {}) {
   const selected = languageOf(language);
   const evidence = activeUserEvidence(ledger);
   const raw = cleanText(problem || evidence.at(-1)?.value, 240);
@@ -229,27 +230,40 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const stopped = ['stop', 'professional'].includes(safety?.route);
   const exhausted = noProgress?.exhausted === true;
   const mechanism = fallbackMechanism(initialReport);
+  const pattern = functionalPatternGuidance(functionalPatterns)[0] || null;
   const handledAxes = handledEvidenceAxes({ ledger, rawText: initialReport });
   const normalizedNextAxis = normalizeEvidenceAxis(nextTest?.evidenceKey || nextTest?.code);
-  const fallbackCandidate = fallbackQuestionCandidate(selected, mechanism, handledAxes);
-  const groundedNextTest = nextTest?.evidenceKey === 'observable_behavior' || (normalizedNextAxis && handledAxes.has(normalizedNextAxis))
-    ? (fallbackCandidate ? { ...nextTest, ...fallbackCandidate } : null)
-    : nextTest;
+  const patternQuestion = pattern && !handledAxes.has(normalizeEvidenceAxis(pattern.question.evidenceKey))
+    ? { evidenceKey: pattern.question.evidenceKey, questionType: 'short_text', prompt: pattern.question.text }
+    : null;
+  const fallbackCandidate = patternQuestion || fallbackQuestionCandidate(selected, mechanism, handledAxes);
+  const groundedNextTest = patternQuestion
+    ? { ...nextTest, ...patternQuestion }
+    : nextTest?.evidenceKey === 'observable_behavior' || (normalizedNextAxis && handledAxes.has(normalizedNextAxis))
+      ? (fallbackCandidate ? { ...nextTest, ...fallbackCandidate } : null)
+      : nextTest;
   const question = stopped || exhausted || directHelp ? null : questionFromTest(groundedNextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });
   const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft: ${sentence(initialReport)}`, `You described: ${sentence(initialReport)}`, `Du beschreibst: ${sentence(initialReport)}`);
   const groundedCauses = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(text => text && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(text));
-  const causes = [...groundedCauses, ...fallbackCauses(selected, mechanism, objectName)].slice(0, 3);
-  const suppliedChecks = asArray(directHelp?.now).filter(text => !DANGEROUS.test(text)).slice(0, 2);
-  const checks = [...suppliedChecks, ...fallbackChecks(selected, mechanism, objectName)].slice(0, 2);
+  const causes = [...groundedCauses, ...asArray(pattern?.causeFamilies), ...fallbackCauses(selected, mechanism, objectName)].slice(0, 3);
+  const questionAxis = normalizeEvidenceAxis(question?.evidenceKey);
+  const suppliedChecks = asArray(directHelp?.now).filter(text => !DANGEROUS.test(text)).map(text => ({ text, evidenceKey: '' }));
+  const checks = [...suppliedChecks, ...asArray(pattern?.checks), ...fallbackChecks(selected, mechanism, objectName)]
+    .filter(check => {
+      const axis = normalizeEvidenceAxis(check.evidenceKey);
+      return !axis || (!handledAxes.has(axis) && axis !== questionAxis);
+    })
+    .slice(0, 2);
+  const localValidationFailure = Boolean(fallbackReason) && !/^ai_(?:provider|timeout|temporary|paid|daily)|quota|capacity|normalization|malformed|missing_structured|unsupported_response|wrong_payload|empty_object|provider_returned/i.test(fallbackReason);
   return immutable({
     contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: stopped ? 'safety' : 'deterministic_fallback', language: selected,
     object: immutable({ displayName: objectName, category: classifiedIsAuthoritative ? (cleanText(classification?.objectFamily, 100) || 'unresolved') : 'unresolved', source: classifiedName && classifiedIsAuthoritative ? 'deterministic_normalization' : 'raw_user_input', confidence: understood ? 'medium' : 'low' }), summary,
     knownFacts: Object.freeze(factText && factEvidence?.evidenceId && !RAW_ANSWER.test(factText) && !/\b(?:ik zei|i said|ich sagte)\b/i.test(factText) ? [immutable({ text: sentence(factText), evidenceIds: Object.freeze([factEvidence.evidenceId]) })] : []),
     likelyCauses: Object.freeze(stopped ? [] : causes.map(label => immutable({ label: sentence(label), basis: 'deterministic_hypothesis' }))),
-    safeFirstChecks: Object.freeze(stopped ? [] : checks.map(text => immutable({ text: sentence(text), actionClass: 'observation' }))), nextQuestion: question,
+    safeFirstChecks: Object.freeze(stopped ? [] : checks.map(check => immutable({ text: sentence(check.text), actionClass: 'observation', evidenceKey: normalizeEvidenceAxis(check.evidenceKey) || 'direct_safety_check' }))), nextQuestion: question,
     endState: exhausted ? 'insufficient_evidence' : stopped ? 'safety_stop' : directHelp ? 'direct_help' : null,
     degradedMode: !stopped,
-    uncertainty: exhausted ? localized(selected, 'Er is na drie pogingen nog onvoldoende nieuwe informatie. De diagnose stopt hier om een vragenlus te voorkomen.', 'After three attempts there is still insufficient new information. The diagnosis stops here to prevent a question loop.', 'Nach drei Versuchen fehlen weiterhin neue Informationen. Die Diagnose endet hier, um eine Frageschleife zu vermeiden.') : stopped ? localized(selected, 'Veiligheid gaat nu voor verdere analyse.', 'Safety takes priority over further analysis.', 'Sicherheit hat jetzt Vorrang vor weiterer Analyse.') : localized(selected, 'De slimme analyse is tijdelijk niet beschikbaar. Ik kan je wel helpen met veilige basiscontroles, of je kunt later opnieuw proberen.', 'Smart analysis is temporarily unavailable. I can still help with safe basic checks, or you can try again later.', 'Die intelligente Analyse ist vorübergehend nicht verfügbar. Ich kann bei sicheren Basiskontrollen helfen, oder du versuchst es später erneut.'),
+    uncertainty: exhausted ? localized(selected, 'Er is na drie pogingen nog onvoldoende nieuwe informatie. De diagnose stopt hier om een vragenlus te voorkomen.', 'After three attempts there is still insufficient new information. The diagnosis stops here to prevent a question loop.', 'Nach drei Versuchen fehlen weiterhin neue Informationen. Die Diagnose endet hier, um eine Frageschleife zu vermeiden.') : stopped ? localized(selected, 'Veiligheid gaat nu voor verdere analyse.', 'Safety takes priority over further analysis.', 'Sicherheit hat jetzt Vorrang vor weiterer Analyse.') : localValidationFailure ? localized(selected, 'Op basis van wat we nu weten, is dit de veiligste volgende controle.', 'Based on what we know now, this is the safest next check.', 'Auf Grundlage dessen, was wir jetzt wissen, ist dies die sicherste nächste Prüfung.') : localized(selected, 'De slimme analyse is tijdelijk niet beschikbaar. Ik kan je wel helpen met veilige basiscontroles, of je kunt later opnieuw proberen.', 'Smart analysis is temporarily unavailable. I can still help with safe basic checks, or you can try again later.', 'Die intelligente Analyse ist vorübergehend nicht verfügbar. Ich kann bei sicheren Basiskontrollen helfen, oder du versuchst es später erneut.'),
     repairGuidance: null, safety: immutable({ route: safety?.route || null, flags: Object.freeze(asArray(safety?.flags).map(flag => flag.code)) }),
   });
 }
@@ -268,7 +282,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (!Array.isArray(value.knownFacts) || !Array.isArray(value.likelyCauses) || !Array.isArray(value.safeFirstChecks)) return fail('missing_required_field');
   if (value.knownFacts.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['text', 'evidenceIds'].includes(key)))) return fail('hallucinated_field');
   if (value.likelyCauses.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['label', 'basis'].includes(key)))) return fail('hallucinated_field');
-  if (value.safeFirstChecks.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['text', 'actionClass'].includes(key)))) return fail('hallucinated_field');
+  if (value.safeFirstChecks.some(item => !item || typeof item !== 'object' || Object.keys(item).some(key => !['text', 'actionClass', 'evidenceKey'].includes(key)))) return fail('hallucinated_field');
   const selected = languageOf(language);
   if (value.contractVersion != null && value.contractVersion !== CONSUMER_RESPONSE_CONTRACT_VERSION) return fail('contract_version_mismatch');
   if (value.responseSource != null && value.responseSource !== 'ai') return fail('response_source_mismatch');
@@ -286,7 +300,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
     if (knownFacts.length > 6) knownFacts.shift();
   }
   const likelyCauses = asArray(value.likelyCauses).slice(0, 4).map(item => ({ label: cleanText(item?.label, 240), basis: cleanText(item?.basis, 60) || 'model_inference' })).filter(item => item.label);
-  const safeFirstChecks = asArray(value.safeFirstChecks).slice(0, 4).map(item => ({ text: cleanText(item?.text, 260), actionClass: cleanText(item?.actionClass, 60) })).filter(item => item.text);
+  const safeFirstChecks = asArray(value.safeFirstChecks).slice(0, 4).map(item => ({ text: cleanText(item?.text, 260), actionClass: cleanText(item?.actionClass, 60), evidenceKey: normalizeEvidenceAxis(item?.evidenceKey) || inferCheckEvidenceAxis(item?.text) })).filter(item => item.text);
   if (safeFirstChecks.some(item => !SAFE_ACTION_CLASSES.includes(item.actionClass))) return fail('unsafe_action_class');
   if (repairGate?.open !== true && safeFirstChecks.some(item => DANGEROUS.test(item.text))) return fail('repair_gate_bypass');
   if (repairGate?.open !== true && value.repairGuidance != null) return fail('repair_guidance_when_gate_closed');
@@ -317,6 +331,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (nextQuestion && !inferredChoices && !sameAxisAlternative && /\b(?:en|and|und|maar|but|aber|of|or|oder)\b.+\?/i.test(nextQuestion.text)) return fail('compound_question');
   if (nextQuestion && (!nextQuestion.questionId || !nextQuestion.evidenceKey)) return fail('incomplete_question_contract');
   const answeredAxes = handledEvidenceAxes({ ledger });
+  if (safeFirstChecks.some(item => answeredAxes.has(item.evidenceKey))) return fail('already_known_safe_check_axis');
   if (nextQuestion && answeredAxes.has(nextQuestion.evidenceKey)) return fail('already_known_evidence_axis');
   if (nextQuestion && ['single_choice', 'multi_choice', 'action_check'].includes(nextQuestion.type)) {
     if (nextQuestion.options.length < 2) return fail('missing_question_options');

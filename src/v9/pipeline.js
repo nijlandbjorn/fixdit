@@ -12,8 +12,9 @@ import { createDiagnosticState, transitionDiagnosticState } from './state-machin
 import { buildDirectHelp, selectDiagnosticRoute } from './decision-layer.js';
 import { detectNoProgress } from './no-progress.js';
 import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, validateConsumerResponseV1 } from './consumer-response-v1.js';
-import { handledEvidenceAxes } from './diagnostic-axis.js';
+import { evidenceAxisRestrictions } from './diagnostic-axis.js';
 import { classificationFromUserText } from './raw-classification.js';
+import { detectFunctionalPatterns, functionalPatternGuidance } from './functional-patterns.js';
 
 function transitionForDecision(state, safety, gate, nextTest) {
   if (safety.route === 'stop') {
@@ -104,7 +105,14 @@ export async function runPipelineV9({
   let providerCallFailed = false;
   let aiLatencyMs = 0;
   let assistedResponse = null;
-  let assistedHypotheses = asArray(modelHypotheses);
+  const functionalPatterns = detectFunctionalPatterns(conversationEvidence);
+  const patternGuidance = functionalPatternGuidance(functionalPatterns);
+  const patternHypotheses = patternGuidance.flatMap(pattern => pattern.causeFamilies.map((statement, index) => ({
+    code: `${pattern.id}_${index + 1}`,
+    statement,
+    missingEvidence: [pattern.question.evidenceKey],
+  })));
+  let assistedHypotheses = [...asArray(modelHypotheses), ...patternHypotheses];
   let hypotheses = generateHypotheses({ ledger, classification, modelProposals: assistedHypotheses });
   let noProgress = detectNoProgress(previousObservations, problem);
   let decision = selectDiagnosticRoute({ classification, safety, ledger, noProgress });
@@ -153,14 +161,15 @@ export async function runPipelineV9({
     ? buildDirectHelp({ classification, hypotheses, safety })
     : null;
 
-  const deterministicResponse = buildFallbackConsumerResponse({
-    language, problem, ledger, noProgress, safety, classification, hypotheses, nextTest, directHelp,
+  let deterministicResponse = buildFallbackConsumerResponse({
+    language, problem, ledger, noProgress, safety, classification, hypotheses, nextTest, directHelp, functionalPatterns,
   });
   let aiFallbackReason = typeof reasoner === 'function' ? null : (aiUnavailableReason || 'ai_unavailable');
   if (!['stop', 'professional'].includes(safety.route) && typeof reasoner === 'function') {
     const aiStarted = Date.now();
     try {
       providerCallStarted = true;
+      const evidenceRestrictions = evidenceAxisRestrictions({ ledger, observations: previousObservations, rawText: conversationEvidence });
       const assisted = await reasoner({
         language, originalUserInput: problem, classification, safety,
         evidenceLedger: ledger.entries.map(entry => ({
@@ -176,10 +185,13 @@ export async function runPipelineV9({
           answerKind: cleanText(entry.provenance?.answerKind, 80) || null,
           semanticClaim: cleanText(entry.provenance?.semanticClaim, 500) || null,
         })),
-        answeredEvidenceAxes: [...handledEvidenceAxes({ ledger, rawText: conversationEvidence })],
+        answeredEvidenceKeys: evidenceRestrictions.answeredEvidenceKeys,
+        knownEvidenceKeys: evidenceRestrictions.knownEvidenceKeys,
+        forbiddenNextEvidenceKeys: evidenceRestrictions.forbiddenNextEvidenceKeys,
+        answeredEvidenceAxes: evidenceRestrictions.knownEvidenceKeys,
         hypotheses: hypotheses.filter(item => item.code !== 'unclassified_failure' && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(item.statement)),
         contradictions, previousTurns: asArray(previousObservations), route: decision.route,
-        repairGate, noProgress, capabilities,
+        repairGate, noProgress, capabilities, functionalPatterns, functionalPatternGuidance: patternGuidance,
       });
       aiCalls = 1;
       providerCallCompleted = true;
@@ -210,6 +222,12 @@ export async function runPipelineV9({
   const consumerValidation = validateConsumerResponseV1(assistedResponse, {
     language, repairGate, safety, ledger, fallback: deterministicResponse, capabilities,
   });
+  if (!consumerValidation.valid && assistedResponse) {
+    deterministicResponse = buildFallbackConsumerResponse({
+      language, problem, ledger, noProgress, safety, classification, hypotheses, nextTest, directHelp, functionalPatterns,
+      fallbackReason: consumerValidation.reason,
+    });
+  }
   const consumerResponse = consumerValidation.valid ? consumerValidation.response : deterministicResponse;
   const aiPreValidationResponse = mode === 'tester' ? preValidationSnapshot(assistedResponse) : null;
   if (!consumerValidation.valid && assistedResponse && !aiFallbackReason) aiFallbackReason = consumerValidation.reason;
