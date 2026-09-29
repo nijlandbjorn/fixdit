@@ -12,6 +12,7 @@ import { createDiagnosticState, transitionDiagnosticState } from './state-machin
 import { buildDirectHelp, selectDiagnosticRoute } from './decision-layer.js';
 import { detectNoProgress } from './no-progress.js';
 import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, validateConsumerResponseV1 } from './consumer-response-v1.js';
+import { handledEvidenceAxes } from './diagnostic-axis.js';
 import { classificationFromUserText } from './raw-classification.js';
 
 function transitionForDecision(state, safety, gate, nextTest) {
@@ -175,10 +176,7 @@ export async function runPipelineV9({
           answerKind: cleanText(entry.provenance?.answerKind, 80) || null,
           semanticClaim: cleanText(entry.provenance?.semanticClaim, 500) || null,
         })),
-        answeredEvidenceAxes: ledger.entries
-          .filter(entry => entry.status === 'active' && entry.subject === 'user_answer')
-          .map(entry => cleanText(entry.provenance?.evidenceKey || entry.predicate, 120))
-          .filter(Boolean),
+        answeredEvidenceAxes: [...handledEvidenceAxes({ ledger, rawText: conversationEvidence })],
         hypotheses: hypotheses.filter(item => item.code !== 'unclassified_failure' && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(item.statement)),
         contradictions, previousTurns: asArray(previousObservations), route: decision.route,
         repairGate, noProgress, capabilities,

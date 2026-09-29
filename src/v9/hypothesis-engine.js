@@ -101,16 +101,21 @@ function normalizeProposal(proposal, index, ledger) {
   const answered = activeEvidence(ledger).filter(entry => entry.subject === 'user_answer');
   const missingEvidence = asArray(proposal?.missingEvidence).map(value => cleanText(value, 120)).filter(Boolean);
   const answeredMissing = answered.filter(entry => missingEvidence.some(axis => normalizeEvidenceAxis(axis) === normalizeEvidenceAxis(entry.provenance?.evidenceKey || entry.predicate)));
+  const positiveAnswers = answeredMissing.filter(entry => entry.polarity === 'present');
+  const negativeAnswers = answeredMissing.filter(entry => entry.polarity === 'absent');
+  const predictsVisibleDamage = missingEvidence.some(axis => normalizeEvidenceAxis(axis) === 'visible_damage')
+    && /visible|zichtbaar|surface|oppervlak|damage|schade|beschad|tear|scheur|fray|rafel|riss/i.test(`${code} ${statement}`);
+  const weakeningAnswers = predictsVisibleDamage ? negativeAnswers : [];
   const base = Math.min(0.5, clamp01(proposal?.score ?? 0.35));
-  const score = clamp01(base + Number(proposal?.confirmedSupportCount || 0) * 0.1 + answeredMissing.length * 0.1 - opposingEvidenceIds.length * 0.2);
+  const score = clamp01(base + Number(proposal?.confirmedSupportCount || 0) * 0.1 + positiveAnswers.length * 0.1 - (opposingEvidenceIds.length + weakeningAnswers.length) * 0.2);
   return immutable({
     hypothesisId: cleanText(proposal?.hypothesisId, 160) || `hy_${stableHash([ledger?.runId, code, statement])}`,
     code,
     statement,
     score,
-    status: opposingEvidenceIds.length ? 'challenged' : 'active',
-    supportingEvidenceIds: Object.freeze([...new Set([...supportingEvidenceIds, ...answeredMissing.map(entry => entry.evidenceId)])]),
-    opposingEvidenceIds: Object.freeze(opposingEvidenceIds),
+    status: opposingEvidenceIds.length || weakeningAnswers.length ? 'challenged' : 'active',
+    supportingEvidenceIds: Object.freeze([...new Set([...supportingEvidenceIds, ...positiveAnswers.map(entry => entry.evidenceId)])]),
+    opposingEvidenceIds: Object.freeze([...new Set([...opposingEvidenceIds, ...weakeningAnswers.map(entry => entry.evidenceId)])]),
     missingEvidence: Object.freeze(missingEvidence.filter(axis => !answeredMissing.some(entry => normalizeEvidenceAxis(axis) === normalizeEvidenceAxis(entry.provenance?.evidenceKey || entry.predicate)))),
     falsifiers: Object.freeze(asArray(proposal?.falsifiers).map(value => cleanText(value, 300)).filter(Boolean)),
   });

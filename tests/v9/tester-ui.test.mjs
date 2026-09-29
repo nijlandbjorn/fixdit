@@ -55,6 +55,13 @@ test('mobile-first tester-UI bevat safety-, evidence-, next-test- en Repair-Gate
   assert.match(html, /answerKind:optionId/);
   assert.match(html, /evidenceKey:activeQuestion\.evidenceKey/);
   assert.match(html, /semanticClaim:claim/);
+  assert.match(html, /data-testid="start-diagnosis"/);
+  assert.match(html, /data-testid="add-photo"/);
+  assert.match(html, /data-testid="submit-answer"/);
+  assert.match(html, /button\.dataset\.testid='answer-option-'\+option\.id/);
+  assert.match(html, /el\('start'\)\.addEventListener\('click',\(\)=>send\(el\('problem'\)\.value\)\)/);
+  assert.match(html, /el\('photo'\)\.addEventListener\('change'/);
+  assert.match(html, /button\.addEventListener\('click',\(\)=>selectSemanticAnswer\(option\.id\)\)/);
   assert.doesNotMatch(html, /ondersteuningsscore/);
 });
 

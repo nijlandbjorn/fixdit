@@ -33,15 +33,15 @@ export function renderV9TesterHtml() {
   <div class="steps" aria-label="Voortgang"><div class="step active" id="stepDescribe"><b>1</b>Beschrijving</div><div class="step" id="stepQuestions"><b>2</b>Vervolgvragen</div><div class="step" id="stepDiagnosis"><b>3</b>Diagnose</div></div>
   <section class="card start-card" id="startCard">
     <label class="label" for="problem">Wat is er kapot?</label>
-    <textarea class="problem" id="problem" placeholder="Beschrijf wat je ziet, hoort of merkt…" maxlength="500"></textarea>
+    <textarea class="problem" id="problem" data-testid="problem-input" placeholder="Beschrijf wat je ziet, hoort of merkt…" maxlength="500"></textarea>
     <label class="label" for="aiModel">Workers Free-model (bake-off)</label>
     <select id="aiModel">
       <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">Llama 3.3 70B FP8 Fast</option>
       <option value="@cf/google/gemma-4-26b-a4b-it">Gemma 4 26B</option>
       <option value="@cf/nvidia/nemotron-3-120b-a12b">Nemotron 3 120B</option>
     </select>
-    <div class="upload"><input id="photo" type="file" accept="image/*"><span id="photoLabel">Foto toevoegen (optioneel)</span></div>
-    <div class="actions"><button class="primary" id="start">Diagnose starten</button><button class="secondary" id="reset" type="button">Opnieuw beginnen</button></div>
+    <div class="upload"><input id="photo" data-testid="add-photo" type="file" accept="image/*"><span id="photoLabel">Foto toevoegen (optioneel)</span></div>
+    <div class="actions"><button class="primary" id="start" data-testid="start-diagnosis" type="button">Diagnose starten</button><button class="secondary" id="reset" type="button">Opnieuw beginnen</button></div>
     <div class="status" id="status" role="status" aria-live="polite"></div>
   </section>
   <section class="benefits" id="benefits"><div class="benefit"><strong>Veilig eerst</strong><span>Risico’s worden vóór elke volgende stap gecontroleerd.</span></div><div class="benefit"><strong>Stap voor stap</strong><span>Je krijgt één concrete controle tegelijk.</span></div><div class="benefit"><strong>Geen giswerk</strong><span>Reparatieadvies blijft dicht tot er genoeg bewijs is.</span></div></section>
@@ -51,7 +51,7 @@ export function renderV9TesterHtml() {
     <section class="card professional hidden" id="noProgressCard"></section>
     <section class="card"><h2>Wat we weten</h2><ul class="facts" id="facts"></ul></section>
     <section class="card"><h2>Mogelijke oorzaken</h2><ol class="hypotheses" id="hypotheses"></ol></section>
-    <section class="card next hidden" id="nextCard"><h2>Beste volgende controle</h2><div class="question" id="nextQuestion"></div><p id="nextWhy"></p><div class="answers" id="booleanAnswers"><button class="answer" data-answer="Ja">Ja</button><button class="answer" data-answer="Nee">Nee</button><button class="answer" data-answer="Weet ik niet">Weet ik niet</button></div><form class="free-answer" id="answerForm"><input id="freeAnswer" placeholder="Geef een kort antwoord"><button class="primary">Stuur</button></form></section>
+    <section class="card next hidden" id="nextCard"><h2>Beste volgende controle</h2><div class="question" id="nextQuestion"></div><p id="nextWhy"></p><div class="answers" id="booleanAnswers"><button class="answer" data-answer="Ja">Ja</button><button class="answer" data-answer="Nee">Nee</button><button class="answer" data-answer="Weet ik niet">Weet ik niet</button></div><form class="free-answer" id="answerForm"><input id="freeAnswer" placeholder="Geef een kort antwoord"><button class="primary" data-testid="submit-answer" type="submit">Stuur</button></form></section>
     <section class="card gate closed" id="gateCard"></section>
     <section class="card hidden" id="repairCard"><h2>Veilige reparatiestappen</h2><ol class="repair-steps" id="repairSteps"></ol></section>
     <div class="timeline" id="timeline"></div>
@@ -88,7 +88,7 @@ function renderQuestion(response){
   el('nextWhy').textContent=question.why?'Waarom deze vraag? '+question.why:'';
   const choices=['single_choice','multi_choice','action_check'].includes(question.type);
   const answers=el('booleanAnswers');answers.classList.toggle('hidden',!choices);answers.innerHTML='';
-  if(choices){for(const option of question.options||[]){const button=document.createElement('button');button.type='button';button.className='answer';button.dataset.optionId=option.id;button.textContent=option.label;button.addEventListener('click',()=>selectSemanticAnswer(option.id));answers.appendChild(button)}}
+  if(choices){for(const option of question.options||[]){const button=document.createElement('button');button.type='button';button.className='answer';button.dataset.optionId=option.id;button.dataset.testid='answer-option-'+option.id;button.textContent=option.label;button.addEventListener('click',()=>selectSemanticAnswer(option.id));answers.appendChild(button)}}
   const form=el('answerForm');form.classList.toggle('hidden',choices||question.type==='photo');
   el('freeAnswer').type=question.type==='number'?'number':'text';el('freeAnswer').placeholder=question.type==='number'?'Vul een getal in':'Geef een kort antwoord';
 }

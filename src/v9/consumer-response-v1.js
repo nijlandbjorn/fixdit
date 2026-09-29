@@ -1,5 +1,5 @@
 import { asArray, cleanText, immutable, stableHash } from './contracts.js';
-import { handledEvidenceAxes, normalizeEvidenceAxis, sameAxisAlternativeQuestion } from './diagnostic-axis.js';
+import { canonicalQuestionEvidenceAxis, handledEvidenceAxes, normalizeEvidenceAxis, sameAxisAlternativeQuestion } from './diagnostic-axis.js';
 
 export const CONSUMER_RESPONSE_CONTRACT_VERSION = 'v1';
 export const QUESTION_TYPES = Object.freeze(['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check']);
@@ -295,7 +295,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
     : ['single_choice', 'multi_choice', 'action_check'].includes(questionType)
       ? canonicalQuestionOptions(questionText, selected)
     : { options: [], evidenceMapping: {} };
-  const evidenceKey = normalizeEvidenceAxis(q?.evidenceKey);
+  const evidenceKey = canonicalQuestionEvidenceAxis(q);
   const nextQuestion = q && questionText ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash([questionText, evidenceKey])}`, type: questionType, text: questionText, options: canonical.options, evidenceKey, evidenceMapping: canonical.evidenceMapping, why: cleanText(q.why, 240) } : null;
   if (nextQuestion && !QUESTION_TYPES.includes(nextQuestion.type)) return fail('invalid_question_type');
   if (nextQuestion && contentChoices.length && !['single_choice', 'multi_choice'].includes(nextQuestion.type)) return fail('choices_on_non_choice_question');

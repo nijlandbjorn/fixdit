@@ -4,6 +4,7 @@ import test from 'node:test';
 import { buildFallbackConsumerResponse, DEFAULT_INTERACTION_CAPABILITIES, QUESTION_TYPES, validateConsumerResponseV1 } from '../../src/v9/consumer-response-v1.js';
 import { ledgerFromInput } from '../../src/v9/evidence-ledger.js';
 import { detectNoProgress } from '../../src/v9/no-progress.js';
+import { canonicalQuestionEvidenceAxis, handledEvidenceAxes, normalizeEvidenceAxis } from '../../src/v9/diagnostic-axis.js';
 import { runPipelineV9 } from '../../src/v9/pipeline.js';
 import { createWorkersAiReasoner, normalizeWorkersAiResponse, REASONING_MODEL, resolveReasoningModel } from '../../src/v9/workers-ai-adapter.js';
 
@@ -171,7 +172,9 @@ test('reasoner ontvangt actieve semantische evidence-assen voor echte multi-turn
       } };
     },
   });
-  assert.deepEqual(received.answeredEvidenceAxes, ['cable_fault_location']);
+  assert.ok(received.answeredEvidenceAxes.includes('connection_location'));
+  assert.ok(received.answeredEvidenceAxes.includes('movement_dependency'));
+  assert.ok(received.answeredEvidenceAxes.includes('affected_side'));
   assert.equal(received.evidenceLedger.find(entry => entry.evidenceKey === 'cable_fault_location').answerKind, 'choice');
   assert.equal(result.consumerResponse.responseSource, 'ai');
   assert.equal(result.consumerResponse.nextQuestion.evidenceKey, 'connector_rotation');
@@ -210,6 +213,49 @@ test('beantwoorde modelhypothese-as verhoogt support en verdwijnt uit missing ev
   assert.ok(afterHypothesis.score > beforeHypothesis.score);
   assert.equal(afterHypothesis.missingEvidence.includes('kabel_schade'), false);
   assert.ok(afterHypothesis.supportingEvidenceIds.length > beforeHypothesis.supportingEvidenceIds.length);
+});
+
+test('canonical evidence-assen koppelen provideraliases en betrouwbare raw feiten', () => {
+  assert.equal(normalizeEvidenceAxis('kabel_kwaliteit'), 'visible_damage');
+  assert.equal(normalizeEvidenceAxis('cable_condition'), 'visible_damage');
+  assert.equal(canonicalQuestionEvidenceAxis({
+    evidenceKey: 'geluid_locatie', text: 'Waar gebeurt het geluid?', choices: ['Alleen links', 'Alleen rechts', 'Beide kanten'],
+  }), 'affected_side');
+  const axes = handledEvidenceAxes({ rawText: 'Mijn koptelefoon geeft links alleen geluid als ik de kabel beweeg.' });
+  assert.ok(axes.has('affected_side'));
+  assert.ok(axes.has('movement_dependency'));
+});
+
+test('negatieve zichtbare-schade-evidence versterkt een schadehypothese niet', async () => {
+  const proposal = { code: 'visible_cable_damage', statement: 'Zichtbare kabelschade kan de onderbreking veroorzaken.', missingEvidence: ['kabel_kwaliteit'] };
+  const before = await runPipelineV9({ problem: 'Mijn kabel hapert bij beweging.', modelHypotheses: [proposal] });
+  const after = await runPipelineV9({
+    problem: 'Er is geen zichtbare schade.',
+    previousObservations: ['Mijn kabel hapert bij beweging.', { text: 'Nee', semanticClaim: 'Er is geen zichtbare schade.', evidenceKey: 'visible_damage', answerKind: 'no', rawAnswer: 'Nee' }],
+    modelHypotheses: [proposal],
+  });
+  const beforeHypothesis = before.hypotheses.find(item => item.code === proposal.code);
+  const afterHypothesis = after.hypotheses.find(item => item.code === proposal.code);
+  assert.ok(afterHypothesis.score < beforeHypothesis.score);
+  assert.equal(afterHypothesis.supportingEvidenceIds.length, beforeHypothesis.supportingEvidenceIds.length);
+  assert.ok(afterHypothesis.opposingEvidenceIds.length > beforeHypothesis.opposingEvidenceIds.length);
+  assert.equal(afterHypothesis.status, 'challenged');
+});
+
+test('AI mag een reeds uit raw input bekende affected-side-as niet opnieuw vragen', () => {
+  const problem = 'Mijn koptelefoon geeft links alleen geluid als ik de kabel beweeg.';
+  const ledger = ledgerFromInput({ problem });
+  const response = {
+    object: { displayName: 'koptelefoon', category: 'audio', confidence: 'high' },
+    summary: problem,
+    knownFacts: [{ text: problem, evidenceIds: [ledger.entries[0].evidenceId] }],
+    likelyCauses: [{ label: 'Een instabiele externe verbinding.', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Bekijk de bereikbare kabel.', actionClass: 'observation' }],
+    nextQuestion: { type: 'single_choice', text: 'Waar gebeurt het geluid?', evidenceKey: 'geluid_locatie', choices: ['Alleen links', 'Alleen rechts', 'Beide kanten'] },
+    uncertainty: 'De precieze oorzaak is nog niet bevestigd.', repairGuidance: null,
+  };
+  const result = validateConsumerResponseV1(response, { ledger, repairGate: { open: false }, fallback: {} });
+  assert.equal(result.reason, 'already_known_evidence_axis');
 });
 
 test('Preview reasoning model is configureerbaar via een gesloten gratis-kandidatenlijst', async () => {
