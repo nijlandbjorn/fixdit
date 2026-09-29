@@ -98,6 +98,53 @@ test('mechanisme-fallbacks vermijden objectvreemde controles over domeinen', asy
   }
 });
 
+test('software/configuratie-fallback vermijdt elektrische kabeladviezen zonder aanleiding', async () => {
+  const result = await runPipelineV9({ problem: 'Mijn router staat aan maar wifi valt steeds weg.' });
+  const rendered = JSON.stringify(result.consumerResponse);
+  assert.match(rendered, /status|verbinding|gebruikssituatie/i);
+  assert.doesNotMatch(rendered, /beschadigde kabel|stekker|laadteken|batterij|foutcode/i);
+});
+
+test('reasoner ontvangt actieve semantische evidence-assen voor echte multi-turn versmalling', async () => {
+  const report = 'Mijn koptelefoon geeft links alleen geluid als ik de kabel beweeg.';
+  const previousObservations = [
+    report,
+    {
+      text: 'Ook wanneer de kabel bij de koptelefoon wordt bewogen.',
+      semanticClaim: 'Het geluid valt uit wanneer de kabel bij de koptelefoon wordt bewogen.',
+      evidenceKey: 'cable_fault_location',
+      questionId: 'q_location',
+      answerKind: 'choice',
+      rawAnswer: 'Bij de koptelefoon',
+    },
+  ];
+  let received;
+  const result = await runPipelineV9({
+    problem: previousObservations.at(-1).semanticClaim,
+    previousObservations,
+    reasoner: async input => {
+      received = input;
+      const answer = input.evidenceLedger.find(entry => entry.evidenceKey === 'cable_fault_location' && entry.status === 'active');
+      return { hypotheses: [{ code: 'plug_strain_relief', statement: 'De kabelovergang bij de koptelefoon kan een onderbreking hebben.', missingEvidence: ['connector_rotation'] }], consumerResponse: {
+        object: { displayName: 'koptelefoon', category: 'audioapparaat', confidence: 'high' },
+        summary: 'Het linkerkanaal valt uit wanneer de kabel bij de koptelefoon beweegt.',
+        knownFacts: [{ text: answer.semanticClaim, evidenceIds: [answer.evidenceId] }],
+        likelyCauses: [{ label: 'Een kabelbreuk bij de trekontlasting van de koptelefoon.', basis: 'hypothesis' }, { label: 'Een los extern contact bij de aansluiting van de oorschelp.', basis: 'hypothesis' }],
+        safeFirstChecks: [{ text: 'Bekijk de kabelovergang bij de koptelefoon op een zichtbare knik.', actionClass: 'observation' }],
+        nextQuestion: { type: 'single_choice', text: 'Verandert het geluid wanneer alleen de stekker wordt gedraaid?', evidenceKey: 'connector_rotation' },
+        uncertainty: 'De exacte plek van de onderbreking is nog niet bevestigd.', repairGuidance: null,
+      } };
+    },
+  });
+  assert.deepEqual(received.answeredEvidenceAxes, ['cable_fault_location']);
+  assert.equal(received.evidenceLedger.find(entry => entry.evidenceKey === 'cable_fault_location').answerKind, 'choice');
+  assert.equal(result.consumerResponse.responseSource, 'ai');
+  assert.equal(result.consumerResponse.nextQuestion.evidenceKey, 'connector_rotation');
+  assert.doesNotMatch(result.consumerResponse.nextQuestion.text, /waar.*kabel/i);
+  assert.match(result.consumerResponse.likelyCauses[0].label, /trekontlasting/i);
+  assert.equal(result.repairGate.open, false);
+});
+
 test('Preview reasoning model is configureerbaar via een gesloten gratis-kandidatenlijst', async () => {
   const candidate = '@cf/zai-org/glm-4.7-flash';
   assert.equal(resolveReasoningModel({ V9_AI_MODEL: candidate }), candidate);

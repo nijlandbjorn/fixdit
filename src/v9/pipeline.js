@@ -162,7 +162,23 @@ export async function runPipelineV9({
       providerCallStarted = true;
       const assisted = await reasoner({
         language, originalUserInput: problem, classification, safety,
-        evidenceLedger: ledger.entries.map(entry => ({ evidenceId: entry.evidenceId, source: entry.source, subject: entry.subject, predicate: entry.predicate, value: entry.value, polarity: entry.polarity, status: entry.status })),
+        evidenceLedger: ledger.entries.map(entry => ({
+          evidenceId: entry.evidenceId,
+          source: entry.source,
+          subject: entry.subject,
+          predicate: entry.predicate,
+          value: entry.value,
+          polarity: entry.polarity,
+          status: entry.status,
+          turnNumber: entry.turnNumber,
+          evidenceKey: cleanText(entry.provenance?.evidenceKey, 120) || null,
+          answerKind: cleanText(entry.provenance?.answerKind, 80) || null,
+          semanticClaim: cleanText(entry.provenance?.semanticClaim, 500) || null,
+        })),
+        answeredEvidenceAxes: ledger.entries
+          .filter(entry => entry.status === 'active' && entry.subject === 'user_answer')
+          .map(entry => cleanText(entry.provenance?.evidenceKey || entry.predicate, 120))
+          .filter(Boolean),
         hypotheses, contradictions, previousTurns: asArray(previousObservations), route: decision.route,
         repairGate, noProgress, nextQuestion: nextTest, capabilities,
       });

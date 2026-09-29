@@ -48,7 +48,8 @@ function fallbackMechanism(text) {
   if (/\b(?:lek|lekt|lekkage|vocht|druip|water onder|leak|leaking|moisture|drip|leckt|undicht|feucht|tropf)\b/i.test(value)) return 'leak';
   if (/\b(?:water|afvoer|doorstroom|druk|kraan|pomp|spoelt|flow|drain|pressure|faucet|tap|pump|wasser|abfluss|druck|hahn|pumpe)\b/i.test(value)) return 'flow';
   if (/\b(?:heet|warm|koelt|vriest|ijs|temperatuur|hot|heat|cool|freez|ice|heiß|warm|kühl|frier|eis)\b/i.test(value)) return 'thermal';
-  if (/\b(?:laadt|stroom|stekker|kabel|scherm|toets|lamp|elektr|wifi|router|netwerk|charging|power|plug|cable|screen|key|light|network|strom|stecker|kabel|bildschirm|taste|licht|netzwerk)\b/i.test(value)) return 'powered';
+  if (/\b(?:wifi|router|netwerk|software|app|instelling|verbinding|network|configuration|setting|connection|netzwerk|software|einstellung|verbindung)\b/i.test(value)) return 'software';
+  if (/\b(?:laadt|stroom|stekker|kabel|scherm|toets|lamp|elektr|charging|power|plug|cable|screen|key|light|strom|stecker|kabel|bildschirm|taste|licht)\b/i.test(value)) return 'powered';
   if (/\b(?:scheef|klemt|loopt aan|slingert|barst|kras|vervorm|crooked|stuck|rubs|wobbl|crack|scratch|misalign|schief|klemmt|schleift|eiert|riss|kratzer)\b/i.test(value)) return 'alignment';
   if (/\b(?:rolt|draait|beweegt|zakt|hangt|klikt|veer|mechan|rolls?|turns?|moves?|drops|hangs?|clicks?|spring|rollt|dreht|bewegt|sinkt|hängt|klickt|feder)\b/i.test(value)) return 'mechanical';
   return 'unknown';
@@ -59,6 +60,7 @@ function fallbackChecks(language, mechanism, objectName = '') {
     mechanical: [`Kijk van buiten of ${object} zichtbaar geblokkeerd, verbogen of verschoven is.`, `Let zonder kracht te zetten op weerstand, speling of een afwijkend geluid bij normale beweging.`],
     alignment: [`Bekijk van buiten waar ${object} aanloopt, klemt of uit lijn staat.`, `Vergelijk de stand en vrije ruimte aan beide zijden zonder iets los te maken.`],
     powered: [`Controleer ${object} van buiten op een losse of beschadigde kabel, stekker of aansluiting die bij dit probleem hoort.`, `Let bij ${object} op welk normaal zichtbaar lampje, scherm of laadteken wel of niet verschijnt.`],
+    software: [`Let bij ${object} op welke normale status of verbinding zichtbaar verandert wanneer het probleem optreedt.`, `Vergelijk het gedrag van ${object} in één andere normale gebruikssituatie zonder instellingen te wijzigen.`],
     flow: [`Controleer bij ${object} de normaal bereikbare toevoer of afvoer op een zichtbare knik of blokkade.`, `Vergelijk de doorstroming van ${object} tijdens normaal gebruik zonder onderdelen te openen.`],
     leak: [`Dep ${object} aan de buitenkant droog en kijk waar het vocht als eerste opnieuw zichtbaar wordt.`, `Controleer van buiten of een bereikbare koppeling, rand of slang van ${object} zichtbaar nat is.`],
     thermal: [`Controleer van buiten waar bij ${object} warmte, kou of ijsvorming het duidelijkst optreedt.`, `Kijk of een deur, rooster of afdichting van ${object} zichtbaar niet goed aansluit.`],
@@ -71,6 +73,7 @@ function fallbackQuestion(language, mechanism) {
     mechanical: ['Voel je weerstand wanneer je het onderdeel langzaam en zonder kracht beweegt?', 'Do you feel resistance when moving the part slowly without force?', 'Spürst du Widerstand, wenn du das Teil langsam und ohne Kraft bewegst?'],
     alignment: ['Op welke plek raakt of klemt het onderdeel?', 'At which point does the part rub or jam?', 'An welcher Stelle schleift oder klemmt das Teil?'],
     powered: ['Blijft de werking veranderen wanneer de bereikbare kabel of stekker stil blijft liggen?', 'Does the behavior still change while the accessible cable or plug remains still?', 'Ändert sich das Verhalten weiterhin, wenn das zugängliche Kabel oder der Stecker stillliegt?'],
+    software: ['Treedt het probleem ook op in een andere normale gebruikssituatie?', 'Does the problem also occur in another normal usage situation?', 'Tritt das Problem auch in einer anderen normalen Nutzungssituation auf?'],
     flow: ['Is de doorstroming vanaf het begin zwak?', 'Is the flow weak from the start?', 'Ist der Durchfluss von Anfang an schwach?'],
     leak: ['Waar verschijnt het vocht als eerste?', 'Where does the moisture first appear?', 'Wo tritt die Feuchtigkeit zuerst auf?'],
     thermal: ['Waar is het temperatuurverschil of de ijsvorming het sterkst?', 'Where is the temperature difference or ice buildup strongest?', 'Wo ist der Temperaturunterschied oder die Eisbildung am stärksten?'],
