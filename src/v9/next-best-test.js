@@ -1,5 +1,6 @@
 import { asArray, cleanText, immutable, stableHash } from './contracts.js';
 import { buildPhotoRequest } from './photo-request.js';
+import { handledEvidenceAxes, normalizeEvidenceAxis } from './diagnostic-axis.js';
 
 const VISUAL_FACTS = /location|damage|attachment|material|crack|leak|visible|condition/i;
 const BOOLEAN_FACTS = new Set(['water_supply', 'known_good_supply', 'inlet_hose_condition', 'inlet_filter_condition', 'aquastop_state', 'door_lock_state', 'external_display', 'water_in_drum', 'wired_connection', 'manual_light', 'reservoir_level', 'gas_supply_state', 'growth_or_movement', 'failure_boundary']);
@@ -190,12 +191,12 @@ export function selectNextBestTest(input, { previousObservations = [], axisOffse
   const asked = new Set(asArray(previousObservations)
     .map(item => cleanText(item?.answerTo, 500).toLocaleLowerCase())
     .filter(Boolean));
-  const answeredAxes = new Set(asArray(previousObservations).map(item => cleanText(item?.evidenceKey, 160)).filter(Boolean));
+  const answeredAxes = handledEvidenceAxes({ observations: previousObservations, rawText: input?.rawEvidenceText });
   const rawEvidence = asArray(previousObservations).map(item => cleanText(item?.semanticClaim || item?.text || item, 500)).concat(cleanText(input?.rawEvidenceText, 500)).join(' ');
   if (/\b(?:lekt|leak(?:s|ing)?|undicht)\b/i.test(rawEvidence) && /\b(?:bij|onder|rond|langs|aan\s+de|koppeling|aansluiting|at|under|around|near|coupling|connection|bei|unter|um|kupplung|anschluss)\b/i.test(rawEvidence)) answeredAxes.add('leak_location');
   if (/\b(?:start|begint|draait|gaat\s+aan|turns?\s+on|starts?|beginnt|springt\s+an)\b/i.test(rawEvidence)) answeredAxes.add('failure_boundary');
   const candidates = rankNextBestTests(input)
-    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()) && !answeredAxes.has(candidate.evidenceKey || candidate.code));
+    .filter(candidate => !asked.has(cleanText(candidate.prompt, 500).toLocaleLowerCase()) && !answeredAxes.has(normalizeEvidenceAxis(candidate.evidenceKey || candidate.code)));
   if (!candidates.length) return null;
   return candidates[Math.min(Math.max(0, axisOffset), candidates.length - 1)] || candidates[0];
 }

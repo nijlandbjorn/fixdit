@@ -1,4 +1,5 @@
 import { asArray, cleanText, immutable, stableHash } from './contracts.js';
+import { handledEvidenceAxes, normalizeEvidenceAxis, sameAxisAlternativeQuestion } from './diagnostic-axis.js';
 
 export const CONSUMER_RESPONSE_CONTRACT_VERSION = 'v1';
 export const QUESTION_TYPES = Object.freeze(['single_choice', 'multi_choice', 'number', 'short_text', 'photo', 'action_check']);
@@ -48,6 +49,7 @@ function fallbackMechanism(text) {
   if (/\b(?:lek|lekt|lekkage|vocht|druip|water onder|leak|leaking|moisture|drip|leckt|undicht|feucht|tropf)\b/i.test(value)) return 'leak';
   if (/\b(?:water|afvoer|doorstroom|druk|kraan|pomp|spoelt|flow|drain|pressure|faucet|tap|pump|wasser|abfluss|druck|hahn|pumpe)\b/i.test(value)) return 'flow';
   if (/\b(?:heet|warm|koelt|vriest|ijs|temperatuur|hot|heat|cool|freez|ice|heiß|warm|kühl|frier|eis)\b/i.test(value)) return 'thermal';
+  if (/\b(?:kabel|stekker|connector|cable|plug|stecker)\b.{0,60}\b(?:beweeg|beweg|draai|hoek|move|wiggl|turn|angle)\b|\b(?:beweeg|beweg|draai|hoek|move|wiggl|turn|angle)\b.{0,60}\b(?:kabel|stekker|connector|cable|plug|stecker)\b/i.test(value)) return 'connection';
   if (/\b(?:wifi|router|netwerk|software|app|instelling|verbinding|network|configuration|setting|connection|netzwerk|software|einstellung|verbindung)\b/i.test(value)) return 'software';
   if (/\b(?:laadt|stroom|stekker|kabel|scherm|toets|lamp|elektr|charging|power|plug|cable|screen|key|light|strom|stecker|kabel|bildschirm|taste|licht)\b/i.test(value)) return 'powered';
   if (/\b(?:scheef|klemt|loopt aan|slingert|barst|kras|vervorm|crooked|stuck|rubs|wobbl|crack|scratch|misalign|schief|klemmt|schleift|eiert|riss|kratzer)\b/i.test(value)) return 'alignment';
@@ -60,6 +62,7 @@ function fallbackChecks(language, mechanism, objectName = '') {
     mechanical: [`Kijk van buiten of ${object} zichtbaar geblokkeerd, verbogen of verschoven is.`, `Let zonder kracht te zetten op weerstand, speling of een afwijkend geluid bij normale beweging.`],
     alignment: [`Bekijk van buiten waar ${object} aanloopt, klemt of uit lijn staat.`, `Vergelijk de stand en vrije ruimte aan beide zijden zonder iets los te maken.`],
     powered: [`Controleer ${object} van buiten op een losse of beschadigde kabel, stekker of aansluiting die bij dit probleem hoort.`, `Let bij ${object} op welk normaal zichtbaar lampje, scherm of laadteken wel of niet verschijnt.`],
+    connection: [`Bekijk de bereikbare kabel en stekker van ${object} op een zichtbare knik, scheur of losse buitenkant.`, `Let op bij welk bereikbaar uiteinde een kleine normale beweging het gedrag verandert, zonder kracht te zetten.`],
     software: [`Let bij ${object} op welke normale status of verbinding zichtbaar verandert wanneer het probleem optreedt.`, `Vergelijk het gedrag van ${object} in één andere normale gebruikssituatie zonder instellingen te wijzigen.`],
     flow: [`Controleer bij ${object} de normaal bereikbare toevoer of afvoer op een zichtbare knik of blokkade.`, `Vergelijk de doorstroming van ${object} tijdens normaal gebruik zonder onderdelen te openen.`],
     leak: [`Dep ${object} aan de buitenkant droog en kijk waar het vocht als eerste opnieuw zichtbaar wordt.`, `Controleer van buiten of een bereikbare koppeling, rand of slang van ${object} zichtbaar nat is.`],
@@ -74,6 +77,7 @@ function fallbackCauses(language, mechanism, objectName = '') {
     mechanical: [`Een zichtbare blokkade kan de vrije beweging van ${object} hinderen.`, `Een verschoven of vervormd bewegend deel kan de teruggaande beweging remmen.`],
     alignment: [`Een verschoven bevestigingspunt kan ${object} uit lijn trekken.`, `Plaatselijke vervorming kan zorgen dat ${object} aanloopt of klemt.`],
     powered: [`Een onderbreking in het bereikbare externe voedings- of signaalpad kan het gedrag veroorzaken.`, `De normale externe bediening kan geen stabiel signaal aan ${object} geven.`],
+    connection: [`Een breuk in de bereikbare kabel kan het signaal bij beweging onderbreken.`, `Een los bereikbaar stekkercontact kan het signaal afhankelijk van de stand maken.`],
     software: [`De storing kan beperkt zijn tot één gebruikssituatie of verbonden apparaat.`, `Een instabiele normale verbinding of configuratiestatus kan het gedrag veroorzaken.`],
     flow: [`Een beperking in de normaal bereikbare toevoer kan de doorstroming verminderen.`, `Een bereikbare afvoer of uitlaat kan gedeeltelijk geblokkeerd zijn.`],
     leak: [`Een bereikbare koppeling of afdichtrand kan plaatselijk lekken.`, `Een zichtbaar leiding-, slang- of oppervlaktedeel kan beschadigd zijn.`],
@@ -95,6 +99,13 @@ function fallbackQuestion(language, mechanism) {
   };
   const [nl, en, de] = questions[mechanism] || questions.unknown;
   return localized(language, nl, en, de);
+}
+function fallbackQuestionCandidate(language, mechanism, handled) {
+  const candidates = mechanism === 'connection' ? [
+    { evidenceKey: 'visible_damage', questionType: 'boolean', prompt: localized(language, 'Zie je zichtbare schade aan de bereikbare kabel of stekker?', 'Can you see visible damage on the accessible cable or plug?', 'Siehst du sichtbare Schäden am zugänglichen Kabel oder Stecker?') },
+    { evidenceKey: 'connection_location', questionType: 'short_text', prompt: localized(language, 'Bij welk bereikbaar uiteinde verandert het geluid het duidelijkst?', 'At which accessible end does the sound change most clearly?', 'An welchem zugänglichen Ende verändert sich der Ton am deutlichsten?') },
+  ] : [{ evidenceKey: `${mechanism}_discriminator`, questionType: 'short_text', prompt: fallbackQuestion(language, mechanism) }];
+  return candidates.find(candidate => !handled.has(normalizeEvidenceAxis(candidate.evidenceKey))) || null;
 }
 function choiceLabels(language) {
   return language === 'de'
@@ -205,8 +216,11 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const stopped = ['stop', 'professional'].includes(safety?.route);
   const exhausted = noProgress?.exhausted === true;
   const mechanism = fallbackMechanism(initialReport);
-  const groundedNextTest = nextTest?.evidenceKey === 'observable_behavior'
-    ? { ...nextTest, evidenceKey: `${mechanism}_discriminator`, prompt: fallbackQuestion(selected, mechanism) }
+  const handledAxes = handledEvidenceAxes({ ledger, rawText: initialReport });
+  const normalizedNextAxis = normalizeEvidenceAxis(nextTest?.evidenceKey || nextTest?.code);
+  const fallbackCandidate = fallbackQuestionCandidate(selected, mechanism, handledAxes);
+  const groundedNextTest = nextTest?.evidenceKey === 'observable_behavior' || (normalizedNextAxis && handledAxes.has(normalizedNextAxis))
+    ? (fallbackCandidate ? { ...nextTest, ...fallbackCandidate } : null)
     : nextTest;
   const question = stopped || exhausted || directHelp ? null : questionFromTest(groundedNextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });
   const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft: ${sentence(initialReport)}`, `You described: ${sentence(initialReport)}`, `Du beschreibst: ${sentence(initialReport)}`);
@@ -266,7 +280,11 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   const q = value.nextQuestion;
   if (q && (typeof q !== 'object' || Array.isArray(q) || Object.keys(q).some(key => !['questionId', 'type', 'text', 'evidenceKey', 'why', 'choices', 'options', 'evidenceMapping'].includes(key)))) return fail('hallucinated_field');
   if (q && (Object.hasOwn(q, 'options') || Object.hasOwn(q, 'evidenceMapping'))) return fail('ai_supplied_interaction_semantics');
-  const questionText = cleanText(q?.text, 300);
+  const rawQuestionText = cleanText(q?.text, 300);
+  const sameAxisAlternative = sameAxisAlternativeQuestion(rawQuestionText, q?.evidenceKey);
+  const questionText = sameAxisAlternative
+    ? localized(selected, 'Zie je zichtbare schade?', 'Can you see visible damage?', 'Siehst du sichtbare Schäden?')
+    : rawQuestionText;
   const proposedType = cleanText(q?.type, 40);
   const proposedChoices = asArray(q?.choices);
   const inferredChoices = binaryQuestionChoices(questionText, proposedType, proposedChoices);
@@ -277,14 +295,15 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
     : ['single_choice', 'multi_choice', 'action_check'].includes(questionType)
       ? canonicalQuestionOptions(questionText, selected)
     : { options: [], evidenceMapping: {} };
-  const nextQuestion = q && questionText ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash([questionText, q.evidenceKey])}`, type: questionType, text: questionText, options: canonical.options, evidenceKey: cleanText(q.evidenceKey, 120), evidenceMapping: canonical.evidenceMapping, why: cleanText(q.why, 240) } : null;
+  const evidenceKey = normalizeEvidenceAxis(q?.evidenceKey);
+  const nextQuestion = q && questionText ? { questionId: cleanText(q.questionId, 120) || `q_${stableHash([questionText, evidenceKey])}`, type: questionType, text: questionText, options: canonical.options, evidenceKey, evidenceMapping: canonical.evidenceMapping, why: cleanText(q.why, 240) } : null;
   if (nextQuestion && !QUESTION_TYPES.includes(nextQuestion.type)) return fail('invalid_question_type');
   if (nextQuestion && contentChoices.length && !['single_choice', 'multi_choice'].includes(nextQuestion.type)) return fail('choices_on_non_choice_question');
   if (nextQuestion && !asArray(capabilities?.questionTypes).includes(nextQuestion.type)) return fail('unsupported_question_type');
   if (nextQuestion?.type === 'photo' && capabilities?.photoInput !== true) return fail('photo_input_unavailable');
-  if (nextQuestion && !inferredChoices && /\b(?:en|and|und|maar|but|aber|of|or|oder)\b.+\?/i.test(nextQuestion.text)) return fail('compound_question');
+  if (nextQuestion && !inferredChoices && !sameAxisAlternative && /\b(?:en|and|und|maar|but|aber|of|or|oder)\b.+\?/i.test(nextQuestion.text)) return fail('compound_question');
   if (nextQuestion && (!nextQuestion.questionId || !nextQuestion.evidenceKey)) return fail('incomplete_question_contract');
-  const answeredAxes = new Set(activeEvidence.flatMap(entry => [entry.predicate, entry.provenance?.evidenceKey]).map(axis => cleanText(axis, 120)).filter(Boolean));
+  const answeredAxes = handledEvidenceAxes({ ledger });
   if (nextQuestion && answeredAxes.has(nextQuestion.evidenceKey)) return fail('already_known_evidence_axis');
   if (nextQuestion && ['single_choice', 'multi_choice', 'action_check'].includes(nextQuestion.type)) {
     if (nextQuestion.options.length < 2) return fail('missing_question_options');
@@ -303,6 +322,6 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   if (selected === 'nl' && /\b(the|device|might|please check)\b/i.test(text)) return fail('wrong_language');
   if (selected === 'de' && /\b(the|device|might|please check)\b/i.test(text)) return fail('wrong_language');
   if (safety?.route && value.safety?.route && value.safety.route !== safety.route) return fail('safety_override');
-  const canonicalizationActions = [...(canonical.actions || []), ...(inferredChoices ? ['binary_alternative_question_made_tap_first'] : [])];
+  const canonicalizationActions = [...(canonical.actions || []), ...(inferredChoices ? ['binary_alternative_question_made_tap_first'] : []), ...(sameAxisAlternative ? ['same_axis_wording_canonicalized'] : [])];
   return { valid: true, reason: null, canonicalizationActions: Object.freeze(canonicalizationActions), response: immutable({ ...response, object: immutable(object), knownFacts: Object.freeze(knownFacts.map(immutable)), likelyCauses: Object.freeze(likelyCauses.map(immutable)), safeFirstChecks: Object.freeze(safeFirstChecks.map(immutable)), nextQuestion: nextQuestion ? immutable({ ...nextQuestion, options: Object.freeze(nextQuestion.options.map(immutable)), evidenceMapping: immutable(nextQuestion.evidenceMapping) }) : null, safety: immutable({ ...response.safety, flags: Object.freeze(response.safety.flags) }) }) };
 }

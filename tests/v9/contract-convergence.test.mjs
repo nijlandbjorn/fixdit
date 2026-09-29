@@ -67,6 +67,23 @@ test('één-as binaire vrije vraag wordt tap-first zonder compound contractfout'
   assert.ok(result.canonicalizationActions.includes('binary_alternative_question_made_tap_first'));
 });
 
+test('same-axis schadeformulering met of wordt semantisch gecanonicaliseerd', () => {
+  const response = validResponse('koptelefoon', 'Het geluid valt uit wanneer de kabel beweegt.');
+  response.nextQuestion = { type: 'single_choice', text: 'Is de kabel beschadigd of gescheurd?', evidenceKey: 'kabel_schade', choices: ['Ja', 'Nee'] };
+  const result = validateConsumerResponseV1(response, { ledger: ledgerFromInput({ problem: 'Het geluid valt uit wanneer de kabel beweegt.' }), repairGate: { open: false }, fallback: {} });
+  assert.equal(result.valid, true);
+  assert.equal(result.response.nextQuestion.text, 'Zie je zichtbare schade?');
+  assert.equal(result.response.nextQuestion.evidenceKey, 'visible_damage');
+  assert.ok(result.canonicalizationActions.includes('same_axis_wording_canonicalized'));
+});
+
+test('echte multi-axis of-vraag blijft fail-closed', () => {
+  const response = validResponse('rolmaat', 'De rolmaat rolt niet terug.');
+  response.nextQuestion = { type: 'single_choice', text: 'Is de rolmaat gevallen of blootgesteld aan extreme temperaturen?', evidenceKey: 'failure_cause', choices: ['Ja', 'Nee'] };
+  const result = validateConsumerResponseV1(response, { ledger: ledgerFromInput({ problem: 'Mijn rolmaat rolt niet terug.' }), repairGate: { open: false }, fallback: {} });
+  assert.equal(result.reason, 'compound_question');
+});
+
 test('mutation gate weigert inhoudelijke en structurele contractafwijkingen fail-closed', () => {
   const ledger = ledgerFromInput({ problem: 'Een apparaat hapert.' });
   const check = value => validateConsumerResponseV1(value, { ledger, repairGate: { open: false }, fallback: {} }).reason;

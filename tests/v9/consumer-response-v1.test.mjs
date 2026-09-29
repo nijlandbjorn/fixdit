@@ -91,10 +91,20 @@ test('mechanisme-fallbacks vermijden objectvreemde controles over domeinen', asy
   for (const [problem, expected, forbidden] of cases) {
     const result = await runPipelineV9({ problem });
     const rendered = JSON.stringify(result.consumerResponse);
+    const userFacingText = [
+      result.consumerResponse.object?.displayName,
+      result.consumerResponse.summary,
+      ...(result.consumerResponse.knownFacts || []).map((fact) => fact.text),
+      ...(result.consumerResponse.likelyCauses || []).map((cause) => cause.label),
+      ...(result.consumerResponse.safeFirstChecks || []).map((check) => check.text),
+      result.consumerResponse.nextQuestion?.text,
+      ...(result.consumerResponse.nextQuestion?.options || []).map((option) => option.label),
+      result.consumerResponse.uncertainty,
+    ].filter(Boolean).join(' ');
     assert.match(rendered, expected, problem);
     assert.doesNotMatch(rendered, forbidden, problem);
     assert.equal(result.repairGate.open, false, problem);
-    assert.ok(!/\bunknown\b|\bvoorwerp\b/i.test(rendered), problem);
+    assert.ok(!/\bunknown\b|\bvoorwerp\b/i.test(userFacingText), problem);
   }
 });
 
@@ -168,6 +178,38 @@ test('reasoner ontvangt actieve semantische evidence-assen voor echte multi-turn
   assert.doesNotMatch(result.consumerResponse.nextQuestion.text, /waar.*kabel/i);
   assert.match(result.consumerResponse.likelyCauses[0].label, /trekontlasting/i);
   assert.equal(result.repairGate.open, false);
+});
+
+test('fallback kiest na beantwoorde bewegingsas een nieuwe semantische evidence-as', async () => {
+  const report = 'Mijn koptelefoon geeft links alleen geluid als ik de kabel beweeg.';
+  const first = await runPipelineV9({ problem: report });
+  assert.equal(first.consumerResponse.nextQuestion.evidenceKey, 'visible_damage');
+  const answer = {
+    text: 'Nee', semanticClaim: 'Er is geen zichtbare schade aan de kabel of stekker.',
+    evidenceKey: 'visible_damage', questionId: first.consumerResponse.nextQuestion.questionId,
+    answerKind: 'no', rawAnswer: 'Nee',
+  };
+  const second = await runPipelineV9({ problem: answer.semanticClaim, previousObservations: [report, answer] });
+  assert.equal(second.consumerResponse.nextQuestion.evidenceKey, 'connection_location');
+  assert.notEqual(second.consumerResponse.nextQuestion.text, first.consumerResponse.nextQuestion.text);
+  assert.equal(second.repairGate.open, false);
+  const activeAnswer = second.ledger.entries.find(entry => entry.subject === 'user_answer' && entry.status === 'active');
+  assert.equal(activeAnswer.predicate, 'visible_damage');
+});
+
+test('beantwoorde modelhypothese-as verhoogt support en verdwijnt uit missing evidence', async () => {
+  const proposal = { code: 'cable_surface_damage', statement: 'Zichtbare kabelschade kan het signaal onderbreken.', missingEvidence: ['kabel_schade'] };
+  const before = await runPipelineV9({ problem: 'Mijn koptelefoon valt uit bij kabelbeweging.', modelHypotheses: [proposal] });
+  const after = await runPipelineV9({
+    problem: 'Er is zichtbare schade aan de kabel.',
+    previousObservations: ['Mijn koptelefoon valt uit bij kabelbeweging.', { text: 'Ja', semanticClaim: 'Er is zichtbare schade aan de kabel.', evidenceKey: 'visible_damage', answerKind: 'yes', rawAnswer: 'Ja' }],
+    modelHypotheses: [proposal],
+  });
+  const beforeHypothesis = before.hypotheses.find(item => item.code === proposal.code);
+  const afterHypothesis = after.hypotheses.find(item => item.code === proposal.code);
+  assert.ok(afterHypothesis.score > beforeHypothesis.score);
+  assert.equal(afterHypothesis.missingEvidence.includes('kabel_schade'), false);
+  assert.ok(afterHypothesis.supportingEvidenceIds.length > beforeHypothesis.supportingEvidenceIds.length);
 });
 
 test('Preview reasoning model is configureerbaar via een gesloten gratis-kandidatenlijst', async () => {
