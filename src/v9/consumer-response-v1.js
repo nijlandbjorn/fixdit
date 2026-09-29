@@ -68,6 +68,20 @@ function fallbackChecks(language, mechanism, objectName = '') {
   };
   return (copy[mechanism] || copy.unknown).map(text => localized(language, text, text, text));
 }
+function fallbackCauses(language, mechanism, objectName = '') {
+  const object = objectName || localized(language, 'het betrokken onderdeel', 'the affected part', 'das betroffene Teil');
+  const copy = {
+    mechanical: [`Een zichtbare blokkade kan de vrije beweging van ${object} hinderen.`, `Een verschoven of vervormd bewegend deel kan de teruggaande beweging remmen.`],
+    alignment: [`Een verschoven bevestigingspunt kan ${object} uit lijn trekken.`, `Plaatselijke vervorming kan zorgen dat ${object} aanloopt of klemt.`],
+    powered: [`Een onderbreking in het bereikbare externe voedings- of signaalpad kan het gedrag veroorzaken.`, `De normale externe bediening kan geen stabiel signaal aan ${object} geven.`],
+    software: [`De storing kan beperkt zijn tot één gebruikssituatie of verbonden apparaat.`, `Een instabiele normale verbinding of configuratiestatus kan het gedrag veroorzaken.`],
+    flow: [`Een beperking in de normaal bereikbare toevoer kan de doorstroming verminderen.`, `Een bereikbare afvoer of uitlaat kan gedeeltelijk geblokkeerd zijn.`],
+    leak: [`Een bereikbare koppeling of afdichtrand kan plaatselijk lekken.`, `Een zichtbaar leiding-, slang- of oppervlaktedeel kan beschadigd zijn.`],
+    thermal: [`Een deur, rooster of afdichting kan plaatselijk niet goed aansluiten.`, `Beperkte luchtcirculatie kan het temperatuurverschil plaatselijk versterken.`],
+    unknown: [`Een zichtbare blokkade of afwijkende stand kan het gemelde gedrag veroorzaken.`],
+  };
+  return (copy[mechanism] || copy.unknown).map(text => localized(language, text, text, text));
+}
 function fallbackQuestion(language, mechanism) {
   const questions = {
     mechanical: ['Voel je weerstand wanneer je het onderdeel langzaam en zonder kracht beweegt?', 'Do you feel resistance when moving the part slowly without force?', 'Spürst du Widerstand, wenn du das Teil langsam und ohne Kraft bewegst?'],
@@ -196,7 +210,8 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
     : nextTest;
   const question = stopped || exhausted || directHelp ? null : questionFromTest(groundedNextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });
   const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft: ${sentence(initialReport)}`, `You described: ${sentence(initialReport)}`, `Du beschreibst: ${sentence(initialReport)}`);
-  const causes = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(text => text && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(text)).slice(0, 3);
+  const groundedCauses = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(text => text && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(text));
+  const causes = [...groundedCauses, ...fallbackCauses(selected, mechanism, objectName)].slice(0, 3);
   const suppliedChecks = asArray(directHelp?.now).filter(text => !DANGEROUS.test(text)).slice(0, 2);
   const checks = [...suppliedChecks, ...fallbackChecks(selected, mechanism, objectName)].slice(0, 2);
   return immutable({
@@ -280,7 +295,7 @@ export function validateConsumerResponseV1(value, { language = 'nl', repairGate 
   const response = { contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: 'ai', degradedMode: false, language: selected, object, summary: cleanText(value.summary, 360), knownFacts, likelyCauses, safeFirstChecks, nextQuestion, endState: cleanText(value.endState, 60) || null, uncertainty: cleanText(value.uncertainty, 300), repairGuidance: repairGate?.open === true ? value.repairGuidance ?? null : null, safety: { route: safety?.route || null, flags: asArray(safety?.flags).map(flag => flag.code) } };
   const text = allText(response);
   if (!response.summary || !object.displayName || !likelyCauses.length || !safeFirstChecks.length) return fail('empty_required_content');
-  if (likelyCauses.some(item => /^(?:unknown|unknown cause|onbekende oorzaak|oorzaak onbekend|unbekannte ursache|unklare ursache)[.!]?$/i.test(item.label))) return fail('placeholder_likely_cause');
+  if (likelyCauses.some(item => /^(?:unknown|unknown cause|onbekende oorzaak|oorzaak onbekend|unbekannte ursache|unklare ursache|mechanische storing|mechanical fault|mechanischer fehler|algemeen defect|general defect|allgemeiner defekt|slijtage|wear|verschleiß)[.!]?$/i.test(item.label))) return fail('placeholder_likely_cause');
   if (text.length > 2600) return fail('output_too_long');
   if (INTERNAL.test(text) || INTERNAL.test(object.displayName)) return fail('internal_label');
   if (DANGEROUS.test(text)) return fail('dangerous_instruction');

@@ -105,6 +105,31 @@ test('software/configuratie-fallback vermijdt elektrische kabeladviezen zonder a
   assert.doesNotMatch(rendered, /beschadigde kabel|stekker|laadteken|batterij|foutcode/i);
 });
 
+test('onbekende classificatie geeft concrete mechanisme-oorzaken zonder legacy-placeholder', async () => {
+  let received;
+  const result = await runPipelineV9({
+    problem: 'Mijn rolmaat rolt niet meer vanzelf op.',
+    reasoner: async input => { received = input; return { hypotheses: [], consumerResponse: null }; },
+  });
+  assert.equal(received.hypotheses.some(item => item.code === 'unclassified_failure'), false);
+  assert.equal(Object.hasOwn(received, 'nextQuestion'), false);
+  assert.ok(result.consumerResponse.likelyCauses.length >= 2);
+  assert.match(result.consumerResponse.likelyCauses.map(item => item.label).join(' '), /blokkade|verschoven|vervormd/i);
+  assert.doesNotMatch(result.consumerResponse.likelyCauses.map(item => item.label).join(' '), /mechanische storing|onvoldoende afgebakend/i);
+});
+
+test('validator weigert niet-onderscheidende generieke oorzaaklabels', () => {
+  const ledger = ledgerFromInput({ problem: 'Mijn rolmaat rolt niet op.' });
+  const base = {
+    object: { displayName: 'rolmaat', category: 'handgereedschap', confidence: 'high' },
+    summary: 'De rolmaat rolt niet op.', knownFacts: [],
+    likelyCauses: [{ label: 'Mechanische storing', basis: 'hypothesis' }],
+    safeFirstChecks: [{ text: 'Bekijk de opening van buiten.', actionClass: 'observation' }],
+    nextQuestion: null, uncertainty: 'De oorzaak is nog niet bevestigd.', repairGuidance: null,
+  };
+  assert.equal(validateConsumerResponseV1(base, { ledger, repairGate: { open: false }, fallback: {} }).reason, 'placeholder_likely_cause');
+});
+
 test('reasoner ontvangt actieve semantische evidence-assen voor echte multi-turn versmalling', async () => {
   const report = 'Mijn koptelefoon geeft links alleen geluid als ik de kabel beweeg.';
   const previousObservations = [

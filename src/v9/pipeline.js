@@ -179,8 +179,9 @@ export async function runPipelineV9({
           .filter(entry => entry.status === 'active' && entry.subject === 'user_answer')
           .map(entry => cleanText(entry.provenance?.evidenceKey || entry.predicate, 120))
           .filter(Boolean),
-        hypotheses, contradictions, previousTurns: asArray(previousObservations), route: decision.route,
-        repairGate, noProgress, nextQuestion: nextTest, capabilities,
+        hypotheses: hypotheses.filter(item => item.code !== 'unclassified_failure' && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(item.statement)),
+        contradictions, previousTurns: asArray(previousObservations), route: decision.route,
+        repairGate, noProgress, capabilities,
       });
       aiCalls = 1;
       providerCallCompleted = true;
