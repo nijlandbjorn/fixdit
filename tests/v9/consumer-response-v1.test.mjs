@@ -57,6 +57,47 @@ test('adapter-normalisatiefout blijft zichtbaar en start geen consumer-validatie
   assert.equal(result.metrics.aiPreValidationResponse, null);
 });
 
+test('primaire reasoner gebruikt plain JSON met lokale validatie als authority', async () => {
+  let providerInput;
+  const payload = {
+    hypotheses: [],
+    consumerResponse: {
+      object: { displayName: 'rolmaat', category: 'handgereedschap', confidence: 'high' },
+      summary: 'De rolmaat trekt het lint niet vanzelf terug.', knownFacts: [],
+      likelyCauses: [{ label: 'Het terugrolmechanisme wordt extern door vuil of vervorming geremd.', basis: 'mechanism' }],
+      safeFirstChecks: [{ text: 'Bekijk of het lint bij de opening zichtbaar scheef loopt.', actionClass: 'observation' }],
+      nextQuestion: { type: 'short_text', text: 'Voel je weerstand wanneer je het lint langzaam teruggeleidt?', evidenceKey: 'retraction_resistance' },
+      uncertainty: 'De interne oorzaak is nog niet vastgesteld.', repairGuidance: null,
+    },
+  };
+  const reasoner = createWorkersAiReasoner({ V9_ALLOW_AI: 'true', AI: { run: async (_model, input) => { providerInput = input; return { response: JSON.stringify(payload) }; } } });
+  const result = await runPipelineV9({ problem: 'Mijn rolmaat rolt niet meer vanzelf op.', mode: 'tester', reasoner });
+  assert.equal(Object.hasOwn(providerInput, 'response_format'), false);
+  assert.equal(result.metrics.providerResponseNormalization.normalizationResult, 'success');
+  assert.equal(result.consumerResponse.responseSource, 'ai');
+});
+
+test('mechanisme-fallbacks vermijden objectvreemde controles over domeinen', async () => {
+  const cases = [
+    ['Mijn rolmaat rolt niet meer vanzelf op.', /weerstand|geblokkeerd|verbogen/i, /aansluiting|batterij|foutcode/i],
+    ['Mijn koptelefoon geeft links alleen geluid als ik de kabel beweeg.', /kabel|stekker|aansluiting/i, /afvoer|foutcode/i],
+    ['Uit mijn keukenkraan komt bij koud water veel minder water dan bij warm.', /toevoer|doorstroming|knik|blokkade/i, /batterij|foutcode/i],
+    ['Mijn jaloezie hangt scheef wanneer ik hem omhoog doe.', /aanloopt|klemt|lijn|stand/i, /stekker|batterij/i],
+    ['Mijn vaatwasser blijft na het programma vol water staan.', /afvoer|doorstroming|knik|blokkade/i, /batterij|wifi/i],
+    ['Mijn fietswiel loopt aan wanneer ik hem ronddraai.', /aanloopt|klemt|lijn|vrije ruimte/i, /foutcode|batterij/i],
+    ['Mijn laptop laadt alleen op als ik de stekker onder een bepaalde hoek houd.', /kabel|stekker|aansluiting|laadteken/i, /afvoer/i],
+    ['Langs één rand van mijn vriezer ontstaat steeds een dikke laag ijs.', /ijs|afdichting|deur|rooster/i, /foutcode|wifi/i],
+  ];
+  for (const [problem, expected, forbidden] of cases) {
+    const result = await runPipelineV9({ problem });
+    const rendered = JSON.stringify(result.consumerResponse);
+    assert.match(rendered, expected, problem);
+    assert.doesNotMatch(rendered, forbidden, problem);
+    assert.equal(result.repairGate.open, false, problem);
+    assert.ok(!/\bunknown\b|\bvoorwerp\b/i.test(rendered), problem);
+  }
+});
+
 test('Preview reasoning model is configureerbaar via een gesloten gratis-kandidatenlijst', async () => {
   const candidate = '@cf/zai-org/glm-4.7-flash';
   assert.equal(resolveReasoningModel({ V9_AI_MODEL: candidate }), candidate);

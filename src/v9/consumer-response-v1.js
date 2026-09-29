@@ -23,7 +23,7 @@ function sentence(value) { const text = cleanText(value, 260); return text ? `${
 function activeUserEvidence(ledger) { return asArray(ledger?.entries).filter(entry => entry.status === 'active' && ['user_text', 'previous_user_text', 'vision_structured'].includes(entry.source)); }
 function rawObjectName(problem, language) {
   const raw = cleanText(problem, 180).replace(/[.!?]+$/g, '');
-  const verb = '(?:is|zijn|heeft|hebben|doet|doen|gaat|werken?|start|begint|blijft|zakt|steekt|loopt|lekt|wordt|geeft|draait|trapt|staat|krijgt|laadt|koelt|ontsteekt|vonkt|maakt|knippert|dubbelklikt|sluit|hangt|wiebelt|kraakt|slaat|valt|slingert|stopt|trekt|reageert|springt|zit|ruikt|komt|has|does|starts|stays|drops|leaks|sparks|closes|hangs|falls|clicks|ist|hat|funktioniert|startet|bleibt|sinkt|läuft|leckt|funkt|wird)';
+  const verb = '(?:is|zijn|heeft|hebben|doet|doen|gaat|werken?|start|begint|blijft|zakt|steekt|loopt|lekt|rolt|wordt|geeft|draait|trapt|staat|krijgt|laadt|koelt|ontsteekt|vonkt|maakt|knippert|dubbelklikt|sluit|hangt|wiebelt|kraakt|slaat|valt|slingert|stopt|trekt|reageert|springt|zit|ruikt|komt|has|does|starts|stays|drops|leaks|rolls|sparks|closes|hangs|falls|clicks|ist|hat|funktioniert|startet|bleibt|sinkt|läuft|leckt|rollt|funkt|wird)';
   const possessive = new RegExp('(?:^|\\b)(?:mijn|m[’\']n|my|mein(?:e|en|er)?)\\s+(.+?)(?=\\s+' + verb + '\\b|$)', 'iu').exec(raw)?.[1];
   let phrase = cleanText(possessive, 100);
   const nested = /\b(?:mijn|my|mein(?:e|en|er)?)\s+([\p{L}\d-]+(?:\s+[\p{L}\d-]+){0,2})$/iu.exec(phrase)?.[1];
@@ -42,10 +42,42 @@ function clarification(language) {
   if (language === 'en') return 'I do not yet understand which item or part you mean. Can you briefly say what is broken?';
   return 'Ik begrijp nog niet precies welk onderdeel of apparaat je bedoelt. Kun je kort aangeven wat er kapot is?';
 }
-function externalCheck(language, objectName = '') {
-  if (language === 'de') return objectName ? `Betrachte ${objectName} nur von außen und achte auf sichtbare Schäden oder lose äußere Verbindungen.` : 'Betrachte das betroffene Teil nur von außen und achte auf sichtbare Schäden oder lose äußere Verbindungen.';
-  if (language === 'en') return objectName ? `Inspect ${objectName} only from the outside for visible damage or loose external connections.` : 'Inspect the affected part only from the outside for visible damage or loose external connections.';
-  return objectName ? `Bekijk ${objectName} alleen van buiten op zichtbare schade of losse externe aansluitingen.` : 'Bekijk het betrokken onderdeel alleen van buiten op zichtbare schade of losse externe aansluitingen.';
+function fallbackMechanism(text) {
+  const value = String(text || '').toLocaleLowerCase();
+  if (/\b(?:rook|brandlucht|smeltlucht|gaslucht|vlam|vonken?|smoke|burning smell|gas smell|flames?|sparks?|rauch|brandgeruch|gasgeruch|flammen?|funken?)\b/i.test(value)) return 'hazard';
+  if (/\b(?:lek|lekt|lekkage|vocht|druip|water onder|leak|leaking|moisture|drip|leckt|undicht|feucht|tropf)\b/i.test(value)) return 'leak';
+  if (/\b(?:water|afvoer|doorstroom|druk|kraan|pomp|spoelt|flow|drain|pressure|faucet|tap|pump|wasser|abfluss|druck|hahn|pumpe)\b/i.test(value)) return 'flow';
+  if (/\b(?:heet|warm|koelt|vriest|ijs|temperatuur|hot|heat|cool|freez|ice|heiß|warm|kühl|frier|eis)\b/i.test(value)) return 'thermal';
+  if (/\b(?:laadt|stroom|stekker|kabel|scherm|toets|lamp|elektr|wifi|router|netwerk|charging|power|plug|cable|screen|key|light|network|strom|stecker|kabel|bildschirm|taste|licht|netzwerk)\b/i.test(value)) return 'powered';
+  if (/\b(?:scheef|klemt|loopt aan|slingert|barst|kras|vervorm|crooked|stuck|rubs|wobbl|crack|scratch|misalign|schief|klemmt|schleift|eiert|riss|kratzer)\b/i.test(value)) return 'alignment';
+  if (/\b(?:rolt|draait|beweegt|zakt|hangt|klikt|veer|mechan|rolls?|turns?|moves?|drops|hangs?|clicks?|spring|rollt|dreht|bewegt|sinkt|hängt|klickt|feder)\b/i.test(value)) return 'mechanical';
+  return 'unknown';
+}
+function fallbackChecks(language, mechanism, objectName = '') {
+  const object = objectName || localized(language, 'het betrokken onderdeel', 'the affected part', 'das betroffene Teil');
+  const copy = {
+    mechanical: [`Kijk van buiten of ${object} zichtbaar geblokkeerd, verbogen of verschoven is.`, `Let zonder kracht te zetten op weerstand, speling of een afwijkend geluid bij normale beweging.`],
+    alignment: [`Bekijk van buiten waar ${object} aanloopt, klemt of uit lijn staat.`, `Vergelijk de stand en vrije ruimte aan beide zijden zonder iets los te maken.`],
+    powered: [`Controleer ${object} van buiten op een losse of beschadigde kabel, stekker of aansluiting die bij dit probleem hoort.`, `Let bij ${object} op welk normaal zichtbaar lampje, scherm of laadteken wel of niet verschijnt.`],
+    flow: [`Controleer bij ${object} de normaal bereikbare toevoer of afvoer op een zichtbare knik of blokkade.`, `Vergelijk de doorstroming van ${object} tijdens normaal gebruik zonder onderdelen te openen.`],
+    leak: [`Dep ${object} aan de buitenkant droog en kijk waar het vocht als eerste opnieuw zichtbaar wordt.`, `Controleer van buiten of een bereikbare koppeling, rand of slang van ${object} zichtbaar nat is.`],
+    thermal: [`Controleer van buiten waar bij ${object} warmte, kou of ijsvorming het duidelijkst optreedt.`, `Kijk of een deur, rooster of afdichting van ${object} zichtbaar niet goed aansluit.`],
+    unknown: [`Bekijk ${object} alleen van buiten op een zichtbare blokkade, beschadiging of afwijkende stand.`, `Let bij normaal gebruik van ${object} op het eerste zichtbare of hoorbare verschil zonder iets los te maken.`],
+  };
+  return (copy[mechanism] || copy.unknown).map(text => localized(language, text, text, text));
+}
+function fallbackQuestion(language, mechanism) {
+  const questions = {
+    mechanical: ['Voel je weerstand wanneer je het onderdeel langzaam en zonder kracht beweegt?', 'Do you feel resistance when moving the part slowly without force?', 'Spürst du Widerstand, wenn du das Teil langsam und ohne Kraft bewegst?'],
+    alignment: ['Op welke plek raakt of klemt het onderdeel?', 'At which point does the part rub or jam?', 'An welcher Stelle schleift oder klemmt das Teil?'],
+    powered: ['Blijft de werking veranderen wanneer de bereikbare kabel of stekker stil blijft liggen?', 'Does the behavior still change while the accessible cable or plug remains still?', 'Ändert sich das Verhalten weiterhin, wenn das zugängliche Kabel oder der Stecker stillliegt?'],
+    flow: ['Is de doorstroming vanaf het begin zwak?', 'Is the flow weak from the start?', 'Ist der Durchfluss von Anfang an schwach?'],
+    leak: ['Waar verschijnt het vocht als eerste?', 'Where does the moisture first appear?', 'Wo tritt die Feuchtigkeit zuerst auf?'],
+    thermal: ['Waar is het temperatuurverschil of de ijsvorming het sterkst?', 'Where is the temperature difference or ice buildup strongest?', 'Wo ist der Temperaturunterschied oder die Eisbildung am stärksten?'],
+    unknown: ['Welke zichtbare verandering treedt op wanneer het probleem ontstaat?', 'What visible change occurs when the problem appears?', 'Welche sichtbare Veränderung tritt auf, wenn das Problem erscheint?'],
+  };
+  const [nl, en, de] = questions[mechanism] || questions.unknown;
+  return localized(language, nl, en, de);
 }
 function choiceLabels(language) {
   return language === 'de'
@@ -144,14 +176,15 @@ export function buildFallbackConsumerResponse({ language = 'nl', problem = '', l
   const understood = Boolean(objectName) && !GENERIC_OBJECT.test(objectName);
   const stopped = ['stop', 'professional'].includes(safety?.route);
   const exhausted = noProgress?.exhausted === true;
+  const mechanism = fallbackMechanism(initialReport);
   const groundedNextTest = nextTest?.evidenceKey === 'observable_behavior'
-    ? { ...nextTest, evidenceKey: 'occurrence_pattern', prompt: localized(selected, 'Is dit voortdurend, of alleen onder bepaalde omstandigheden?', 'Does this happen continuously, or only under certain conditions?', 'Tritt das ständig oder nur unter bestimmten Bedingungen auf?') }
+    ? { ...nextTest, evidenceKey: `${mechanism}_discriminator`, prompt: fallbackQuestion(selected, mechanism) }
     : nextTest;
   const question = stopped || exhausted || directHelp ? null : questionFromTest(groundedNextTest, selected) || immutable({ questionId: `q_${stableHash([selected, 'clarify'])}`, type: 'short_text', text: clarification(selected), options: Object.freeze([]), evidenceKey: 'object_and_problem_description', evidenceMapping: immutable({}), why: '' });
   const summary = stopped ? safetyCopy(selected) : localized(selected, `Je beschrijft: ${sentence(initialReport)}`, `You described: ${sentence(initialReport)}`, `Du beschreibst: ${sentence(initialReport)}`);
   const causes = asArray(directHelp?.causes).concat(asArray(hypotheses).map(item => item.statement)).filter(text => text && !/onvoldoende afgebakend|insufficiently defined|nicht ausreichend eingegrenzt/i.test(text)).slice(0, 3);
   const suppliedChecks = asArray(directHelp?.now).filter(text => !DANGEROUS.test(text)).slice(0, 2);
-  const checks = [...suppliedChecks, externalCheck(selected, objectName), localized(selected, 'Controleer alleen normaal bereikbare aansluitingen en bedieningsstanden.', 'Check only normally accessible connections and controls.', 'Prüfe nur normal zugängliche Anschlüsse und Bedieneinstellungen.')].slice(0, 2);
+  const checks = [...suppliedChecks, ...fallbackChecks(selected, mechanism, objectName)].slice(0, 2);
   return immutable({
     contractVersion: CONSUMER_RESPONSE_CONTRACT_VERSION, responseSource: stopped ? 'safety' : 'deterministic_fallback', language: selected,
     object: immutable({ displayName: objectName, category: classifiedIsAuthoritative ? (cleanText(classification?.objectFamily, 100) || 'unresolved') : 'unresolved', source: classifiedName && classifiedIsAuthoritative ? 'deterministic_normalization' : 'raw_user_input', confidence: understood ? 'medium' : 'low' }), summary,
